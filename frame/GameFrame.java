@@ -102,6 +102,7 @@ public class GameFrame extends JFrame implements ActionListener {
         this.add(terrainType, BorderLayout.LINE_END);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
+        this.pack();
         this.setVisible(true);
     }
 
@@ -111,7 +112,7 @@ public class GameFrame extends JFrame implements ActionListener {
             if (Integer.parseInt(troopsNumber.getText()) <= max_troops &&
                     Integer.parseInt(rowNumber.getText()) <= rows
             ){
-                // to add SET method for each row, troop type
+                // to add return method for each row, troop type
                 if (side.isSelected()) {
                     right_side = true;
                 } else {
