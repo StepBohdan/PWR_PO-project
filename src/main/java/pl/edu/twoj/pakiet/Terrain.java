@@ -7,7 +7,7 @@ public class Terrain {
     private static final int SIZE = 100;
     // Using enums for better readability (but still outputting numbers)
     private enum TerrainType {
-        LAND, WATER, GRAVEL, MOUNTAIN
+        LAND, WATER, GRAVEL, MOUNTAIN // 0,1,2,3 according 
     }
     private TerrainType[][] map;
     private Random random;
