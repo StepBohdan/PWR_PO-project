@@ -51,7 +51,7 @@ public class Terrain {
                         y += random.nextInt(3) - 1; // Vertical movement
                     }
                 } else {
-                    // Handle out-of-bounds: maybe restart the river or change direction?
+                
                 }
             }
 
