@@ -3,7 +3,7 @@
 =======
 .gradle
 build/
-!gradle/wrapper/gradle-wrapper.jar
+!PWR_PO-project/gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 

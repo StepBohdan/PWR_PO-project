@@ -1,11 +1,10 @@
-package frame;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class ActionPanel extends JPanel {
     //add terrain generation
-    ActionPanel(){
+    public ActionPanel(){
         // how to implement game engine
         this.setFocusable(false);
         this.setPreferredSize(new Dimension(700,700));

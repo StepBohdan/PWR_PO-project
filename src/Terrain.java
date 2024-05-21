@@ -1,4 +1,4 @@
-package pl.edu.twoj.pakiet;
+
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;

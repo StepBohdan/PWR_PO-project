@@ -2,11 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-<<<<<<< HEAD
       <module fileurl="file://$PROJECT_DIR$/warriors.iml" filepath="$PROJECT_DIR$/warriors.iml" />
-=======
+
       <module fileurl="file://$PROJECT_DIR$/.idea/PWR_PO-project.iml" filepath="$PROJECT_DIR$/.idea/PWR_PO-project.iml" />
->>>>>>> origin/Ilya-Branch
     </modules>
   </component>
 </project>
