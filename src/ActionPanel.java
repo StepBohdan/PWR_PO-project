@@ -4,6 +4,9 @@ import java.awt.*;
 
 public class ActionPanel extends JPanel {
     //add terrain generation
+    Terrain terrain = new Terrain();
+    int[][] generatedMap = terrain.getMap();
+
     public ActionPanel(){
         // how to implement game engine
         this.setFocusable(false);
@@ -21,13 +24,26 @@ public class ActionPanel extends JPanel {
         int size = 7;
         for(int i = 0 ; i < 100; i ++){
             for(int j = 0; j < 100; j ++){
-                if((i % 2 == 1 && j % 2 == 1) || (i % 2 == 0 && j % 2 == 0)){
-                    g2D.setPaint(Color.RED);
-                } else{
-                    g2D.setPaint(Color.BLACK);
+                switch (generatedMap[i][j]){
+                    case 0:
+                        g2D.setPaint(Color.GREEN);
+                        g2D.fillRect(i * size,j * size,size,size);
+                        break;
+                    case 1:
+                        g2D.setPaint(Color.BLUE);
+                        g2D.fillRect(i * size,j * size,size,size);
+                        break;
+                    case 2:
+                        g2D.setPaint(Color.GRAY);
+                        g2D.fillRect(i * size,j * size,size,size);
+                        break;
+                    case 3:
+                        g2D.setPaint(Color.DARK_GRAY);
+                        g2D.fillRect(i * size,j * size,size,size);
+                        break;
                 }
-                g2D.fillRect(i * size,j * size,size,size);
             }
         }
     }
+    // movement methods and so on - repaint()
 }
