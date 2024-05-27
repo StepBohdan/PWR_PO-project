@@ -103,8 +103,8 @@ public class GameFrame extends JFrame implements ActionListener {
         menu.add(start);
         leftArmy = new JLabel(leftArmyText);
         rightArmy = new JLabel(rightArmyText);
-        menu.add(leftArmy);
-        menu.add(rightArmy);
+        menu.add(new JLabel(""));
+        menu.add(new JLabel(""));
 
 //        mainPanel = new ActionPanel(generatedMap);
         mainPanel = new JPanel();
@@ -129,33 +129,22 @@ public class GameFrame extends JFrame implements ActionListener {
             if (Integer.parseInt(troopsNumber.getText()) <= max_troops &&
                     Integer.parseInt(rowNumber.getText()) <= rows
             ){
-                // to add return method for each row, troop type
                 if (side.isSelected()) {
                     right_side = true;
-                    rightArmyText = setArmyText(rightArmyText);
-                    rightArmy.setText(rightArmyText);
+                    // right army init
                 } else {
                     left_side = true;
-                    leftArmyText = setArmyText(leftArmyText);
-                    leftArmy.setText(leftArmyText);
+                    // left army init
                 }
                 System.out.println(right_side + " " + left_side + " " +Integer.parseInt(troopsNumber.getText()) + " "+Integer.parseInt(rowNumber.getText()));
                 if(left_side && right_side){
                     start.setEnabled(true);
+
                 }
             }
         }
-    }
-    private String setArmyText(String sideArmy){
-        String warriorType = "";
-        if (archer.isSelected()){
-            warriorType = "Archer";
-        } else if (swordsman.isSelected()) {
-            warriorType = "Swordsman";
-        } else if (shieldman.isSelected()) {
-            warriorType = "Shieldman";
+        if (e.getSource() == start){
+            mainPanel = new ActionPanel(generatedMap);
         }
-        sideArmy = String.format("<html>%s<br>%s - %s - %s<br></html>", sideArmy, warriorType, troopsNumber.getText(), rowNumber.getText());
-        return sideArmy;
     }
 }
