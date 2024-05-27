@@ -4,11 +4,11 @@ import java.awt.*;
 
 public class ActionPanel extends JPanel {
     //add terrain generation
-    Terrain terrain = new Terrain();
-    int[][] generatedMap = terrain.getMap();
+    int[][] generatedMap;
 
-    public ActionPanel(){
+    public ActionPanel(int[][] generatedMap){
         // how to implement game engine
+        this.generatedMap = generatedMap;
         this.setFocusable(false);
         this.setPreferredSize(new Dimension(700,700));
         this.setVisible(true);

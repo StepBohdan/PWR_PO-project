@@ -6,8 +6,9 @@ import java.awt.event.ActionListener;
 
 public class GameFrame extends JFrame implements ActionListener {
     JCheckBox side;
-    ImageIcon trueCheck = new ImageIcon("frame/true-check.png");
-    ImageIcon falseCheck = new ImageIcon("frame/false-check.png");
+    ImageIcon trueCheck = new ImageIcon("src/true-check.png");
+    ImageIcon falseCheck = new ImageIcon("src/false-check.png");
+    ImageIcon gameLogo = new ImageIcon("src/game-logo.png");
     JPanel troopsNumberPanel;
     JLabel troopsNumberLabel;
     JPanel rowNumberPanel;
@@ -25,6 +26,11 @@ public class GameFrame extends JFrame implements ActionListener {
     JButton submit;
     JButton start;
 
+    JLabel leftArmy;
+    String leftArmyText = "Left army:\n";
+    JLabel rightArmy;
+    String rightArmyText = "Right army:\n";
+
     JPanel mainPanel;
     JPanel menu;
     JComboBox<String> terrainType;
@@ -32,6 +38,9 @@ public class GameFrame extends JFrame implements ActionListener {
     int rows;
     boolean left_side = false;
     boolean right_side = false;
+
+    Terrain terrain = new Terrain();
+    int[][] generatedMap = terrain.getMap();
     GameFrame(int max_troops, int rows){
         this.max_troops = max_troops;
         this.rows = rows;
@@ -49,6 +58,9 @@ public class GameFrame extends JFrame implements ActionListener {
         archer = new JRadioButton("Archer", true);
         swordsman = new JRadioButton("Swordsman");
         shieldman = new JRadioButton("Shieldman");
+        archer.addActionListener(this);
+        swordsman.addActionListener(this);
+        shieldman.addActionListener(this);
         troopsType.add(archer);
         troopsType.add(swordsman);
         troopsType.add(shieldman);
@@ -89,10 +101,15 @@ public class GameFrame extends JFrame implements ActionListener {
         menu.add(rowNumberPanel);
         menu.add(submit);
         menu.add(start);
-        menu.add(new JLabel(""));
-        menu.add(new JLabel(""));
+        leftArmy = new JLabel(leftArmyText);
+        rightArmy = new JLabel(rightArmyText);
+        menu.add(leftArmy);
+        menu.add(rightArmy);
 
-        mainPanel = new ActionPanel();
+//        mainPanel = new ActionPanel(generatedMap);
+        mainPanel = new JPanel();
+        mainPanel.setPreferredSize(new Dimension(700,700));
+        mainPanel.add(new JLabel(gameLogo));
 
         terrainType = new JComboBox<>();
         terrainType.setPreferredSize(new Dimension(100,50));
@@ -115,8 +132,12 @@ public class GameFrame extends JFrame implements ActionListener {
                 // to add return method for each row, troop type
                 if (side.isSelected()) {
                     right_side = true;
+                    rightArmyText = setArmyText(rightArmyText);
+                    rightArmy.setText(rightArmyText);
                 } else {
                     left_side = true;
+                    leftArmyText = setArmyText(leftArmyText);
+                    leftArmy.setText(leftArmyText);
                 }
                 System.out.println(right_side + " " + left_side + " " +Integer.parseInt(troopsNumber.getText()) + " "+Integer.parseInt(rowNumber.getText()));
                 if(left_side && right_side){
@@ -124,5 +145,17 @@ public class GameFrame extends JFrame implements ActionListener {
                 }
             }
         }
+    }
+    private String setArmyText(String sideArmy){
+        String warriorType = "";
+        if (archer.isSelected()){
+            warriorType = "Archer";
+        } else if (swordsman.isSelected()) {
+            warriorType = "Swordsman";
+        } else if (shieldman.isSelected()) {
+            warriorType = "Shieldman";
+        }
+        sideArmy = String.format("<html>%s<br>%s - %s - %s<br></html>", sideArmy, warriorType, troopsNumber.getText(), rowNumber.getText());
+        return sideArmy;
     }
 }
