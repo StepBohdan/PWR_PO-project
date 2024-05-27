@@ -92,6 +92,7 @@ public class GameFrame extends JFrame implements ActionListener {
 
         start = new JButton("Start");
         start.setEnabled(false);
+        start.addActionListener(this);
 
         menu.add(new JLabel(""));
         menu.add(new JLabel(""));
@@ -144,7 +145,19 @@ public class GameFrame extends JFrame implements ActionListener {
             }
         }
         if (e.getSource() == start){
-            mainPanel = new ActionPanel(generatedMap);
+            mainPanel.removeAll();
+
+            // Create a new ActionPanel and set it to mainPanel
+            ActionPanel newPanel = new ActionPanel(generatedMap);
+
+            // Add the new panel to the mainPanel
+            mainPanel.setLayout(new BorderLayout());
+            mainPanel.add(newPanel, BorderLayout.CENTER);
+
+            // Refresh the mainPanel
+            mainPanel.revalidate();
+            mainPanel.repaint();
+            System.out.println("dick");
         }
     }
 }
