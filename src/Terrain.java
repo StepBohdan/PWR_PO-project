@@ -1,7 +1,6 @@
 
 import java.util.Random;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class Terrain {
      static final int SIZE = 100;
@@ -11,8 +10,8 @@ public class Terrain {
     private enum TerrainType {
         LAND, WATER, GRAVEL, MOUNTAIN // 0,1,2,3 according
     }
-    private TerrainType[][] map;
-    private Random random;
+    private final TerrainType[][] map;
+    private final Random random;
 
     public Terrain() {
         map = new TerrainType[SIZE][SIZE];
@@ -34,10 +33,9 @@ public class Terrain {
     }
 
     private void generateRiver() {
-        int startX = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
-        int endX = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
 
-        int currentX = startX;
+
+        int currentX = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
         int currentY = 0; // Start at the very top
 
         while (currentY < SIZE) { // Go all the way to the bottom
@@ -82,12 +80,14 @@ public class Terrain {
     }
 
     private void generateMountains() {
-        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(10) + 4, 6);
+        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(10) + 3, 6);
     }
 
     private void generateGravel() {
-        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(10) + 4, 5);
-    }
+
+        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(10) + 4, 1);
+
+        }
 
     public int[][] getMap() {
         // Convert TerrainType to integer values (0, 1, 2, 3)

@@ -5,9 +5,9 @@ import java.awt.event.ActionListener;
 
 public class GameFrame extends JFrame implements ActionListener {
     JCheckBox side;
-    ImageIcon trueCheck = new ImageIcon("src/red.png");
-    ImageIcon falseCheck = new ImageIcon("src/blue.png");
-    ImageIcon gameLogo = new ImageIcon("src/game-logo.png");
+    ImageIcon trueCheck = new ImageIcon("src/images/red.png");
+    ImageIcon falseCheck = new ImageIcon("src/images/blue.png");
+    ImageIcon gameLogo = new ImageIcon("src/images/frame.png");
     JPanel troopsNumberPanel;
     JLabel troopsNumberLabel;
     JPanel rowNumberPanel;
@@ -124,14 +124,17 @@ public class GameFrame extends JFrame implements ActionListener {
         this.setVisible(true);
     }
     public void warriorArrangement() {
-        // Swordsman - 4, Archer - 5, Shielsdman - 6
+        // Red team
+        // Swordsman - 4, Archer - 5, Shieldsman - 6
+        // Blue team
+        // Swordsman -7, Archer - 8, Shieldsman - 9
         int troopsNumberInt = Integer.parseInt(troopsNumber.getText());
         int rowNumberInt = Integer.parseInt(rowNumber.getText());
         int step = SIZE / troopsNumberInt;
 
         if (archer.isSelected()) {
-            new Archer(1, 3, 0.0);
             if (left_side) {
+                new Archer(1, 3, 0.0, "BLUE");
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
                         generatedMap[rowNumberInt-1][i * step +1] = 5;
@@ -140,17 +143,18 @@ public class GameFrame extends JFrame implements ActionListener {
                     }
                 }
             } else if (right_side) {
+                new Archer(1, 3, 0.0, "RED");
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
-                        generatedMap[SIZE - rowNumberInt][i * step+1] = 5;
+                        generatedMap[SIZE - rowNumberInt][i * step+1] = 7;
                     }else{
-                        generatedMap[SIZE - rowNumberInt][i * step] = 5;
+                        generatedMap[SIZE - rowNumberInt][i * step] = 7;
                     }
                 }
             }
         } else if (swordsman.isSelected()) {
-            new Swordsman(1, 1, 0.3);
             if (left_side) {
+                new Swordsman(1, 1, 0.3, "BLUE");
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
                         generatedMap[rowNumberInt-1][i * step + 1] = 4;
@@ -159,17 +163,18 @@ public class GameFrame extends JFrame implements ActionListener {
                     }
                 }
             } else if (right_side) {
+                new Swordsman(1, 1, 0.3, "RED");
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
-                            generatedMap[SIZE - rowNumberInt][i * step+1] = 4;
+                            generatedMap[SIZE - rowNumberInt][i * step+1] = 8;
                         }else{
-                            generatedMap[SIZE - rowNumberInt][i * step] = 4;
+                            generatedMap[SIZE - rowNumberInt][i * step] = 8;
                     }
                 }
             }
         } else if (shieldman.isSelected()) {
-            new Shieldman(0, 1, 0.8);
             if (left_side) {
+                new Shieldman(0, 1, 0.8, "BLUE");
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
                         generatedMap[rowNumberInt-1][i * step+1] = 6;
@@ -178,11 +183,12 @@ public class GameFrame extends JFrame implements ActionListener {
                     }
                 }
             } else if (right_side) {
+                new Shieldman(0, 1, 0.8, "RED");
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
-                        generatedMap[SIZE - rowNumberInt][i * step+1] = 6;
+                        generatedMap[SIZE - rowNumberInt][i * step+1] = 9;
                     }else{
-                        generatedMap[SIZE - rowNumberInt][i * step] = 6;
+                        generatedMap[SIZE - rowNumberInt][i * step] = 9;
                     }
                 }
             }

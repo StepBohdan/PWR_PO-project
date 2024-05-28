@@ -1,17 +1,15 @@
 import java.util.Arrays;
 
 abstract class Warrior {
-    int attackDmg;
-    int attackRate;
-    double evasion;
-
-    static Terrain terrain = new Terrain();
-    static int[][] generatedMap = terrain.getMap();
-
-    public Warrior(int attackDmg, int attackRate, double evasion) {
+     final String team;
+     final int attackDmg;
+    final int attackRate;
+    final double evasion;
+    public Warrior(int attackDmg, int attackRate, double evasion, String team) {
         this.attackDmg = attackDmg;
         this.attackRate = attackRate;
         this.evasion = evasion;
+        this.team = team;
     }
 
     public abstract int[] attackRange(int warriorRow, int warriorCol, int rows, int cols);
@@ -19,8 +17,8 @@ abstract class Warrior {
 }
 
 class Swordsman extends Warrior {
-    public Swordsman(int attackDmg, int attackRate, double evasion) {
-        super(attackDmg, attackRate, evasion);
+    public Swordsman(int attackDmg, int attackRate, double evasion, String team) {
+        super(attackDmg, attackRate, evasion, team);
     }
 
     @Override
@@ -40,8 +38,8 @@ class Swordsman extends Warrior {
 }
 
 class Archer extends Warrior {
-    public Archer(int attackDmg, int attackRate, double evasion) {
-        super(attackDmg, attackRate, evasion);
+    public Archer(int attackDmg, int attackRate, double evasion, String team) {
+        super(attackDmg, attackRate, evasion, team);
     }
 
     @Override
@@ -61,8 +59,8 @@ class Archer extends Warrior {
 }
 
 class Shieldman extends Warrior {
-    public Shieldman(int attackDmg, int attackRate, double evasion) {
-        super(attackDmg, attackRate, evasion);
+    public Shieldman(int attackDmg, int attackRate, double evasion, String team) {
+        super(attackDmg, attackRate, evasion, team);
     }
 
 
@@ -83,22 +81,3 @@ class Shieldman extends Warrior {
     }
 }
 
-// Main class to run the application
-public class Warriors {
-    public static void main(String[] args) {
-        Warrior[] warriors = new Warrior[]{
-                new Swordsman(1, 1, 0.3),
-                new Archer(1, 3, 0.0),
-                new Shieldman(0, 1, 0.8)
-        };
-
-        // Print the map with warriors
-        int[][] map = Warrior.generatedMap;
-        for (int i = 0; i < Terrain.SIZE; i++) {
-            for (int j = 0; j < Terrain.SIZE; j++) {
-                System.out.print(map[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
-}
