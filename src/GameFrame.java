@@ -35,6 +35,8 @@ public class GameFrame extends JFrame implements ActionListener {
     int rows;
     boolean left_side = false;
     boolean right_side = false;
+    private boolean leftSelected = false;
+    private boolean rightSelected = false;
 
     static Terrain terrain = new Terrain();
     static int[][] generatedMap = terrain.getMap();
@@ -137,6 +139,7 @@ public class GameFrame extends JFrame implements ActionListener {
                         generatedMap[rowNumberInt-1][i * step] = 5;
                     }
                 }
+                left_side = true;
             } else if (right_side) {
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
@@ -145,6 +148,7 @@ public class GameFrame extends JFrame implements ActionListener {
                         generatedMap[SIZE - rowNumberInt][i * step] = 5;
                     }
                 }
+                right_side = true;
             }
         } else if (swordsman.isSelected()) {
             new Swordsman(1, 1, 0.3);
@@ -156,6 +160,7 @@ public class GameFrame extends JFrame implements ActionListener {
                         generatedMap[rowNumberInt-1][i * step] = 4;
                     }
                 }
+                left_side = true;
             } else if (right_side) {
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
@@ -164,6 +169,7 @@ public class GameFrame extends JFrame implements ActionListener {
                             generatedMap[SIZE - rowNumberInt][i * step] = 4;
                     }
                 }
+                right_side = true;
             }
         } else if (shieldman.isSelected()) {
             new Shieldman(0, 1, 0.8);
@@ -175,10 +181,16 @@ public class GameFrame extends JFrame implements ActionListener {
                         generatedMap[rowNumberInt-1][i * step] = 6;
                     }
                 }
+                left_side = true;
             } else if (right_side) {
                 for (int i = 0; i < troopsNumberInt; i++) {
-                    generatedMap[SIZE - rowNumberInt][i*step] = 6;
+                    if(rowNumberInt % 2 == 0) {
+                        generatedMap[SIZE - rowNumberInt][i * step+1] = 6;
+                    }else{
+                        generatedMap[SIZE - rowNumberInt][i * step] = 6;
+                    }
                 }
+                right_side = true;
             }
         }
 
@@ -193,6 +205,7 @@ public class GameFrame extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
         if (e.getSource() == submit) {
             System.out.println("Submit button pressed");
             if (Integer.parseInt(troopsNumber.getText()) <= max_troops &&
@@ -201,9 +214,19 @@ public class GameFrame extends JFrame implements ActionListener {
                 right_side = side.isSelected();
                 warriorArrangement();
                 System.out.println("Right side: " + right_side + ", Left side: " + left_side + ", Troops number: " + Integer.parseInt(troopsNumber.getText()) + ", Row number: " + Integer.parseInt(rowNumber.getText()));
-                start.setEnabled(true);
+
+                if (left_side) {
+                    leftSelected = true;
+                }
+                if (right_side) {
+                    rightSelected = true;
+                }
+
+                if(leftSelected && rightSelected){
+                    start.setEnabled(true);
+                }
             }
-        } else if (e.getSource() == start) {
+        }else if (e.getSource() == start) {
             System.out.println("Start button pressed");
             mainPanel.removeAll();
 

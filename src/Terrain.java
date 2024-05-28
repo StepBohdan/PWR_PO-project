@@ -1,11 +1,12 @@
+
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.*;
-
 public class Terrain {
-    static final int SIZE = 100;
+     static final int SIZE = 100;
+    private static final int SIDE_BORDER_WIDTH = 5;
+
     // Using enums for better readability (but still outputting numbers)
     private enum TerrainType {
         LAND, WATER, GRAVEL, MOUNTAIN // 0,1,2,3 according
@@ -21,52 +22,42 @@ public class Terrain {
 
     private void generateTerrain() {
         // Fill with land, but maybe consider a more interesting starting point
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                map[i][j] = TerrainType.LAND;
+        for (int j = 0; j < SIZE; j++) {
+            for (int i = 0; i < SIZE; i++) {
+                map[j][i] = TerrainType.LAND;
             }
         }
 
-        generateRivers();
         generateMountains();
         generateGravel();
+        generateRiver();
     }
 
-    private void generateRivers() {
-        int numRivers = random.nextInt(5) + 2; // Increased range for more variety
-        for (int r = 0; r < numRivers; r++) {
-            List<Integer[]> riverPoints = new ArrayList<>();
-            int x = random.nextInt(SIZE);
-            int y = random.nextInt(SIZE);
-            int length = random.nextInt(SIZE / 2) + SIZE / 4;
+    private void generateRiver() {
+        int startX = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
+        int endX = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
 
-            for (int i = 0; i < length; i++) {
-                if (x >= 0 && x < SIZE && y >= 0 && y < SIZE) {
-                    riverPoints.add(new Integer[]{x, y});
+        int currentX = startX;
+        int currentY = 0; // Start at the very top
 
-                    // More organic movement using a weighted random direction
-                    int direction = random.nextInt(10);
-                    if (direction < 5) {
-                        x += random.nextInt(3) - 1; // Horizontal movement
-                    } else {
-                        y += random.nextInt(3) - 1; // Vertical movement
-                    }
-                } else {
+        while (currentY < SIZE) { // Go all the way to the bottom
+            map[currentX][currentY] = TerrainType.WATER;
 
-                }
+            int direction = random.nextInt(4);
+            if (direction == 0 && currentX > SIDE_BORDER_WIDTH) {
+                currentX--;
+            } else if (direction == 1 && currentX < SIZE - SIDE_BORDER_WIDTH - 1) {
+                currentX++;
             }
-
-            // "Draw" the river on the map
-            for (Integer[] point : riverPoints) {
-                map[point[0]][point[1]] = TerrainType.WATER;
-            }
+            currentY++;
         }
     }
+
 
     private void generateTerrainFeature(TerrainType terrainType, int numFeatures, int maxRadius) {
         for (int i = 0; i < numFeatures; i++) {
-            int x = random.nextInt(SIZE);
-            int y = random.nextInt(SIZE);
+            int y = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
+            int x = random.nextInt(SIZE); // No border restriction for Y (top to bottom)
             int radius = random.nextInt(maxRadius) + 3;
 
             // Randomly adjust the radius to create non-circular shapes
@@ -81,7 +72,8 @@ public class Terrain {
                         distance += random.nextInt(2) - 1;
                     }
 
-                    if (newX >= 0 && newX < SIZE && newY >= 0 && newY < SIZE && distance <= radius) {
+                    if (newX >= SIDE_BORDER_WIDTH && newX < SIZE - SIDE_BORDER_WIDTH &&
+                            newY >= 0 && newY < SIZE && distance <= radius) {
                         map[newX][newY] = terrainType;
                     }
                 }
@@ -90,11 +82,11 @@ public class Terrain {
     }
 
     private void generateMountains() {
-        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(8) + 2, 5);
+        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(10) + 4, 6);
     }
 
     private void generateGravel() {
-        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(8) + 2, 4);
+        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(10) + 4, 5);
     }
 
     public int[][] getMap() {
@@ -121,4 +113,3 @@ public class Terrain {
         }
     }
 }
-
