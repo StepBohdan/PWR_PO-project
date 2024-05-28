@@ -41,7 +41,7 @@ public class Terrain {
             map[currentY][currentX] = TerrainType.WATER;
 
             int direction = random.nextInt(2);
-            if (direction == 0 && currentX > SIDE_BORDER_WIDTH) {
+            if (direction == 0 && currentX > SIDE_BORDER_WIDTH + 1) {
                 currentX--;
             } else if (direction == 1 && currentX < SIZE - SIDE_BORDER_WIDTH - 1) {
                 currentX++;
