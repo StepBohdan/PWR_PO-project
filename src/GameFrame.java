@@ -139,7 +139,6 @@ public class GameFrame extends JFrame implements ActionListener {
                         generatedMap[rowNumberInt-1][i * step] = 5;
                     }
                 }
-                left_side = true;
             } else if (right_side) {
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
@@ -148,7 +147,6 @@ public class GameFrame extends JFrame implements ActionListener {
                         generatedMap[SIZE - rowNumberInt][i * step] = 5;
                     }
                 }
-                right_side = true;
             }
         } else if (swordsman.isSelected()) {
             new Swordsman(1, 1, 0.3);
@@ -160,7 +158,6 @@ public class GameFrame extends JFrame implements ActionListener {
                         generatedMap[rowNumberInt-1][i * step] = 4;
                     }
                 }
-                left_side = true;
             } else if (right_side) {
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
@@ -169,7 +166,6 @@ public class GameFrame extends JFrame implements ActionListener {
                             generatedMap[SIZE - rowNumberInt][i * step] = 4;
                     }
                 }
-                right_side = true;
             }
         } else if (shieldman.isSelected()) {
             new Shieldman(0, 1, 0.8);
@@ -181,7 +177,6 @@ public class GameFrame extends JFrame implements ActionListener {
                         generatedMap[rowNumberInt-1][i * step] = 6;
                     }
                 }
-                left_side = true;
             } else if (right_side) {
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
@@ -190,17 +185,8 @@ public class GameFrame extends JFrame implements ActionListener {
                         generatedMap[SIZE - rowNumberInt][i * step] = 6;
                     }
                 }
-                right_side = true;
             }
         }
-
-//        System.out.println("Updated map:");
-//        for (int[] row : generatedMap) {
-//            for (int cell : row) {
-//                System.out.print(cell + " ");
-//            }
-//            System.out.println();
-//        }
     }
 
     @Override
