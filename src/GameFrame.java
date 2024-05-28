@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -6,8 +5,8 @@ import java.awt.event.ActionListener;
 
 public class GameFrame extends JFrame implements ActionListener {
     JCheckBox side;
-    ImageIcon trueCheck = new ImageIcon("src/true-check.png");
-    ImageIcon falseCheck = new ImageIcon("src/false-check.png");
+    ImageIcon trueCheck = new ImageIcon("src/red.png");
+    ImageIcon falseCheck = new ImageIcon("src/blue.png");
     ImageIcon gameLogo = new ImageIcon("src/game-logo.png");
     JPanel troopsNumberPanel;
     JLabel troopsNumberLabel;
@@ -20,8 +19,6 @@ public class GameFrame extends JFrame implements ActionListener {
     JRadioButton archer;
     JRadioButton swordsman;
     JRadioButton shieldman;
-//    JLabel left_set;
-//    JLabel right_set;
 
     JButton submit;
     JButton start;
@@ -39,17 +36,19 @@ public class GameFrame extends JFrame implements ActionListener {
     boolean left_side = false;
     boolean right_side = false;
 
-    Terrain terrain = new Terrain();
-    int[][] generatedMap = terrain.getMap();
-    GameFrame(int max_troops, int rows){
+    static Terrain terrain = new Terrain();
+    static int[][] generatedMap = terrain.getMap();
+    static final int SIZE = generatedMap.length;
+
+    GameFrame(int max_troops, int rows) {
         this.max_troops = max_troops;
         this.rows = rows;
-        this.setSize(1500,800);
+        this.setSize(1500, 800);
         this.setLayout(new BorderLayout(10, 10)); // probably will be changed to GridBagLayout
 
         menu = new JPanel();
-        menu.setLayout(new GridLayout(6,2, 10, 10)); // same
-        menu.setMaximumSize(new Dimension(200,300));
+        menu.setLayout(new GridLayout(6, 2, 10, 10)); // same
+        menu.setMaximumSize(new Dimension(200, 300));
 
         troopsType = new ButtonGroup();
         troopsTypePanel = new JPanel();
@@ -70,14 +69,14 @@ public class GameFrame extends JFrame implements ActionListener {
 
         rowNumberPanel = new JPanel();
         rowNumberLabel = new JLabel("Enter the number of row: ");
-        rowNumberPanel.setLayout(new GridLayout(2,1));
+        rowNumberPanel.setLayout(new GridLayout(2, 1));
         rowNumber = new JTextField();
         rowNumberPanel.add(rowNumberLabel);
         rowNumberPanel.add(rowNumber);
 
         troopsNumberPanel = new JPanel();
         troopsNumberLabel = new JLabel("Enter amount of troops: ");
-        troopsNumberPanel.setLayout(new GridLayout(2,1));
+        troopsNumberPanel.setLayout(new GridLayout(2, 1));
         troopsNumber = new JTextField();
         troopsNumberPanel.add(troopsNumberLabel);
         troopsNumberPanel.add(troopsNumber);
@@ -107,13 +106,12 @@ public class GameFrame extends JFrame implements ActionListener {
         menu.add(new JLabel(""));
         menu.add(new JLabel(""));
 
-//        mainPanel = new ActionPanel(generatedMap);
         mainPanel = new JPanel();
-        mainPanel.setPreferredSize(new Dimension(700,700));
+        mainPanel.setPreferredSize(new Dimension(700, 700));
         mainPanel.add(new JLabel(gameLogo));
 
         terrainType = new JComboBox<>();
-        terrainType.setPreferredSize(new Dimension(100,50));
+        terrainType.setPreferredSize(new Dimension(100, 50));
 
         this.add(menu, BorderLayout.LINE_START);
         this.add(mainPanel, BorderLayout.CENTER);
@@ -123,41 +121,99 @@ public class GameFrame extends JFrame implements ActionListener {
         this.pack();
         this.setVisible(true);
     }
+    public void warriorArrangement() {
+        // Swordsman - 4, Archer - 5, Shielsdman - 6
+        int troopsNumberInt = Integer.parseInt(troopsNumber.getText());
+        int rowNumberInt = Integer.parseInt(rowNumber.getText());
+        int step = SIZE / troopsNumberInt;
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == submit){
-            if (Integer.parseInt(troopsNumber.getText()) <= max_troops &&
-                    Integer.parseInt(rowNumber.getText()) <= rows
-            ){
-                if (side.isSelected()) {
-                    right_side = true;
-                    // right army init
-                } else {
-                    left_side = true;
-                    // left army init
+        if (archer.isSelected()) {
+            new Archer(1, 3, 0.0);
+            if (left_side) {
+                for (int i = 0; i < troopsNumberInt; i++) {
+                    if(rowNumberInt % 2 == 0) {
+                        generatedMap[rowNumberInt-1][i * step +1] = 5;
+                    }else{
+                        generatedMap[rowNumberInt-1][i * step] = 5;
+                    }
                 }
-                System.out.println(right_side + " " + left_side + " " +Integer.parseInt(troopsNumber.getText()) + " "+Integer.parseInt(rowNumber.getText()));
-                if(left_side && right_side){
-                    start.setEnabled(true);
-
+            } else if (right_side) {
+                for (int i = 0; i < troopsNumberInt; i++) {
+                    if(rowNumberInt % 2 == 0) {
+                        generatedMap[SIZE - rowNumberInt][i * step+1] = 5;
+                    }else{
+                        generatedMap[SIZE - rowNumberInt][i * step] = 5;
+                    }
+                }
+            }
+        } else if (swordsman.isSelected()) {
+            new Swordsman(1, 1, 0.3);
+            if (left_side) {
+                for (int i = 0; i < troopsNumberInt; i++) {
+                    if(rowNumberInt % 2 == 0) {
+                        generatedMap[rowNumberInt-1][i * step + 1] = 4;
+                    }else{
+                        generatedMap[rowNumberInt-1][i * step] = 4;
+                    }
+                }
+            } else if (right_side) {
+                for (int i = 0; i < troopsNumberInt; i++) {
+                    if(rowNumberInt % 2 == 0) {
+                            generatedMap[SIZE - rowNumberInt][i * step+1] = 4;
+                        }else{
+                            generatedMap[SIZE - rowNumberInt][i * step] = 4;
+                    }
+                }
+            }
+        } else if (shieldman.isSelected()) {
+            new Shieldman(0, 1, 0.8);
+            if (left_side) {
+                for (int i = 0; i < troopsNumberInt; i++) {
+                    if(rowNumberInt % 2 == 0) {
+                        generatedMap[rowNumberInt-1][i * step+1] = 6;
+                    }else{
+                        generatedMap[rowNumberInt-1][i * step] = 6;
+                    }
+                }
+            } else if (right_side) {
+                for (int i = 0; i < troopsNumberInt; i++) {
+                    generatedMap[SIZE - rowNumberInt][i*step] = 6;
                 }
             }
         }
-        if (e.getSource() == start){
+
+//        System.out.println("Updated map:");
+//        for (int[] row : generatedMap) {
+//            for (int cell : row) {
+//                System.out.print(cell + " ");
+//            }
+//            System.out.println();
+//        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == submit) {
+            System.out.println("Submit button pressed");
+            if (Integer.parseInt(troopsNumber.getText()) <= max_troops &&
+                    Integer.parseInt(rowNumber.getText()) <= rows) {
+                left_side = !side.isSelected();
+                right_side = side.isSelected();
+                warriorArrangement();
+                System.out.println("Right side: " + right_side + ", Left side: " + left_side + ", Troops number: " + Integer.parseInt(troopsNumber.getText()) + ", Row number: " + Integer.parseInt(rowNumber.getText()));
+                start.setEnabled(true);
+            }
+        } else if (e.getSource() == start) {
+            System.out.println("Start button pressed");
             mainPanel.removeAll();
 
-            // Create a new ActionPanel and set it to mainPanel
             ActionPanel newPanel = new ActionPanel(generatedMap);
-
-            // Add the new panel to the mainPanel
             mainPanel.setLayout(new BorderLayout());
             mainPanel.add(newPanel, BorderLayout.CENTER);
 
-            // Refresh the mainPanel
             mainPanel.revalidate();
             mainPanel.repaint();
-            System.out.println("dick");
+            System.out.println("Game started");
         }
     }
 }

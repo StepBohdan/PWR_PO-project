@@ -1,13 +1,14 @@
-
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.*;
+
 public class Terrain {
-    private static final int SIZE = 100;
+    static final int SIZE = 100;
     // Using enums for better readability (but still outputting numbers)
     private enum TerrainType {
-        LAND, WATER, GRAVEL, MOUNTAIN // 0,1,2,3 according 
+        LAND, WATER, GRAVEL, MOUNTAIN // 0,1,2,3 according
     }
     private TerrainType[][] map;
     private Random random;
@@ -51,7 +52,7 @@ public class Terrain {
                         y += random.nextInt(3) - 1; // Vertical movement
                     }
                 } else {
-                
+
                 }
             }
 
@@ -89,11 +90,11 @@ public class Terrain {
     }
 
     private void generateMountains() {
-        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(8) + 2, 6);
+        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(8) + 2, 5);
     }
 
     private void generateGravel() {
-        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(8) + 2, 5);
+        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(8) + 2, 4);
     }
 
     public int[][] getMap() {
@@ -120,3 +121,4 @@ public class Terrain {
         }
     }
 }
+
