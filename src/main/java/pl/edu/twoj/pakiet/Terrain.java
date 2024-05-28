@@ -1,13 +1,16 @@
 package pl.edu.twoj.pakiet;
+
 import java.util.Random;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 
 public class Terrain {
     private static final int SIZE = 100;
+    private static final int SIDE_BORDER_WIDTH = 3; // Width of the border on the sides
+
     // Using enums for better readability (but still outputting numbers)
     private enum TerrainType {
-        LAND, WATER, GRAVEL, MOUNTAIN
+        LAND, WATER, GRAVEL, MOUNTAIN //д 0,1,2,3 according
     }
     private TerrainType[][] map;
     private Random random;
@@ -19,19 +22,77 @@ public class Terrain {
     }
 
     private void generateTerrain() {
-        // Fill with land, but maybe consider a more interesting starting point
+        // Fill with land
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 map[i][j] = TerrainType.LAND;
             }
         }
 
-        generateRivers();
         generateMountains();
         generateGravel();
+        generateRiver();
+
+
     }
 
-    private void generateRivers() {
+    private void generateRiver() {
+        int startX = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
+
+        int currentX = startX;
+        int currentY = 0; // Start at the very top
+
+        while (currentY < SIZE) {// Go all the way to the bottom
+            if( map[currentX][currentY] != TerrainType.MOUNTAIN){
+                map[currentY][currentX] = TerrainType.WATER;
+            }
+
+
+            int direction = random.nextInt(2);
+            if (direction == 0 && currentX > SIDE_BORDER_WIDTH) {
+                currentX--;
+            } else if (direction == 1 && currentX < SIZE - SIDE_BORDER_WIDTH - 1) {
+                currentX++;
+            }
+            currentY++;
+        }
+    }
+
+    private void generateTerrainFeature(TerrainType terrainType, int numFeatures, int maxRadius) {
+        for (int i = 0; i < numFeatures; i++) {
+            // Ensure features are generated within the side borders
+            int x = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
+            int y = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH; // No border restriction for Y (top to bottom)
+            int radius = random.nextInt(maxRadius) + 3;
+
+            for (int j = -radius; j <= radius; j++) {
+                for (int k = -radius; k <= radius; k++) {
+                    int newX = x + j;
+                    int newY = y + k;
+                    int distance = (int) Math.sqrt(j * j + k * k);
+
+                    if (random.nextInt(10) < 2) {
+                        distance += random.nextInt(2) - 1;
+                    }
+
+                    // Check boundaries and distance for feature placement
+                    if (newX >= SIDE_BORDER_WIDTH && newX < SIZE - SIDE_BORDER_WIDTH &&
+                            newY >= 0 && newY < SIZE && distance <= radius) {
+                        if( map [newX][newY] != TerrainType.MOUNTAIN){
+                            map[newY][newX] = terrainType;
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+    private void generateMountains() {
+        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(5) + 1, 5);
+    }
+
+    private void generateGravel() {
         int numRivers = random.nextInt(5) + 2; // Increased range for more variety
         for (int r = 0; r < numRivers; r++) {
             List<Integer[]> riverPoints = new ArrayList<>();
@@ -51,63 +112,30 @@ public class Terrain {
                         y += random.nextInt(3) - 1; // Vertical movement
                     }
                 } else {
-                    // Handle out-of-bounds: maybe restart the river or change direction?
+
                 }
             }
 
             // "Draw" the river on the map
             for (Integer[] point : riverPoints) {
-                map[point[0]][point[1]] = TerrainType.WATER;
-            }
-        }
-    }
-
-    private void generateTerrainFeature(TerrainType terrainType, int numFeatures, int maxRadius) {
-        for (int i = 0; i < numFeatures; i++) {
-            int x = random.nextInt(SIZE);
-            int y = random.nextInt(SIZE);
-            int radius = random.nextInt(maxRadius) + 3;
-
-            // Randomly adjust the radius to create non-circular shapes
-            for (int j = -radius; j <= radius; j++) {
-                for (int k = -radius; k <= radius; k++) {
-                    int newX = x + j;
-                    int newY = y + k;
-                    int distance = (int) Math.sqrt(j * j + k * k);
-
-                    // Randomly adjust distance to create irregularity
-                    if (random.nextInt(10) < 2) {
-                        distance += random.nextInt(2) - 1;
-                    }
-
-                    if (newX >= 0 && newX < SIZE && newY >= 0 && newY < SIZE && distance <= radius) {
-                        map[newX][newY] = terrainType;
-                    }
+                if (map[point[0]][point[1]] != TerrainType.MOUNTAIN){
+                    map[point[0]][point[1]] = TerrainType.GRAVEL;
                 }
             }
         }
     }
 
-    private void generateMountains() {
-        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(8) + 2, 6);
-    }
-
-    private void generateGravel() {
-        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(8) + 2, 5);
-    }
 
     public int[][] getMap() {
-        // Convert TerrainType to integer values (0, 1, 2, 3)
         int[][] intMap = new int[SIZE][SIZE];
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
-                intMap[i][j] = map[i][j].ordinal(); // Get the ordinal value of the enum
+                intMap[i][j] = map[i][j].ordinal();
             }
         }
         return intMap;
     }
 
-    // Main method for testing
     public static void main(String[] args) {
         Terrain terrain = new Terrain();
         int[][] generatedMap = terrain.getMap();
