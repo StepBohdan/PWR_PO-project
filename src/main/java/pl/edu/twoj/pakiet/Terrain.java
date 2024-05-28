@@ -78,11 +78,11 @@ public class Terrain {
     }
 
     private void generateMountains() {
-        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(8) + 2, 6);
+        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(5) + 1, 5);
     }
 
     private void generateGravel() {
-        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(8) + 2, 5);
+        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(5) + 1, 4);
     }
 
     public int[][] getMap() {
