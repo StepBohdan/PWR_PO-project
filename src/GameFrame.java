@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,9 +9,7 @@ public class GameFrame extends JFrame implements ActionListener {
     ImageIcon trueCheck = new ImageIcon("src/images/red.png");
     ImageIcon falseCheck = new ImageIcon("src/images/blue.png");
     ImageIcon gameLogo = new ImageIcon("src/images/frame.png");
-    JPanel troopsNumberPanel;
     JLabel troopsNumberLabel;
-    JPanel rowNumberPanel;
     JLabel rowNumberLabel;
     JTextField rowNumber;
     JTextField troopsNumber;
@@ -22,11 +21,6 @@ public class GameFrame extends JFrame implements ActionListener {
 
     JButton submit;
     JButton start;
-
-    JLabel leftArmy;
-    String leftArmyText = "Left army:\n";
-    JLabel rightArmy;
-    String rightArmyText = "Right army:\n";
 
     JPanel mainPanel;
     JPanel menu;
@@ -42,6 +36,7 @@ public class GameFrame extends JFrame implements ActionListener {
     static int[][] generatedMap = terrain.getMap();
     static final int SIZE = generatedMap.length;
 
+
     GameFrame(int max_troops, int rows) {
         this.max_troops = max_troops;
         this.rows = rows;
@@ -49,13 +44,45 @@ public class GameFrame extends JFrame implements ActionListener {
         this.setLayout(new BorderLayout(10, 10)); // probably will be changed to GridBagLayout
 
         menu = new JPanel();
-        menu.setLayout(new GridLayout(6, 2, 10, 10)); // same
-        menu.setMaximumSize(new Dimension(200, 300));
+        menu.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        JLabel menuLabel = new JLabel("MENU");
+        menuLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 3;
+        menu.add(menuLabel, gbc);
+
+        side = new JCheckBox("Select a side");
+        side.setFocusable(false);
+        side.setIcon(falseCheck);
+        side.setSelectedIcon(trueCheck);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        menu.add(side, gbc);
+
+        troopsNumberLabel = new JLabel("Troops amount (max: 50): ");
+        troopsNumber = new JTextField(8);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        menu.add(troopsNumberLabel, gbc);
+        gbc.gridx = 1;
+        menu.add(troopsNumber, gbc);
+
+        rowNumberLabel = new JLabel("Row number (max: 5): ");
+        rowNumber = new JTextField(8);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        menu.add(rowNumberLabel, gbc);
+        gbc.gridx = 1;
+        menu.add(rowNumber, gbc);
 
         troopsType = new ButtonGroup();
         troopsTypePanel = new JPanel();
         troopsTypePanel.setLayout(new GridLayout(3, 1));
-
         archer = new JRadioButton("Archer", true);
         swordsman = new JRadioButton("Swordsman");
         shieldman = new JRadioButton("Shieldman");
@@ -68,60 +95,67 @@ public class GameFrame extends JFrame implements ActionListener {
         troopsTypePanel.add(archer);
         troopsTypePanel.add(swordsman);
         troopsTypePanel.add(shieldman);
-
-        rowNumberPanel = new JPanel();
-        rowNumberLabel = new JLabel("Enter the number of row: ");
-        rowNumberPanel.setLayout(new GridLayout(2, 1));
-        rowNumber = new JTextField();
-        rowNumberPanel.add(rowNumberLabel);
-        rowNumberPanel.add(rowNumber);
-
-        troopsNumberPanel = new JPanel();
-        troopsNumberLabel = new JLabel("Enter amount of troops: ");
-        troopsNumberPanel.setLayout(new GridLayout(2, 1));
-        troopsNumber = new JTextField();
-        troopsNumberPanel.add(troopsNumberLabel);
-        troopsNumberPanel.add(troopsNumber);
-
-        side = new JCheckBox("Side");
-        side.setFocusable(false);
-        side.setIcon(falseCheck);
-        side.setSelectedIcon(trueCheck);
+        gbc.gridx = 2;
+        gbc.gridy = 2;
+        gbc.gridheight = 2;
+        menu.add(troopsTypePanel, gbc);
 
         submit = new JButton("Submit");
+        styleButton(submit);
         submit.addActionListener(this);
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 2;
+        gbc.gridheight = 1;
+        menu.add(submit, gbc);
 
         start = new JButton("Start");
+        styleButton(start);
         start.setEnabled(false);
         start.addActionListener(this);
+        gbc.gridx = 2;
+        gbc.gridy = 4;
+        gbc.gridwidth = 1;
+        menu.add(start, gbc);
 
-        menu.add(new JLabel(""));
-        menu.add(new JLabel(""));
-        menu.add(side);
-        menu.add(troopsNumberPanel);
-        menu.add(troopsTypePanel);
-        menu.add(rowNumberPanel);
-        menu.add(submit);
-        menu.add(start);
-        leftArmy = new JLabel(leftArmyText);
-        rightArmy = new JLabel(rightArmyText);
-        menu.add(new JLabel(""));
-        menu.add(new JLabel(""));
-
+        // Настройка главной панели
         mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
         mainPanel.setPreferredSize(new Dimension(700, 700));
-        mainPanel.add(new JLabel(gameLogo));
+        mainPanel.add(new JLabel(gameLogo), BorderLayout.CENTER);
 
+        // Настройка комбобокса типа местности
         terrainType = new JComboBox<>();
-        terrainType.setPreferredSize(new Dimension(100, 50));
+        terrainType.setPreferredSize(new Dimension(100, 100));
 
+        // Добавление компонентов в фрейм
         this.add(menu, BorderLayout.LINE_START);
         this.add(mainPanel, BorderLayout.CENTER);
-        this.add(terrainType, BorderLayout.LINE_END);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.pack();
         this.setVisible(true);
+    }
+
+    private void styleButton(JButton button) {
+        button.setFont(new Font("Arial", Font.BOLD, 12));
+        button.setBackground(Color.DARK_GRAY);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        button.setPreferredSize(new Dimension(100, 30));
+    }
+    private void clearRow(int row) {
+        left_side = !side.isSelected();
+        right_side = side.isSelected();
+        for (int i = 0; i < SIZE; i++) {
+            if(left_side){
+                generatedMap[row][i] = 0;
+            }else if(right_side){
+                generatedMap[SIZE-row-1][i] = 0;
+            }
+
+        }
     }
     public void warriorArrangement() {
         // Red team
@@ -131,10 +165,10 @@ public class GameFrame extends JFrame implements ActionListener {
         int troopsNumberInt = Integer.parseInt(troopsNumber.getText());
         int rowNumberInt = Integer.parseInt(rowNumber.getText());
         int step = SIZE / troopsNumberInt;
+        clearRow(rowNumberInt-1);
 
         if (archer.isSelected()) {
             if (left_side) {
-                new Archer(1, 3, 0.0, "BLUE");
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
                         generatedMap[rowNumberInt-1][i * step +1] = 5;
@@ -143,7 +177,7 @@ public class GameFrame extends JFrame implements ActionListener {
                     }
                 }
             } else if (right_side) {
-                new Archer(1, 3, 0.0, "RED");
+
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
                         generatedMap[SIZE - rowNumberInt][i * step+1] = 7;
@@ -154,7 +188,6 @@ public class GameFrame extends JFrame implements ActionListener {
             }
         } else if (swordsman.isSelected()) {
             if (left_side) {
-                new Swordsman(1, 1, 0.3, "BLUE");
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
                         generatedMap[rowNumberInt-1][i * step + 1] = 4;
@@ -163,7 +196,6 @@ public class GameFrame extends JFrame implements ActionListener {
                     }
                 }
             } else if (right_side) {
-                new Swordsman(1, 1, 0.3, "RED");
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
                             generatedMap[SIZE - rowNumberInt][i * step+1] = 8;
@@ -174,7 +206,7 @@ public class GameFrame extends JFrame implements ActionListener {
             }
         } else if (shieldman.isSelected()) {
             if (left_side) {
-                new Shieldman(0, 1, 0.8, "BLUE");
+
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
                         generatedMap[rowNumberInt-1][i * step+1] = 6;
@@ -183,7 +215,6 @@ public class GameFrame extends JFrame implements ActionListener {
                     }
                 }
             } else if (right_side) {
-                new Shieldman(0, 1, 0.8, "RED");
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if(rowNumberInt % 2 == 0) {
                         generatedMap[SIZE - rowNumberInt][i * step+1] = 9;
@@ -197,15 +228,20 @@ public class GameFrame extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         if (e.getSource() == submit) {
             System.out.println("Submit button pressed");
+
+            mainPanel.removeAll();
+            ActionPanel newPanel = new ActionPanel(generatedMap);
+            mainPanel.add(newPanel, BorderLayout.CENTER);
+
             if (Integer.parseInt(troopsNumber.getText()) <= max_troops &&
                     Integer.parseInt(rowNumber.getText()) <= rows) {
                 left_side = !side.isSelected();
                 right_side = side.isSelected();
                 warriorArrangement();
-                System.out.println("Right side: " + right_side + ", Left side: " + left_side + ", Troops number: " + Integer.parseInt(troopsNumber.getText()) + ", Row number: " + Integer.parseInt(rowNumber.getText()));
+                mainPanel.revalidate();
+                mainPanel.repaint();
 
                 if (left_side) {
                     leftSelected = true;
@@ -214,17 +250,14 @@ public class GameFrame extends JFrame implements ActionListener {
                     rightSelected = true;
                 }
 
-                if(leftSelected && rightSelected){
+                if (leftSelected && rightSelected) {
                     start.setEnabled(true);
                 }
             }
-        }else if (e.getSource() == start) {
+        } else if (e.getSource() == start) {
             System.out.println("Start button pressed");
-            mainPanel.removeAll();
-
-            ActionPanel newPanel = new ActionPanel(generatedMap);
-            mainPanel.setLayout(new BorderLayout());
-            mainPanel.add(newPanel, BorderLayout.CENTER);
+            start.setEnabled(false);
+            submit.setEnabled(false);
 
             mainPanel.revalidate();
             mainPanel.repaint();
@@ -232,3 +265,4 @@ public class GameFrame extends JFrame implements ActionListener {
         }
     }
 }
+

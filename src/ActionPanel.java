@@ -46,25 +46,48 @@ public class ActionPanel extends JPanel {
     public void draw(Graphics g) {
         Graphics2D g2D = (Graphics2D) g;
         int size = 7;
-        for (int i = 0; i < 100; i++) {
-            for (int j = 0; j < 100; j++) {
+        int mapWidth = 100;
+        int mapHeight = 100;
+
+        // Определяем размер и положение серой области
+        int grayWidth = 30 * size;
+        int grayHeight = 30 * size;
+        int grayX = (mapWidth * size - grayWidth) / 2;
+        int grayY = (mapHeight * size - grayHeight) / 2;
+
+        for (int i = 0; i < mapWidth; i++) {
+            for (int j = 0; j < mapHeight; j++) {
+                // Проверяем, находится ли точка в серой области
+                if (i * size >= grayX && i * size < grayX + grayWidth &&
+                        j * size >= grayY && j * size < grayHeight) {
+                    // Если точка в серой области, рисуем её серым цветом
+                    g2D.setPaint(Color.GRAY);
+                } else {
+                    // Иначе, рисуем её соответствующим цветом из generatedMap
+                    switch (generatedMap[i][j]) {
+                        case 0:
+                            g2D.setPaint(new Color(28, 107, 1));
+                            break;
+                        case 1:
+                            g2D.setPaint(Color.BLUE);
+                            break;
+                        case 2:
+                            g2D.setPaint(Color.GRAY);
+                            break;
+                        case 3:
+                            g2D.setPaint(Color.DARK_GRAY);
+                            break;
+                        default:
+                            g2D.setPaint(new Color(28, 107, 1));
+                            break;
+                    }
+                }
+
+                // Рисуем фон
+                g2D.fillRect(i * size, j * size, size, size);
+
+                // Рисуем изображение, если необходимо
                 switch (generatedMap[i][j]) {
-                    case 0:
-                        g2D.setPaint(new Color(28, 107, 1));
-                        g2D.fillRect(i * size, j * size, size, size);
-                        break;
-                    case 1:
-                        g2D.setPaint(Color.BLUE);
-                        g2D.fillRect(i * size, j * size, size, size);
-                        break;
-                    case 2:
-                        g2D.setPaint(Color.GRAY);
-                        g2D.fillRect(i * size, j * size, size, size);
-                        break;
-                    case 3:
-                        g2D.setPaint(Color.DARK_GRAY);
-                        g2D.fillRect(i * size, j * size, size, size);
-                        break;
                     case 4:
                         g2D.drawImage(blueSwordsmanImage, i * size, j * size, size, size, null);
                         break;
@@ -87,6 +110,7 @@ public class ActionPanel extends JPanel {
             }
         }
     }
+
 
     // movement methods and so on - repaint()
 
