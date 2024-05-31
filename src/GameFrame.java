@@ -228,11 +228,11 @@ public class GameFrame extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        ActionPanel newPanel = new ActionPanel(generatedMap);
         if (e.getSource() == submit) {
             System.out.println("Submit button pressed");
 
             mainPanel.removeAll();
-            ActionPanel newPanel = new ActionPanel(generatedMap);
             mainPanel.add(newPanel, BorderLayout.CENTER);
 
             if (Integer.parseInt(troopsNumber.getText()) <= max_troops &&
@@ -258,7 +258,6 @@ public class GameFrame extends JFrame implements ActionListener {
             System.out.println("Start button pressed");
             start.setEnabled(false);
             submit.setEnabled(false);
-
             mainPanel.revalidate();
             mainPanel.repaint();
             System.out.println("Game started");
