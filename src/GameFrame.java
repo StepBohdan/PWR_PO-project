@@ -36,6 +36,7 @@ public class GameFrame extends JFrame implements ActionListener {
     static int[][] generatedMap = terrain.getMap();
     static final int SIZE = generatedMap.length;
 
+    ActionPanel actionPanel;
 
     GameFrame(int max_troops, int rows) {
         this.max_troops = max_troops;
@@ -228,21 +229,20 @@ public class GameFrame extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        ActionPanel newPanel = new ActionPanel(generatedMap);
         if (e.getSource() == submit) {
             System.out.println("Submit button pressed");
 
-            mainPanel.removeAll();
-            mainPanel.add(newPanel, BorderLayout.CENTER);
-
             if (Integer.parseInt(troopsNumber.getText()) <= max_troops &&
                     Integer.parseInt(rowNumber.getText()) <= rows) {
+                mainPanel.removeAll();
                 left_side = !side.isSelected();
                 right_side = side.isSelected();
                 warriorArrangement();
+
+                actionPanel = new ActionPanel(generatedMap);
+                mainPanel.add(actionPanel, BorderLayout.CENTER);
                 mainPanel.revalidate();
                 mainPanel.repaint();
-
                 if (left_side) {
                     leftSelected = true;
                 }
@@ -258,8 +258,9 @@ public class GameFrame extends JFrame implements ActionListener {
             System.out.println("Start button pressed");
             start.setEnabled(false);
             submit.setEnabled(false);
-            mainPanel.revalidate();
-            mainPanel.repaint();
+//            mainPanel.revalidate();
+//            mainPanel.repaint();
+            actionPanel.start_game();
             System.out.println("Game started");
         }
     }

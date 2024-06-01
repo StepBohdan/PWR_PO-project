@@ -32,7 +32,6 @@ public class ActionPanel extends JPanel implements ActionListener {
         this.setVisible(true);
         loadImages();
         create_war_loc();
-        start_game(); // add if start button triggered statement
     }
 
     private void loadImages() {
@@ -49,7 +48,7 @@ public class ActionPanel extends JPanel implements ActionListener {
     }
 
 
-//    @Override
+    @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         draw(g);
@@ -77,7 +76,7 @@ public class ActionPanel extends JPanel implements ActionListener {
                     g2D.setPaint(Color.GRAY);
                 } else {
                     // Иначе, рисуем её соответствующим цветом из generatedMap
-                    switch (originGenMap[i][j]) {
+                    switch (generatedMap[i][j]) {
                         case 0:
                             g2D.setPaint(new Color(28, 107, 1));
                             break;
@@ -122,6 +121,7 @@ public class ActionPanel extends JPanel implements ActionListener {
                 }
             }
         }
+        System.out.println("dick map");
     }
 
     public void create_war_loc() {
@@ -133,6 +133,7 @@ public class ActionPanel extends JPanel implements ActionListener {
                     temp.add(i);
                     temp.add(j);
                     warriorLocation.add((ArrayList<Integer>) temp.clone());
+                    System.out.println("Added " + temp);
                     temp.clear();
                 }
             }
@@ -143,75 +144,96 @@ public class ActionPanel extends JPanel implements ActionListener {
         System.out.println("dick"); //test
     }
 
-    private void start_game() {
-        for(ArrayList<Integer> e:warriorLocation){
-            check_opponent(e.getFirst(), e.getLast());
-        }
-        timer = new Timer(1000, this);
+    public void start_game() {
+
+        timer = new Timer(300, this);
         timer.start();
     }
     private int range = 5;
 
-    private void check_opponent(Integer ii, Integer jj) {
+    private void check_opponent(int ii, int jj, int ind) {
         for(int i = Math.max(0, ii - range); i < Math.min(mapLength, ii + range); i++){
             for(int j = Math.max(0, jj - range); j < Math.min(mapLength, jj + range); j++) {
                 if(generatedMap[i][j] > 3){
                     if(getUnitSide(ii,jj) != getUnitSide(i,j)){ // check if opposite teams
-                        actionOpp(ii,jj,i,j);
-                    } else {
-                        moveCenter(ii, jj);
+                        actionOpp(ii,jj,ind,i,j);
+                        break;
                     }
                 }
             }
         }
+        moveCenter(ii,jj,ind);
     }
     private int getUnitSide(int i, int j){
         if(generatedMap[i][j] > 3 && generatedMap[i][j] < 7){
             return 0;
-        } else if(generatedMap[i][j] > 6 && generatedMap[i][j] > 10){
+        } else if(generatedMap[i][j] > 6 && generatedMap[i][j] < 10){
             return 1;
         } else{
-            System.err.println("Not unit checked"); // should not invoke
+            System.err.println("at ActionPanel.getUnitSide: Not unit checked");
+            System.err.printf("%d %d %d\n",generatedMap[i][j], i, j);// should not invoke
         }
-        System.err.println("Not unit checked"); // should not invoke
+        System.err.println("at ActionPanel.getUnitSide: Not unit checked");
+        System.err.printf("%d %d %d\n",generatedMap[i][j], i, j);// should not invoke
         return -1;
     }
 
-    private void moveCenter(int i, int j) {
+    private void moveCenter(int i,int j,int ind) {
         if(generatedMap[i][j] > 3 && generatedMap[i][j] < 7){
             generatedMap[i + 1][j] = generatedMap[i][j];
+            setNewCords(i + 1, j, ind);
         } else {
             generatedMap[i - 1][j] = generatedMap[i][j];
+            setNewCords(i - 1, j, ind);
         }
         generatedMap[i][j] = originGenMap[i][j];
+
+    }
+    private void setNewCords(int i, int j, int ind){
+        ArrayList<Integer> temp = new ArrayList<>();
+        temp.add(i);
+        temp.add(j);
+        System.out.println(warriorLocation.get(ind) +" "+ temp);
+        warriorLocation.set(ind, (ArrayList<Integer>) temp.clone());
+        temp.clear();
     }
 
-    private void actionOpp(int ii, int jj, int i, int j){
+    private void actionOpp(int ii,int jj, int ind, int i, int j){
         if(Point2D.distance(ii,jj,i,j) <= range){
             attack();
         } else {
             if(ii < i){
                 generatedMap[ii + 1][jj] = generatedMap[ii][jj];
                 generatedMap[ii][jj] = originGenMap[ii][jj];
+                setNewCords(ii + 1, j, ind);
             } else if (ii > i){
                 generatedMap[ii - 1][jj] = generatedMap[ii][jj];
                 generatedMap[ii][jj] = originGenMap[ii][jj];
+                setNewCords(ii - 1, j, ind);
             }
             if(jj < j){
                 generatedMap[ii][jj + 1] = generatedMap[ii][jj];
                 generatedMap[ii][jj] = originGenMap[ii][jj];
+                setNewCords(ii, jj + 1, ind);
             } else if (jj > j){
                 generatedMap[ii][jj - 1] = generatedMap[ii][jj];
                 generatedMap[ii][jj] = originGenMap[ii][jj];
+                setNewCords(ii, jj - 1, ind);
             }
         }
     }
 
     private void attack() {
+        System.out.println("dick attacked");
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        int i = 0;
+        for(ArrayList<Integer> a:warriorLocation){
+            check_opponent(a.getFirst(),a.getLast(), i);
+            i++;
+        }
         repaint();
     }
 }
