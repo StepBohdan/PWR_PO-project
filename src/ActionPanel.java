@@ -146,10 +146,10 @@ public class ActionPanel extends JPanel implements ActionListener {
 
     public void start_game() {
 
-        timer = new Timer(300, this);
+        timer = new Timer(100, this);
         timer.start();
     }
-    private int range = 5;
+    private final int range = 5;
 
     private void check_opponent(int ii, int jj, int ind) {
         for(int i = Math.max(0, ii - range); i < Math.min(mapLength, ii + range); i++){
@@ -157,7 +157,7 @@ public class ActionPanel extends JPanel implements ActionListener {
                 if(generatedMap[i][j] > 3){
                     if(getUnitSide(ii,jj) != getUnitSide(i,j)){ // check if opposite teams
                         actionOpp(ii,jj,ind,i,j);
-                        break;
+                        return;
                     }
                 }
             }
@@ -199,7 +199,7 @@ public class ActionPanel extends JPanel implements ActionListener {
     }
 
     private void actionOpp(int ii,int jj, int ind, int i, int j){
-        if(Point2D.distance(ii,jj,i,j) <= range){
+        if(Point2D.distance(ii,jj,i,j) <= range - 3){
             attack();
         } else {
             if(ii < i){
