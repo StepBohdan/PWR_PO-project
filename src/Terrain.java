@@ -1,6 +1,4 @@
-
 import java.util.Random;
-
 
 public class Terrain {
     static final int SIZE = 100;
@@ -34,8 +32,6 @@ public class Terrain {
     }
 
     private void generateRiver() {
-
-
         int currentX = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
         int currentY = 0; // Start at the very top
 
@@ -51,7 +47,6 @@ public class Terrain {
             currentY++;
         }
     }
-
 
     private void generateTerrainFeature(TerrainType terrainType, int numFeatures, int maxRadius) {
         for (int i = 0; i < numFeatures; i++) {
@@ -71,8 +66,7 @@ public class Terrain {
                         distance += random.nextInt(2) - 1;
                     }
 
-                    if (newX >= SIDE_BORDER_WIDTH && newX < SIZE - SIDE_BORDER_WIDTH &&
-                            newY >= 0 && newY < SIZE && distance <= radius) {
+                    if (newX >= SIDE_BORDER_WIDTH && newX < SIZE - SIDE_BORDER_WIDTH && newY >= 0 && newY < SIZE && distance <= radius) {
                         map[newX][newY] = terrainType;
                     }
                 }
@@ -85,9 +79,7 @@ public class Terrain {
     }
 
     private void generateGravel() {
-
         generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(10) + 4, 1);
-
     }
 
     public int[][] getMap() {

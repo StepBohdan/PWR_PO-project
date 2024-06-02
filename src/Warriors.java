@@ -14,7 +14,6 @@ abstract class Warrior {
     }
 
     public abstract int[] attackRange(int warriorRow, int warriorCol, int rows, int cols);
-
 }
 
 class Swordsman extends Warrior {
@@ -64,7 +63,6 @@ class Shieldman extends Warrior {
         super(attackDmg, attackRate, evasion, team);
     }
 
-
     @Override
     public int[] attackRange(int warriorRow, int warriorCol, int rows, int cols) {
         int[] range = new int[8];
@@ -80,4 +78,3 @@ class Shieldman extends Warrior {
         return Arrays.copyOf(range, index);
     }
 }
-

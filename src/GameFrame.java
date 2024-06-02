@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -156,7 +155,6 @@ public class GameFrame extends JFrame implements ActionListener {
             } else if (right_side) {
                 generatedMap[SIZE - row - 1][i] = 0;
             }
-
         }
     }
 
@@ -180,7 +178,6 @@ public class GameFrame extends JFrame implements ActionListener {
                     }
                 }
             } else if (right_side) {
-
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if (rowNumberInt % 2 == 0) {
                         generatedMap[SIZE - rowNumberInt][i * step + 1] = 7;
@@ -209,7 +206,6 @@ public class GameFrame extends JFrame implements ActionListener {
             }
         } else if (shieldman.isSelected()) {
             if (left_side) {
-
                 for (int i = 0; i < troopsNumberInt; i++) {
                     if (rowNumberInt % 2 == 0) {
                         generatedMap[rowNumberInt - 1][i * step + 1] = 6;
@@ -234,8 +230,7 @@ public class GameFrame extends JFrame implements ActionListener {
         if (e.getSource() == submit) {
             System.out.println("Submit button pressed");
 
-            if (Integer.parseInt(troopsNumber.getText()) <= max_troops &&
-                    Integer.parseInt(rowNumber.getText()) <= rows) {
+            if (Integer.parseInt(troopsNumber.getText()) <= max_troops && Integer.parseInt(rowNumber.getText()) <= rows) {
                 mainPanel.removeAll();
                 left_side = !side.isSelected();
                 right_side = side.isSelected();

@@ -1,4 +1,3 @@
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +46,6 @@ public class ActionPanel extends JPanel implements ActionListener {
         }
     }
 
-
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -70,8 +68,7 @@ public class ActionPanel extends JPanel implements ActionListener {
         for (int i = 0; i < mapWidth; i++) {
             for (int j = 0; j < mapHeight; j++) {
                 // Проверяем, находится ли точка в серой области
-                if (i * size >= grayX && i * size < grayX + grayWidth &&
-                        j * size >= grayY && j * size < grayHeight) {
+                if (i * size >= grayX && i * size < grayX + grayWidth && j * size >= grayY && j * size < grayHeight) {
                     // Если точка в серой области, рисуем её серым цветом
                     g2D.setPaint(Color.GRAY);
                 } else {
@@ -145,7 +142,6 @@ public class ActionPanel extends JPanel implements ActionListener {
     }
 
     public void start_game() {
-
         timer = new Timer(100, this);
         timer.start();
     }
@@ -189,7 +185,6 @@ public class ActionPanel extends JPanel implements ActionListener {
             setNewCords(i - 1, j, ind);
         }
         generatedMap[i][j] = originGenMap[i][j];
-
     }
 
     private void setNewCords(int i, int j, int ind) {
