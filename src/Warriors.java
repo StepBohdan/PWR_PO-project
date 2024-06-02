@@ -1,10 +1,11 @@
 import java.util.Arrays;
 
 abstract class Warrior {
-     final String team;
-     final int attackDmg;
+    final String team;
+    final int attackDmg;
     final int attackRate;
     final double evasion;
+
     public Warrior(int attackDmg, int attackRate, double evasion, String team) {
         this.attackDmg = attackDmg;
         this.attackRate = attackRate;
@@ -62,7 +63,6 @@ class Shieldman extends Warrior {
     public Shieldman(int attackDmg, int attackRate, double evasion, String team) {
         super(attackDmg, attackRate, evasion, team);
     }
-
 
 
     @Override

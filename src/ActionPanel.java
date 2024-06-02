@@ -127,9 +127,9 @@ public class ActionPanel extends JPanel implements ActionListener {
     public void create_war_loc() {
 //      generates warriorLocation array
         ArrayList<Integer> temp = new ArrayList<>();
-        for(int i = 0;i < mapLength; i++){
-            for(int j = 0;j < mapLength; j++){ // better method it to have a list of cords of warriors
-                if(generatedMap[i][j] > 3){ // so you dont check for them every time
+        for (int i = 0; i < mapLength; i++) {
+            for (int j = 0; j < mapLength; j++) { // better method it to have a list of cords of warriors
+                if (generatedMap[i][j] > 3) { // so you dont check for them every time
                     temp.add(i);
                     temp.add(j);
                     warriorLocation.add((ArrayList<Integer>) temp.clone());
@@ -138,7 +138,7 @@ public class ActionPanel extends JPanel implements ActionListener {
                 }
             }
         }
-        for(Object e:warriorLocation){
+        for (Object e : warriorLocation) {
             System.out.println(e.toString());
         }
         System.out.println("dick"); //test
@@ -149,37 +149,39 @@ public class ActionPanel extends JPanel implements ActionListener {
         timer = new Timer(100, this);
         timer.start();
     }
+
     private final int range = 5;
 
     private void check_opponent(int ii, int jj, int ind) {
-        for(int i = Math.max(0, ii - range); i < Math.min(mapLength, ii + range); i++){
-            for(int j = Math.max(0, jj - range); j < Math.min(mapLength, jj + range); j++) {
-                if(generatedMap[i][j] > 3){
-                    if(getUnitSide(ii,jj) != getUnitSide(i,j)){ // check if opposite teams
-                        actionOpp(ii,jj,ind,i,j);
+        for (int i = Math.max(0, ii - range); i < Math.min(mapLength, ii + range); i++) {
+            for (int j = Math.max(0, jj - range); j < Math.min(mapLength, jj + range); j++) {
+                if (generatedMap[i][j] > 3) {
+                    if (getUnitSide(ii, jj) != getUnitSide(i, j)) { // check if opposite teams
+                        actionOpp(ii, jj, ind, i, j);
                         return;
                     }
                 }
             }
         }
-        moveCenter(ii,jj,ind);
+        moveCenter(ii, jj, ind);
     }
-    private int getUnitSide(int i, int j){
-        if(generatedMap[i][j] > 3 && generatedMap[i][j] < 7){
+
+    private int getUnitSide(int i, int j) {
+        if (generatedMap[i][j] > 3 && generatedMap[i][j] < 7) {
             return 0;
-        } else if(generatedMap[i][j] > 6 && generatedMap[i][j] < 10){
+        } else if (generatedMap[i][j] > 6 && generatedMap[i][j] < 10) {
             return 1;
-        } else{
+        } else {
             System.err.println("at ActionPanel.getUnitSide: Not unit checked");
-            System.err.printf("%d %d %d\n",generatedMap[i][j], i, j);// should not invoke
+            System.err.printf("%d %d %d\n", generatedMap[i][j], i, j);// should not invoke
         }
         System.err.println("at ActionPanel.getUnitSide: Not unit checked");
-        System.err.printf("%d %d %d\n",generatedMap[i][j], i, j);// should not invoke
+        System.err.printf("%d %d %d\n", generatedMap[i][j], i, j);// should not invoke
         return -1;
     }
 
-    private void moveCenter(int i,int j,int ind) {
-        if(generatedMap[i][j] > 3 && generatedMap[i][j] < 7){
+    private void moveCenter(int i, int j, int ind) {
+        if (generatedMap[i][j] > 3 && generatedMap[i][j] < 7) {
             generatedMap[i + 1][j] = generatedMap[i][j];
             setNewCords(i + 1, j, ind);
         } else {
@@ -189,33 +191,34 @@ public class ActionPanel extends JPanel implements ActionListener {
         generatedMap[i][j] = originGenMap[i][j];
 
     }
-    private void setNewCords(int i, int j, int ind){
+
+    private void setNewCords(int i, int j, int ind) {
         ArrayList<Integer> temp = new ArrayList<>();
         temp.add(i);
         temp.add(j);
-        System.out.println(warriorLocation.get(ind) +" "+ temp);
+        System.out.println(warriorLocation.get(ind) + " " + temp);
         warriorLocation.set(ind, (ArrayList<Integer>) temp.clone());
         temp.clear();
     }
 
-    private void actionOpp(int ii,int jj, int ind, int i, int j){
-        if(Point2D.distance(ii,jj,i,j) <= range - 3){
+    private void actionOpp(int ii, int jj, int ind, int i, int j) {
+        if (Point2D.distance(ii, jj, i, j) <= range - 3) {
             attack();
         } else {
-            if(ii < i){
+            if (ii < i) {
                 generatedMap[ii + 1][jj] = generatedMap[ii][jj];
                 generatedMap[ii][jj] = originGenMap[ii][jj];
                 setNewCords(ii + 1, j, ind);
-            } else if (ii > i){
+            } else if (ii > i) {
                 generatedMap[ii - 1][jj] = generatedMap[ii][jj];
                 generatedMap[ii][jj] = originGenMap[ii][jj];
                 setNewCords(ii - 1, j, ind);
             }
-            if(jj < j){
+            if (jj < j) {
                 generatedMap[ii][jj + 1] = generatedMap[ii][jj];
                 generatedMap[ii][jj] = originGenMap[ii][jj];
                 setNewCords(ii, jj + 1, ind);
-            } else if (jj > j){
+            } else if (jj > j) {
                 generatedMap[ii][jj - 1] = generatedMap[ii][jj];
                 generatedMap[ii][jj] = originGenMap[ii][jj];
                 setNewCords(ii, jj - 1, ind);
@@ -230,8 +233,8 @@ public class ActionPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         int i = 0;
-        for(ArrayList<Integer> a:warriorLocation){
-            check_opponent(a.getFirst(),a.getLast(), i);
+        for (ArrayList<Integer> a : warriorLocation) {
+            check_opponent(a.getFirst(), a.getLast(), i);
             i++;
         }
         repaint();

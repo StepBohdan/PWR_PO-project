@@ -3,13 +3,14 @@ import java.util.Random;
 
 
 public class Terrain {
-     static final int SIZE = 100;
+    static final int SIZE = 100;
     private static final int SIDE_BORDER_WIDTH = 5;
 
     // Using enums for better readability (but still outputting numbers)
     private enum TerrainType {
         LAND, WATER, GRAVEL, MOUNTAIN // 0,1,2,3 according
     }
+
     private final TerrainType[][] map;
     private final Random random;
 
@@ -87,7 +88,7 @@ public class Terrain {
 
         generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(10) + 4, 1);
 
-        }
+    }
 
     public int[][] getMap() {
         // Convert TerrainType to integer values (0, 1, 2, 3)

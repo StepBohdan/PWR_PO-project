@@ -146,18 +146,20 @@ public class GameFrame extends JFrame implements ActionListener {
         button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         button.setPreferredSize(new Dimension(100, 30));
     }
+
     private void clearRow(int row) {
         left_side = !side.isSelected();
         right_side = side.isSelected();
         for (int i = 0; i < SIZE; i++) {
-            if(left_side){
+            if (left_side) {
                 generatedMap[row][i] = 0;
-            }else if(right_side){
-                generatedMap[SIZE-row-1][i] = 0;
+            } else if (right_side) {
+                generatedMap[SIZE - row - 1][i] = 0;
             }
 
         }
     }
+
     public void warriorArrangement() {
         // Red team
         // Swordsman - 4, Archer - 5, Shieldsman - 6
@@ -166,23 +168,23 @@ public class GameFrame extends JFrame implements ActionListener {
         int troopsNumberInt = Integer.parseInt(troopsNumber.getText());
         int rowNumberInt = Integer.parseInt(rowNumber.getText());
         int step = SIZE / troopsNumberInt;
-        clearRow(rowNumberInt-1);
+        clearRow(rowNumberInt - 1);
 
         if (archer.isSelected()) {
             if (left_side) {
                 for (int i = 0; i < troopsNumberInt; i++) {
-                    if(rowNumberInt % 2 == 0) {
-                        generatedMap[rowNumberInt-1][i * step +1] = 5;
-                    }else{
-                        generatedMap[rowNumberInt-1][i * step] = 5;
+                    if (rowNumberInt % 2 == 0) {
+                        generatedMap[rowNumberInt - 1][i * step + 1] = 5;
+                    } else {
+                        generatedMap[rowNumberInt - 1][i * step] = 5;
                     }
                 }
             } else if (right_side) {
 
                 for (int i = 0; i < troopsNumberInt; i++) {
-                    if(rowNumberInt % 2 == 0) {
-                        generatedMap[SIZE - rowNumberInt][i * step+1] = 7;
-                    }else{
+                    if (rowNumberInt % 2 == 0) {
+                        generatedMap[SIZE - rowNumberInt][i * step + 1] = 7;
+                    } else {
                         generatedMap[SIZE - rowNumberInt][i * step] = 7;
                     }
                 }
@@ -190,18 +192,18 @@ public class GameFrame extends JFrame implements ActionListener {
         } else if (swordsman.isSelected()) {
             if (left_side) {
                 for (int i = 0; i < troopsNumberInt; i++) {
-                    if(rowNumberInt % 2 == 0) {
-                        generatedMap[rowNumberInt-1][i * step + 1] = 4;
-                    }else{
-                        generatedMap[rowNumberInt-1][i * step] = 4;
+                    if (rowNumberInt % 2 == 0) {
+                        generatedMap[rowNumberInt - 1][i * step + 1] = 4;
+                    } else {
+                        generatedMap[rowNumberInt - 1][i * step] = 4;
                     }
                 }
             } else if (right_side) {
                 for (int i = 0; i < troopsNumberInt; i++) {
-                    if(rowNumberInt % 2 == 0) {
-                            generatedMap[SIZE - rowNumberInt][i * step+1] = 8;
-                        }else{
-                            generatedMap[SIZE - rowNumberInt][i * step] = 8;
+                    if (rowNumberInt % 2 == 0) {
+                        generatedMap[SIZE - rowNumberInt][i * step + 1] = 8;
+                    } else {
+                        generatedMap[SIZE - rowNumberInt][i * step] = 8;
                     }
                 }
             }
@@ -209,17 +211,17 @@ public class GameFrame extends JFrame implements ActionListener {
             if (left_side) {
 
                 for (int i = 0; i < troopsNumberInt; i++) {
-                    if(rowNumberInt % 2 == 0) {
-                        generatedMap[rowNumberInt-1][i * step+1] = 6;
-                    }else{
-                        generatedMap[rowNumberInt-1][i * step] = 6;
+                    if (rowNumberInt % 2 == 0) {
+                        generatedMap[rowNumberInt - 1][i * step + 1] = 6;
+                    } else {
+                        generatedMap[rowNumberInt - 1][i * step] = 6;
                     }
                 }
             } else if (right_side) {
                 for (int i = 0; i < troopsNumberInt; i++) {
-                    if(rowNumberInt % 2 == 0) {
-                        generatedMap[SIZE - rowNumberInt][i * step+1] = 9;
-                    }else{
+                    if (rowNumberInt % 2 == 0) {
+                        generatedMap[SIZE - rowNumberInt][i * step + 1] = 9;
+                    } else {
                         generatedMap[SIZE - rowNumberInt][i * step] = 9;
                     }
                 }
@@ -265,4 +267,3 @@ public class GameFrame extends JFrame implements ActionListener {
         }
     }
 }
-
