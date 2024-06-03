@@ -1,9 +1,6 @@
 import java.util.Random;
 
 public class Terrain {
-    // TODO: Match with max rows in GameLauncher
-    private static final int SIDE_BORDER_WIDTH = 5;
-
     // Using enums for better readability
     public enum TerrainType {
         LAND, WATER, GRAVEL, MOUNTAIN
@@ -12,12 +9,14 @@ public class Terrain {
     public final TerrainType[][] map;
     public final int mapWidth;
     public final int mapHeight;
+    private final int verticalSafeZoneSize;
     private final Random random;
 
-    public Terrain(final int mapWidth, final int mapHeight, final Random random) {
+    public Terrain(final int mapWidth, final int mapHeight, final int verticalSafeZoneSize, final Random random) {
         map = new TerrainType[mapWidth][mapHeight];
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
+        this.verticalSafeZoneSize = verticalSafeZoneSize;
         this.random = random;
         generateTerrain();
     }
@@ -52,16 +51,16 @@ public class Terrain {
     }
 
     private void generateRiver() {
-        int currentX = random.nextInt(mapWidth - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
+        int currentX = random.nextInt(mapWidth - 2 * verticalSafeZoneSize) + verticalSafeZoneSize;
         int currentY = 0; // Start at the very top
 
         while (currentY < mapHeight) { // Go all the way to the bottom
             map[currentX][currentY] = TerrainType.WATER;
 
             int direction = random.nextInt(4);
-            if (direction == 0 && currentX > SIDE_BORDER_WIDTH) {
+            if (direction == 0 && currentX > verticalSafeZoneSize) {
                 currentX--;
-            } else if (direction == 1 && currentX < mapWidth - SIDE_BORDER_WIDTH - 1) {
+            } else if (direction == 1 && currentX < mapWidth - verticalSafeZoneSize - 1) {
                 currentX++;
             }
             currentY++;
@@ -70,7 +69,7 @@ public class Terrain {
 
     private void generateTerrainFeature(TerrainType terrainType, int amount, int maxRadius) {
         for (int index = 0; index < amount; index++) {
-            int x = random.nextInt(mapWidth - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
+            int x = random.nextInt(mapWidth - 2 * verticalSafeZoneSize) + verticalSafeZoneSize;
             int y = random.nextInt(mapHeight); // No border restriction for Y (top to bottom)
             int radius = random.nextInt(maxRadius) + 3;
 
@@ -86,8 +85,8 @@ public class Terrain {
                         distance += random.nextInt(2) - 1;
                     }
 
-                    if (newX >= SIDE_BORDER_WIDTH &&
-                            newX < mapWidth - SIDE_BORDER_WIDTH &&
+                    if (newX >= verticalSafeZoneSize &&
+                            newX < mapWidth - verticalSafeZoneSize &&
                             newY >= 0 &&
                             newY < mapHeight &&
                             distance <= radius

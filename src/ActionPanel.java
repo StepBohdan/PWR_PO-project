@@ -107,6 +107,7 @@ public class ActionPanel extends JPanel {
 
     private void checkOpponent(Warrior troop) {
         ArrayList<Warrior> enemies = getAllEnemyTroops(troop);
+        // TODO: consider randomizing warrior to attack
         Warrior warriorToAttack = null;
         Warrior warriorToNavigateTo = null;
         for (Warrior enemy : enemies) {
@@ -126,6 +127,7 @@ public class ActionPanel extends JPanel {
         }
 
         if (warriorToAttack != null) {
+            // TODO: Add attack/defence decrease due to terrain
             final boolean attackResult = troop.attack(warriorToAttack, random);
             if (attackResult) {
                 System.out.println("Killed a " + warriorToAttack.team.toString() + " troop");

@@ -1,17 +1,20 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class GameFrame extends JFrame {
     private static final int mapHeight = 100;
     private static final int mapWidth = 100;
+    private static final int maxTroopRows = 5;
     private static final Random random = new Random(); // TODO: Consider making the seed configurable for testing
-    private static final Terrain terrain = new Terrain(mapWidth, mapHeight, random);
+    private static final Terrain terrain = new Terrain(mapWidth, mapHeight, maxTroopRows, random);
 
     private final int maxTroops;
-    private final int rows;
 
     private final JTextField rowNumberTextField;
     private final JTextField troopsNumberTextField;
@@ -31,9 +34,8 @@ public class GameFrame extends JFrame {
     private ActionPanel actionPanel;
     private final ArrayList<Warrior> troops = new ArrayList<>();
 
-    GameFrame(int maxTroops, int rows) {
+    GameFrame(int maxTroops) {
         this.maxTroops = maxTroops;
-        this.rows = rows;
 
         this.setSize(1500, 800);
         this.setLayout(new BorderLayout(10, 10)); // probably will be changed to GridBagLayout
@@ -63,7 +65,7 @@ public class GameFrame extends JFrame {
         gridBagConstraints.gridwidth = 1;
         menuPanel.add(sideCheckBox, gridBagConstraints);
 
-        JLabel troopsNumberLabel = new JLabel("Troops amount (max: 50): ");
+        JLabel troopsNumberLabel = new JLabel("Troops amount (max: " + maxTroops + "): ");
         troopsNumberTextField = new JTextField(8);
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -71,7 +73,7 @@ public class GameFrame extends JFrame {
         gridBagConstraints.gridx = 1;
         menuPanel.add(troopsNumberTextField, gridBagConstraints);
 
-        JLabel rowNumberLabel = new JLabel("Row number (max: 5): ");
+        JLabel rowNumberLabel = new JLabel("Row number (max: " + maxTroopRows + "): ");
         rowNumberTextField = new JTextField(8);
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -143,28 +145,47 @@ public class GameFrame extends JFrame {
         return troopsTypePanel;
     }
 
-    private void onSubmitButtonClick(ActionEvent e) {
+    private void onSubmitButtonClick(ActionEvent event) {
         System.out.println("Submit button pressed");
 
-        int troopsNumber = Integer.parseInt(troopsNumberTextField.getText());
-        int rowNumber = Integer.parseInt(rowNumberTextField.getText());
-        if (troopsNumber <= maxTroops && rowNumber <= rows) {
-            mainPanel.removeAll();
-            generateTroops();
+        int troopsAmount;
+        int rowNumber;
+        try {
+            troopsAmount = Integer.parseInt(troopsNumberTextField.getText());
+        } catch (NumberFormatException e) {
+            troopsNumberTextField.setText("");
+            return;
+        }
+        try {
+            rowNumber = Integer.parseInt(rowNumberTextField.getText());
+        } catch (NumberFormatException e) {
+            rowNumberTextField.setText("");
+            return;
+        }
+        if (troopsAmount < 0 || troopsAmount > maxTroops) {
+            troopsNumberTextField.setText("");
+            return;
+        }
+        if (rowNumber < 0 || rowNumber > maxTroopRows) {
+            rowNumberTextField.setText("");
+            return;
+        }
 
-            actionPanel = new ActionPanel(terrain, troops, random);
-            mainPanel.add(actionPanel, BorderLayout.CENTER);
-            mainPanel.revalidate();
-            mainPanel.repaint();
+        mainPanel.removeAll();
+        generateTroops(troopsAmount, rowNumber);
 
-            switch (selectedTeam) {
-                case BLUE -> blueConfigured = true;
-                case RED -> redConfigured = true;
-            }
+        actionPanel = new ActionPanel(terrain, troops, random);
+        mainPanel.add(actionPanel, BorderLayout.CENTER);
+        mainPanel.revalidate();
+        mainPanel.repaint();
 
-            if (blueConfigured && redConfigured) {
-                startButton.setEnabled(true);
-            }
+        switch (selectedTeam) {
+            case BLUE -> blueConfigured = true;
+            case RED -> redConfigured = true;
+        }
+
+        if (blueConfigured && redConfigured) {
+            startButton.setEnabled(true);
         }
     }
 
@@ -188,18 +209,17 @@ public class GameFrame extends JFrame {
         button.setPreferredSize(new Dimension(100, 30));
     }
 
-    public void generateTroops() {
-        int troopsNumber = Integer.parseInt(troopsNumberTextField.getText());
-        int rowNumber = Integer.parseInt(rowNumberTextField.getText());
-        int step = mapHeight / troopsNumber;
+    public void generateTroops(int amount, int rowNumber) {
+        int step = mapHeight / amount;
 
         int troopX = 0;
         switch (selectedTeam) {
             case BLUE -> troopX = rowNumber - 1;
             case RED -> troopX = mapWidth - rowNumber;
         }
-        for (int troopIndex = 0; troopIndex < troopsNumber; troopIndex++) {
+        for (int troopIndex = 0; troopIndex < amount; troopIndex++) {
             int troopY = troopIndex * step;
+            // Offset every second row
             if (rowNumber % 2 == 0) {
                 troopY++;
             }
