@@ -3,7 +3,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +27,7 @@ public class ActionPanel extends JPanel implements ActionListener {
         this.setPreferredSize(new Dimension(700, 700));
         this.setVisible(true);
         loadImages();
-        create_war_loc();
+        createWarriorLocation();
     }
 
     private void loadImages() {
@@ -116,7 +115,7 @@ public class ActionPanel extends JPanel implements ActionListener {
         System.out.println("dick map");
     }
 
-    public void create_war_loc() {
+    public void createWarriorLocation() {
         // generates warriorLocation array
         ArrayList<Integer> temp = new ArrayList<>();
         for (int i = 0; i < mapLength; i++) {
@@ -136,14 +135,14 @@ public class ActionPanel extends JPanel implements ActionListener {
         System.out.println("dick"); //test
     }
 
-    public void start_game() {
+    public void startGame() {
         timer = new Timer(100, this);
         timer.start();
     }
 
     private final int range = 5;
 
-    private void check_opponent(int ii, int jj, int ind) {
+    private void checkOpponent(int ii, int jj, int ind) {
         for (int i = Math.max(0, ii - range); i < Math.min(mapLength, ii + range); i++) {
             for (int j = Math.max(0, jj - range); j < Math.min(mapLength, jj + range); j++) {
                 if (generatedMap[i][j] > 3) {
@@ -224,7 +223,7 @@ public class ActionPanel extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         int i = 0;
         for (ArrayList<Integer> a : warriorLocation) {
-            check_opponent(a.getFirst(), a.getLast(), i);
+            //checkOpponent(a.getFirst(), a.getLast(), i);
             i++;
         }
         repaint();
