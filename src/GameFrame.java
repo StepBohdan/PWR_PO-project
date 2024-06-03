@@ -255,8 +255,8 @@ public class GameFrame extends JFrame implements ActionListener {
             System.out.println("Start button pressed");
             start.setEnabled(false);
             submit.setEnabled(false);
-//            mainPanel.revalidate();
-//            mainPanel.repaint();
+            //mainPanel.revalidate();
+            //mainPanel.repaint();
             actionPanel.start_game();
             System.out.println("Game started");
         }

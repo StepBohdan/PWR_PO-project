@@ -117,7 +117,7 @@ public class ActionPanel extends JPanel implements ActionListener {
     }
 
     public void create_war_loc() {
-//      generates warriorLocation array
+        // generates warriorLocation array
         ArrayList<Integer> temp = new ArrayList<>();
         for (int i = 0; i < mapLength; i++) {
             for (int j = 0; j < mapLength; j++) { // better method it to have a list of cords of warriors
@@ -164,10 +164,10 @@ public class ActionPanel extends JPanel implements ActionListener {
             return 1;
         } else {
             System.err.println("at ActionPanel.getUnitSide: Not unit checked");
-            System.err.printf("%d %d %d\n", generatedMap[i][j], i, j);// should not invoke
+            System.err.printf("%d %d %d\n", generatedMap[i][j], i, j); // should not invoke
         }
         System.err.println("at ActionPanel.getUnitSide: Not unit checked");
-        System.err.printf("%d %d %d\n", generatedMap[i][j], i, j);// should not invoke
+        System.err.printf("%d %d %d\n", generatedMap[i][j], i, j); // should not invoke
         return -1;
     }
 

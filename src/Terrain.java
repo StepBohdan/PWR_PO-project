@@ -15,12 +15,12 @@ public class Terrain {
     public Terrain(final int mapSize) {
         map = new TerrainType[mapSize][mapSize];
         this.mapSize = mapSize;
-        random = new Random(); // Consider making the seed configurable for testing
+        random = new Random(); // TODO: Consider making the seed configurable for testing
         generateTerrain();
     }
 
     private void generateTerrain() {
-        // Fill with land, but maybe consider a more interesting starting point
+        // Fill with land, TODO: maybe consider a more interesting starting point
         for (int x = 0; x < mapSize; x++) {
             for (int i = 0; i < mapSize; i++) {
                 map[x][i] = TerrainType.LAND;
