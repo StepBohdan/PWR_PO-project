@@ -3,14 +3,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 public class ActionPanel extends JPanel implements ActionListener {
-    private Terrain.TerrainType[][] generatedMap;
-    private Warrior[][] troops;
+    private final Terrain.TerrainType[][] generatedMap;
+    private final Warrior[][] troops;
     private BufferedImage blueArcherImage;
     private BufferedImage blueSwordsmanImage;
     private BufferedImage blueShieldmanImage;
@@ -18,8 +18,6 @@ public class ActionPanel extends JPanel implements ActionListener {
     private BufferedImage redSwordsmanImage;
     private BufferedImage redShieldmanImage;
     private final int mapLength;
-    private ArrayList<ArrayList<Integer>> warriorLocation = new ArrayList<>();
-    private Timer timer;
 
     public ActionPanel(Terrain.TerrainType[][] generatedMap, Warrior[][] troops) {
         this.generatedMap = generatedMap;
@@ -29,7 +27,6 @@ public class ActionPanel extends JPanel implements ActionListener {
         this.setPreferredSize(new Dimension(700, 700));
         this.setVisible(true);
         loadImages();
-        createWarriorLocation();
     }
 
     private void loadImages() {
@@ -91,129 +88,82 @@ public class ActionPanel extends JPanel implements ActionListener {
                 // Рисуем фон
                 g2D.fillRect(i * size, j * size, size, size);
 
-                // Рисуем изображение, если необходимо
-                switch (generatedMap[i][j]) {
-                    case 4:
-                        g2D.drawImage(blueSwordsmanImage, i * size, j * size, size, size, null);
-                        break;
-                    case 5:
-                        g2D.drawImage(blueArcherImage, i * size, j * size, size, size, null);
-                        break;
-                    case 6:
-                        g2D.drawImage(blueShieldmanImage, i * size, j * size, size, size, null);
-                        break;
-                    case 7:
-                        g2D.drawImage(redArcherImage, i * size, j * size, size, size, null);
-                        break;
-                    case 8:
-                        g2D.drawImage(redSwordsmanImage, i * size, j * size, size, size, null);
-                        break;
-                    case 9:
-                        g2D.drawImage(redShieldmanImage, i * size, j * size, size, size, null);
-                        break;
+                // Рисуем воинов
+                Warrior troop = troops[i][j];
+                if (troop != null) {
+                    switch (troop.team) {
+                        case RED -> {
+                            switch (troop) {
+                                case Archer _ -> g2D.drawImage(redArcherImage, i * size, j * size, size, size, null);
+                                case Swordsman _ ->
+                                        g2D.drawImage(redSwordsmanImage, i * size, j * size, size, size, null);
+                                case Shieldman _ ->
+                                        g2D.drawImage(redShieldmanImage, i * size, j * size, size, size, null);
+                                default -> {
+                                }
+                            }
+                        }
+                        case BLUE -> {
+                            switch (troop) {
+                                case Archer _ -> g2D.drawImage(blueArcherImage, i * size, j * size, size, size, null);
+                                case Swordsman _ ->
+                                        g2D.drawImage(blueSwordsmanImage, i * size, j * size, size, size, null);
+                                case Shieldman _ ->
+                                        g2D.drawImage(blueShieldmanImage, i * size, j * size, size, size, null);
+                                default -> {
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
         System.out.println("dick map");
     }
 
-    public void createWarriorLocation() {
-        // generates warriorLocation array
-        ArrayList<Integer> temp = new ArrayList<>();
-        for (int i = 0; i < mapLength; i++) {
-            for (int j = 0; j < mapLength; j++) { // better method it to have a list of cords of warriors
-                if (generatedMap[i][j] > 3) { // so you dont check for them every time
-                    temp.add(i);
-                    temp.add(j);
-                    warriorLocation.add((ArrayList<Integer>) temp.clone());
-                    System.out.println("Added " + temp);
-                    temp.clear();
-                }
-            }
-        }
-        for (Object e : warriorLocation) {
-            System.out.println(e.toString());
-        }
-        System.out.println("dick"); //test
-    }
-
     public void startGame() {
-        timer = new Timer(100, this);
+        // TODO: Add configurable delay
+        Timer timer = new Timer(1000, this);
         timer.start();
     }
 
     private final int range = 5;
 
-    private void checkOpponent(int ii, int jj, int ind) {
-        for (int i = Math.max(0, ii - range); i < Math.min(mapLength, ii + range); i++) {
-            for (int j = Math.max(0, jj - range); j < Math.min(mapLength, jj + range); j++) {
-                if (generatedMap[i][j] > 3) {
-                    if (getUnitSide(ii, jj) != getUnitSide(i, j)) { // check if opposite teams
-                        actionOpp(ii, jj, ind, i, j);
-                        return;
+    private void checkOpponent(int currentX, int currentY) {
+        for (int i = Math.max(0, currentX - range); i < Math.min(mapLength, currentX + range); i++) {
+            for (int j = Math.max(0, currentY - range); j < Math.min(mapLength, currentY + range); j++) {
+                final Warrior troop = troops[i][j];
+                final Warrior opponentTroop = troops[currentX][currentY];
+                if (troop != null && opponentTroop != null) {
+                    if (troop.team != opponentTroop.team) { // check if opposite teams
+                        actionOpp(currentX, currentY, i, j);
                     }
                 }
             }
         }
-        moveCenter(ii, jj, ind);
+
+        advanceTroop(currentX, currentY);
     }
 
-    private int getUnitSide(int i, int j) {
-        if (generatedMap[i][j] > 3 && generatedMap[i][j] < 7) {
-            return 0;
-        } else if (generatedMap[i][j] > 6 && generatedMap[i][j] < 10) {
-            return 1;
-        } else {
-            System.err.println("at ActionPanel.getUnitSide: Not unit checked");
-            System.err.printf("%d %d %d\n", generatedMap[i][j], i, j); // should not invoke
+    private void advanceTroop(int currentX, int currentY) {
+        final Warrior troop = troops[currentX][currentY];
+        if (troop != null) {
+            switch (troop.team) {
+                case BLUE -> setNewTroopCords(currentX, currentY, currentX + 1, currentY);
+                case RED -> setNewTroopCords(currentX, currentY, currentX - 1, currentY);
+            }
         }
-        System.err.println("at ActionPanel.getUnitSide: Not unit checked");
-        System.err.printf("%d %d %d\n", generatedMap[i][j], i, j); // should not invoke
-        return -1;
     }
 
-    private void moveCenter(int i, int j, int ind) {
-        if (generatedMap[i][j] > 3 && generatedMap[i][j] < 7) {
-            generatedMap[i + 1][j] = generatedMap[i][j];
-            setNewCords(i + 1, j, ind);
-        } else {
-            generatedMap[i - 1][j] = generatedMap[i][j];
-            setNewCords(i - 1, j, ind);
-        }
-        generatedMap[i][j] = originGenMap[i][j];
+    private void setNewTroopCords(int oldX, int oldY, int newX, int newY) {
+        Warrior troop = troops[oldX][oldY];
+        troops[oldX][oldY] = null;
+        troops[newX][newY] = troop;
     }
 
-    private void setNewCords(int i, int j, int ind) {
-        ArrayList<Integer> temp = new ArrayList<>();
-        temp.add(i);
-        temp.add(j);
-        System.out.println(warriorLocation.get(ind) + " " + temp);
-        warriorLocation.set(ind, (ArrayList<Integer>) temp.clone());
-        temp.clear();
-    }
-
-    private void actionOpp(int ii, int jj, int ind, int i, int j) {
+    private void actionOpp(int ii, int jj, int i, int j) {
         if (Point2D.distance(ii, jj, i, j) <= range - 3) {
             attack();
-        } else {
-            if (ii < i) {
-                generatedMap[ii + 1][jj] = generatedMap[ii][jj];
-                generatedMap[ii][jj] = originGenMap[ii][jj];
-                setNewCords(ii + 1, j, ind);
-            } else if (ii > i) {
-                generatedMap[ii - 1][jj] = generatedMap[ii][jj];
-                generatedMap[ii][jj] = originGenMap[ii][jj];
-                setNewCords(ii - 1, j, ind);
-            }
-            if (jj < j) {
-                generatedMap[ii][jj + 1] = generatedMap[ii][jj];
-                generatedMap[ii][jj] = originGenMap[ii][jj];
-                setNewCords(ii, jj + 1, ind);
-            } else if (jj > j) {
-                generatedMap[ii][jj - 1] = generatedMap[ii][jj];
-                generatedMap[ii][jj] = originGenMap[ii][jj];
-                setNewCords(ii, jj - 1, ind);
-            }
         }
     }
 
@@ -223,10 +173,11 @@ public class ActionPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        int i = 0;
-        for (ArrayList<Integer> a : warriorLocation) {
-            //checkOpponent(a.getFirst(), a.getLast(), i);
-            i++;
+        // TODO: Pass map size
+        for (int i = 0; i < 99; i++) {
+            for (int j = 0; j < 99; j++) {
+                checkOpponent(i, j);
+            }
         }
         repaint();
     }
