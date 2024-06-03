@@ -42,9 +42,9 @@ public class GameFrame extends JFrame implements ActionListener {
         this.max_troops = max_troops;
         this.rows = rows;
         this.setSize(1500, 800);
-        this.setLayout(new BorderLayout(10, 10)); // probably will be changed to GridBagLayout
+        this.setLayout(new BorderLayout(10, 10));
 
-        ImageIcon icon = new ImageIcon("src/images/frame.png"); // Load your icon image here
+        ImageIcon icon = new ImageIcon("src/images/frame.png");
         this.setIconImage(icon.getImage());
 
         menu = new JPanel();

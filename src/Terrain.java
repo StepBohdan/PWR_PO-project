@@ -8,7 +8,6 @@ public class Terrain {
      static final int SIZE = 100;
     private static final int SIDE_BORDER_WIDTH = 5;
 
-    // Using enums for better readability (but still outputting numbers)
     private enum TerrainType {
         LAND, WATER, GRAVEL, MOUNTAIN // 0,1,2,3 according
     }
@@ -17,12 +16,12 @@ public class Terrain {
 
     public Terrain() {
         map = new TerrainType[SIZE][SIZE];
-        random = new Random(); // Consider making the seed configurable for testing
+        random = new Random();
         generateTerrain();
     }
 
     private void generateTerrain() {
-        // Fill with land, but maybe consider a more interesting starting point
+
         for (int j = 0; j < SIZE; j++) {
             for (int i = 0; i < SIZE; i++) {
                 map[j][i] = TerrainType.LAND;
@@ -56,8 +55,8 @@ public class Terrain {
 
     private void generateTerrainFeature(TerrainType terrainType, int numFeatures, int maxRadius) {
         for (int i = 0; i < numFeatures; i++) {
-            int y = random.nextInt(SIZE); // Генерация координаты y без ограничений
-            int x = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH; // Генерация координаты x внутри центральной части
+            int y = random.nextInt(SIZE);
+            int x = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
             int radius = random.nextInt(maxRadius) + 3;
 
             // Случайно корректируем радиус, чтобы создать некруглые формы
@@ -67,12 +66,12 @@ public class Terrain {
                     int newY = y + k;
                     int distance = (int) Math.sqrt(j * j + k * k);
 
-                    // Случайно корректируем расстояние, чтобы создать нерегулярность
+
                     if (random.nextInt(10) < 2) {
                         distance += random.nextInt(2) - 1;
                     }
 
-                    // Проверяем, чтобы новые координаты были в пределах карты и расстояние было в пределах радиуса
+
                     if (newX >= SIDE_BORDER_WIDTH && newX < SIZE - SIDE_BORDER_WIDTH &&
                             newY >= 0 && newY < SIZE && distance <= radius) {
                         map[newX][newY] = terrainType;
@@ -91,7 +90,7 @@ public class Terrain {
     private void generateGravel() {
 
 //        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(10) + 4, 1);
-        int numRivers = random.nextInt(5) + 2; // Increased range for more variety
+        int numRivers = random.nextInt(5) + 2;
         for (int r = 0; r < numRivers; r++) {
             List<Integer[]> riverPoints = new ArrayList<>();
             int x = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
