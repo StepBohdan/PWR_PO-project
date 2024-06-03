@@ -49,6 +49,7 @@ public class GameFrame extends JFrame {
 
         JCheckBox sideCheckBox = new JCheckBox("Select a side");
         sideCheckBox.addActionListener(_ -> selectedTeam = sideCheckBox.isSelected() ? Warrior.Team.RED : Warrior.Team.BLUE);
+        selectedTeam = Warrior.Team.BLUE;
         sideCheckBox.setFocusable(false);
         ImageIcon blueTeamIcon = new ImageIcon("src/images/blue.png");
         sideCheckBox.setIcon(blueTeamIcon);
