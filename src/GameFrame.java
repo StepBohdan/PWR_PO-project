@@ -44,6 +44,9 @@ public class GameFrame extends JFrame implements ActionListener {
         this.setSize(1500, 800);
         this.setLayout(new BorderLayout(10, 10)); // probably will be changed to GridBagLayout
 
+        ImageIcon icon = new ImageIcon("src/images/frame.png"); // Load your icon image here
+        this.setIconImage(icon.getImage());
+
         menu = new JPanel();
         menu.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -119,17 +122,14 @@ public class GameFrame extends JFrame implements ActionListener {
         gbc.gridwidth = 1;
         menu.add(start, gbc);
 
-        // Настройка главной панели
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setPreferredSize(new Dimension(700, 700));
         mainPanel.add(new JLabel(gameLogo), BorderLayout.CENTER);
 
-        // Настройка комбобокса типа местности
         terrainType = new JComboBox<>();
         terrainType.setPreferredSize(new Dimension(100, 100));
 
-        // Добавление компонентов в фрейм
         this.add(menu, BorderLayout.LINE_START);
         this.add(mainPanel, BorderLayout.CENTER);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
