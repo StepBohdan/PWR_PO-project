@@ -32,7 +32,7 @@ public class GameFrame extends JFrame implements ActionListener {
     private boolean rightSelected = false;
 
     static Terrain terrain = new Terrain(100);
-    static int[][] generatedMap = terrain.getMap();
+    static Terrain.TerrainType[][] generatedMap = terrain.map;
     static final int SIZE = generatedMap.length;
 
     ActionPanel actionPanel;

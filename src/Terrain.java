@@ -3,12 +3,12 @@ import java.util.Random;
 public class Terrain {
     private static final int SIDE_BORDER_WIDTH = 5;
 
-    // Using enums for better readability (but still outputting numbers)
-    private enum TerrainType {
+    // Using enums for better readability
+    public enum TerrainType {
         LAND, WATER, GRAVEL, MOUNTAIN
     }
 
-    private final TerrainType[][] map;
+    public final TerrainType[][] map;
     private final int mapSize;
     private final Random random;
 
@@ -88,26 +88,14 @@ public class Terrain {
         generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(10) + 4, 1);
     }
 
-    public int[][] getMap() {
-        // Convert TerrainType to integer values (0, 1, 2, 3)
-        int[][] intMap = new int[mapSize][mapSize];
-        for (int i = 0; i < mapSize; i++) {
-            for (int j = 0; j < mapSize; j++) {
-                intMap[i][j] = map[i][j].ordinal(); // Get the ordinal value of the enum
-            }
-        }
-        return intMap;
-    }
-
     // Main method for testing
     public static void main(String[] args) {
         final int mapSize = 100;
         Terrain terrain = new Terrain(mapSize);
-        int[][] generatedMap = terrain.getMap();
 
         for (int i = 0; i < mapSize; i++) {
             for (int j = 0; j < mapSize; j++) {
-                System.out.print(generatedMap[i][j] + " ");
+                System.out.print(terrain.map[i][j] + " ");
             }
             System.out.println();
         }

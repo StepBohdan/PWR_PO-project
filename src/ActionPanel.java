@@ -10,8 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ActionPanel extends JPanel implements ActionListener {
-    int[][] generatedMap;
-    int[][] originGenMap;
+    Terrain.TerrainType[][] generatedMap;
     private BufferedImage blueArcherImage;
     private BufferedImage blueSwordsmanImage;
     private BufferedImage blueShieldmanImage;
@@ -22,9 +21,8 @@ public class ActionPanel extends JPanel implements ActionListener {
     ArrayList<ArrayList<Integer>> warriorLocation = new ArrayList<>();
     Timer timer;
 
-    public ActionPanel(int[][] generatedMap) {
+    public ActionPanel(Terrain.TerrainType[][] generatedMap) {
         this.generatedMap = generatedMap;
-        originGenMap = generatedMap.clone();
         this.mapLength = generatedMap.length;
         this.setFocusable(false);
         this.setPreferredSize(new Dimension(700, 700));
@@ -74,20 +72,17 @@ public class ActionPanel extends JPanel implements ActionListener {
                 } else {
                     // Иначе, рисуем её соответствующим цветом из generatedMap
                     switch (generatedMap[i][j]) {
-                        case 0:
+                        case Terrain.TerrainType.LAND:
                             g2D.setPaint(new Color(28, 107, 1));
                             break;
-                        case 1:
+                        case Terrain.TerrainType.WATER:
                             g2D.setPaint(Color.BLUE);
                             break;
-                        case 2:
+                        case Terrain.TerrainType.GRAVEL:
                             g2D.setPaint(Color.GRAY);
                             break;
-                        case 3:
+                        case Terrain.TerrainType.MOUNTAIN:
                             g2D.setPaint(Color.DARK_GRAY);
-                            break;
-                        default:
-                            g2D.setPaint(new Color(28, 107, 1));
                             break;
                     }
                 }
