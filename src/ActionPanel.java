@@ -2,28 +2,26 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ActionPanel extends JPanel implements ActionListener {
-    private final Terrain.TerrainType[][] generatedMap;
+public class ActionPanel extends JPanel {
+    private final Terrain terrain;
     private final ArrayList<Warrior> troops;
+
     private BufferedImage blueArcherImage;
     private BufferedImage blueSwordsmanImage;
     private BufferedImage blueShieldmanImage;
     private BufferedImage redArcherImage;
     private BufferedImage redSwordsmanImage;
     private BufferedImage redShieldmanImage;
-    private final int mapLength;
 
-    public ActionPanel(Terrain.TerrainType[][] generatedMap, ArrayList<Warrior> troops) {
-        this.generatedMap = generatedMap;
+    public ActionPanel(Terrain terrain, ArrayList<Warrior> troops) {
+        this.terrain = terrain;
         this.troops = troops;
-        this.mapLength = generatedMap.length;
         this.setFocusable(false);
         this.setPreferredSize(new Dimension(700, 700));
         this.setVisible(true);
@@ -51,55 +49,34 @@ public class ActionPanel extends JPanel implements ActionListener {
 
     public void draw(Graphics g) {
         Graphics2D g2D = (Graphics2D) g;
-        int size = 7;
-        int mapWidth = 100;
-        int mapHeight = 100;
+        int pixelSize = 7;
 
-        // Определяем размер и положение серой области
-        int grayWidth = 30 * size;
-        int grayHeight = 30 * size;
-        int grayX = (mapWidth * size - grayWidth) / 2;
-        int grayY = (mapHeight * size - grayHeight) / 2;
-
-        for (int i = 0; i < mapWidth; i++) {
-            for (int j = 0; j < mapHeight; j++) {
-                // Проверяем, находится ли точка в серой области
-                if (i * size >= grayX && i * size < grayX + grayWidth && j * size >= grayY && j * size < grayHeight) {
-                    // Если точка в серой области, рисуем её серым цветом
-                    g2D.setPaint(Color.GRAY);
-                } else {
-                    // Иначе, рисуем её соответствующим цветом из generatedMap
-                    switch (generatedMap[i][j]) {
-                        case Terrain.TerrainType.LAND:
-                            g2D.setPaint(new Color(28, 107, 1));
-                            break;
-                        case Terrain.TerrainType.WATER:
-                            g2D.setPaint(Color.BLUE);
-                            break;
-                        case Terrain.TerrainType.GRAVEL:
-                            g2D.setPaint(Color.GRAY);
-                            break;
-                        case Terrain.TerrainType.MOUNTAIN:
-                            g2D.setPaint(Color.DARK_GRAY);
-                            break;
-                    }
+        for (int x = 0; x < terrain.mapWidth; x++) {
+            for (int y = 0; y < terrain.mapHeight; y++) {
+                switch (terrain.map[x][y]) {
+                    case LAND -> g2D.setPaint(new Color(28, 107, 1));
+                    case WATER -> g2D.setPaint(Color.BLUE);
+                    case GRAVEL -> g2D.setPaint(Color.GRAY);
+                    case MOUNTAIN -> g2D.setPaint(Color.DARK_GRAY);
                 }
 
                 // Рисуем фон
-                g2D.fillRect(i * size, j * size, size, size);
+                g2D.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
             }
         }
         // Рисуем воинов
         for (Warrior troop : troops) {
+            final int troopImageX = troop.x * pixelSize;
+            final int troopImageY = troop.y * pixelSize;
             switch (troop.team) {
                 case RED -> {
                     switch (troop) {
                         case Archer _ ->
-                                g2D.drawImage(redArcherImage, troop.x * size, troop.y * size, size, size, null);
+                                g2D.drawImage(redArcherImage, troopImageX, troopImageY, pixelSize, pixelSize, null);
                         case Swordsman _ ->
-                                g2D.drawImage(redSwordsmanImage, troop.x * size, troop.y * size, size, size, null);
+                                g2D.drawImage(redSwordsmanImage, troopImageX, troopImageY, pixelSize, pixelSize, null);
                         case Shieldman _ ->
-                                g2D.drawImage(redShieldmanImage, troop.x * size, troop.y * size, size, size, null);
+                                g2D.drawImage(redShieldmanImage, troopImageX, troopImageY, pixelSize, pixelSize, null);
                         default -> {
                         }
                     }
@@ -107,11 +84,11 @@ public class ActionPanel extends JPanel implements ActionListener {
                 case BLUE -> {
                     switch (troop) {
                         case Archer _ ->
-                                g2D.drawImage(blueArcherImage, troop.x * size, troop.y * size, size, size, null);
+                                g2D.drawImage(blueArcherImage, troopImageX, troopImageY, pixelSize, pixelSize, null);
                         case Swordsman _ ->
-                                g2D.drawImage(blueSwordsmanImage, troop.x * size, troop.y * size, size, size, null);
+                                g2D.drawImage(blueSwordsmanImage, troopImageX, troopImageY, pixelSize, pixelSize, null);
                         case Shieldman _ ->
-                                g2D.drawImage(blueShieldmanImage, troop.x * size, troop.y * size, size, size, null);
+                                g2D.drawImage(blueShieldmanImage, troopImageX, troopImageY, pixelSize, pixelSize, null);
                         default -> {
                         }
                     }
@@ -122,10 +99,11 @@ public class ActionPanel extends JPanel implements ActionListener {
 
     public void startGame() {
         // TODO: Add configurable delay
-        Timer timer = new Timer(100, this);
+        Timer timer = new Timer(100, this::onTimerTick);
         timer.start();
     }
 
+    // TODO: use range from warrior
     private final int range = 5;
 
     private void checkOpponent(Warrior troop) {
@@ -144,6 +122,7 @@ public class ActionPanel extends JPanel implements ActionListener {
         advanceTroop(troop);
     }
 
+    // TODO: Take into accound terrain
     private void advanceTroop(Warrior troop) {
         switch (troop.team) {
             case BLUE -> troop.x++;
@@ -161,8 +140,7 @@ public class ActionPanel extends JPanel implements ActionListener {
         System.out.println("dick attacked");
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
+    public void onTimerTick(ActionEvent e) {
         for (Warrior troop : troops) {
             checkOpponent(troop);
         }

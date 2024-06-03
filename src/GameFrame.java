@@ -4,9 +4,9 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 public class GameFrame extends JFrame {
-    private static final int mapSize = 100;
-    private static final Terrain terrain = new Terrain(mapSize);
-    private static final Terrain.TerrainType[][] generatedMap = terrain.map;
+    private static final int mapHeight = 100;
+    private static final int mapWidth = 100;
+    private static final Terrain terrain = new Terrain(mapWidth, mapHeight);
 
     private final int maxTroops;
     private final int rows;
@@ -144,11 +144,13 @@ public class GameFrame extends JFrame {
     private void onSubmitButtonClick(ActionEvent e) {
         System.out.println("Submit button pressed");
 
-        if (Integer.parseInt(troopsNumberTextField.getText()) <= maxTroops && Integer.parseInt(rowNumberTextField.getText()) <= rows) {
+        int troopsNumber = Integer.parseInt(troopsNumberTextField.getText());
+        int rowNumber = Integer.parseInt(rowNumberTextField.getText());
+        if (troopsNumber <= maxTroops && rowNumber <= rows) {
             mainPanel.removeAll();
             generateTroops();
 
-            actionPanel = new ActionPanel(generatedMap, troops);
+            actionPanel = new ActionPanel(terrain, troops);
             mainPanel.add(actionPanel, BorderLayout.CENTER);
             mainPanel.revalidate();
             mainPanel.repaint();
@@ -187,12 +189,12 @@ public class GameFrame extends JFrame {
     public void generateTroops() {
         int troopsNumber = Integer.parseInt(troopsNumberTextField.getText());
         int rowNumber = Integer.parseInt(rowNumberTextField.getText());
-        int step = mapSize / troopsNumber;
+        int step = mapHeight / troopsNumber;
 
         int troopX = 0;
         switch (selectedTeam) {
             case BLUE -> troopX = rowNumber - 1;
-            case RED -> troopX = mapSize - rowNumber;
+            case RED -> troopX = mapWidth - rowNumber;
         }
         for (int troopIndex = 0; troopIndex < troopsNumber; troopIndex++) {
             int troopY = troopIndex * step;
