@@ -185,76 +185,25 @@ public class GameFrame extends JFrame {
     }
 
     public void generateTroops() {
-        int troopsNumberInt = Integer.parseInt(troopsNumberTextField.getText());
-        int rowNumberInt = Integer.parseInt(rowNumberTextField.getText());
-        int step = mapSize / troopsNumberInt;
+        int troopsNumber = Integer.parseInt(troopsNumberTextField.getText());
+        int rowNumber = Integer.parseInt(rowNumberTextField.getText());
+        int step = mapSize / troopsNumber;
 
-        switch (selectedTroopType) {
-            case ARCHER -> {
-                switch (selectedTeam) {
-                    case BLUE -> {
-                        for (int i = 0; i < troopsNumberInt; i++) {
-                            if (rowNumberInt % 2 == 0) {
-                                troops.add(new Archer(rowNumberInt - 1, i * step + 1, selectedTeam));
-                            } else {
-                                troops.add(new Archer(rowNumberInt - 1, i * step, selectedTeam));
-                            }
-                        }
-                    }
-                    case RED -> {
-                        for (int i = 0; i < troopsNumberInt; i++) {
-                            if (rowNumberInt % 2 == 0) {
-                                troops.add(new Archer(mapSize - rowNumberInt, i * step + 1, selectedTeam));
-                            } else {
-                                troops.add(new Archer(mapSize - rowNumberInt, i * step, selectedTeam));
-                            }
-                        }
-                    }
-                }
+        int troopX = 0;
+        switch (selectedTeam) {
+            case BLUE -> troopX = rowNumber - 1;
+            case RED -> troopX = mapSize - rowNumber;
+        }
+        for (int troopIndex = 0; troopIndex < troopsNumber; troopIndex++) {
+            int troopY = troopIndex * step;
+            if (rowNumber % 2 == 0) {
+                troopY++;
             }
-            case SWORDSMAN -> {
-                switch (selectedTeam) {
-                    case BLUE -> {
-                        for (int i = 0; i < troopsNumberInt; i++) {
-                            if (rowNumberInt % 2 == 0) {
-                                troops.add(new Swordsman(rowNumberInt - 1, i * step + 1, selectedTeam));
-                            } else {
-                                troops.add(new Swordsman(rowNumberInt - 1, i * step, selectedTeam));
-                            }
-                        }
-                    }
-                    case RED -> {
-                        for (int i = 0; i < troopsNumberInt; i++) {
-                            if (rowNumberInt % 2 == 0) {
-                                troops.add(new Swordsman(mapSize - rowNumberInt, i * step + 1, selectedTeam));
-                            } else {
-                                troops.add(new Swordsman(mapSize - rowNumberInt, i * step, selectedTeam));
-                            }
-                        }
-                    }
-                }
-            }
-            case SHIELDMAN -> {
-                switch (selectedTeam) {
-                    case BLUE -> {
-                        for (int i = 0; i < troopsNumberInt; i++) {
-                            if (rowNumberInt % 2 == 0) {
-                                troops.add(new Shieldman(rowNumberInt - 1, i * step + 1, selectedTeam));
-                            } else {
-                                troops.add(new Shieldman(rowNumberInt - 1, i * step, selectedTeam));
-                            }
-                        }
-                    }
-                    case RED -> {
-                        for (int i = 0; i < troopsNumberInt; i++) {
-                            if (rowNumberInt % 2 == 0) {
-                                troops.add(new Shieldman(mapSize - rowNumberInt, i * step + 1, selectedTeam));
-                            } else {
-                                troops.add(new Shieldman(mapSize - rowNumberInt, i * step, selectedTeam));
-                            }
-                        }
-                    }
-                }
+
+            switch (selectedTroopType) {
+                case ARCHER -> troops.add(new Archer(troopX, troopY, selectedTeam));
+                case SWORDSMAN -> troops.add(new Swordsman(troopX, troopY, selectedTeam));
+                case SHIELDMAN -> troops.add(new Shieldman(troopX, troopY, selectedTeam));
             }
         }
     }
