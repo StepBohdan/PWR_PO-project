@@ -1,28 +1,29 @@
 import java.util.Random;
 
 public class Terrain {
-    static final int SIZE = 100;
     private static final int SIDE_BORDER_WIDTH = 5;
 
     // Using enums for better readability (but still outputting numbers)
     private enum TerrainType {
-        LAND, WATER, GRAVEL, MOUNTAIN // 0,1,2,3 according
+        LAND, WATER, GRAVEL, MOUNTAIN
     }
 
     private final TerrainType[][] map;
+    private final int mapSize;
     private final Random random;
 
-    public Terrain() {
-        map = new TerrainType[SIZE][SIZE];
+    public Terrain(final int mapSize) {
+        map = new TerrainType[mapSize][mapSize];
+        this.mapSize = mapSize;
         random = new Random(); // Consider making the seed configurable for testing
         generateTerrain();
     }
 
     private void generateTerrain() {
         // Fill with land, but maybe consider a more interesting starting point
-        for (int j = 0; j < SIZE; j++) {
-            for (int i = 0; i < SIZE; i++) {
-                map[j][i] = TerrainType.LAND;
+        for (int x = 0; x < mapSize; x++) {
+            for (int i = 0; i < mapSize; i++) {
+                map[x][i] = TerrainType.LAND;
             }
         }
 
@@ -32,16 +33,16 @@ public class Terrain {
     }
 
     private void generateRiver() {
-        int currentX = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
+        int currentX = random.nextInt(mapSize - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
         int currentY = 0; // Start at the very top
 
-        while (currentY < SIZE) { // Go all the way to the bottom
+        while (currentY < mapSize) { // Go all the way to the bottom
             map[currentX][currentY] = TerrainType.WATER;
 
             int direction = random.nextInt(4);
             if (direction == 0 && currentX > SIDE_BORDER_WIDTH) {
                 currentX--;
-            } else if (direction == 1 && currentX < SIZE - SIDE_BORDER_WIDTH - 1) {
+            } else if (direction == 1 && currentX < mapSize - SIDE_BORDER_WIDTH - 1) {
                 currentX++;
             }
             currentY++;
@@ -50,8 +51,8 @@ public class Terrain {
 
     private void generateTerrainFeature(TerrainType terrainType, int numFeatures, int maxRadius) {
         for (int i = 0; i < numFeatures; i++) {
-            int y = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
-            int x = random.nextInt(SIZE); // No border restriction for Y (top to bottom)
+            int y = random.nextInt(mapSize - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
+            int x = random.nextInt(mapSize); // No border restriction for Y (top to bottom)
             int radius = random.nextInt(maxRadius) + 3;
 
             // Randomly adjust the radius to create non-circular shapes
@@ -66,7 +67,12 @@ public class Terrain {
                         distance += random.nextInt(2) - 1;
                     }
 
-                    if (newX >= SIDE_BORDER_WIDTH && newX < SIZE - SIDE_BORDER_WIDTH && newY >= 0 && newY < SIZE && distance <= radius) {
+                    if (newX >= SIDE_BORDER_WIDTH &&
+                            newX < mapSize - SIDE_BORDER_WIDTH &&
+                            newY >= 0 &&
+                            newY < mapSize &&
+                            distance <= radius
+                    ) {
                         map[newX][newY] = terrainType;
                     }
                 }
@@ -84,9 +90,9 @@ public class Terrain {
 
     public int[][] getMap() {
         // Convert TerrainType to integer values (0, 1, 2, 3)
-        int[][] intMap = new int[SIZE][SIZE];
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
+        int[][] intMap = new int[mapSize][mapSize];
+        for (int i = 0; i < mapSize; i++) {
+            for (int j = 0; j < mapSize; j++) {
                 intMap[i][j] = map[i][j].ordinal(); // Get the ordinal value of the enum
             }
         }
@@ -95,11 +101,12 @@ public class Terrain {
 
     // Main method for testing
     public static void main(String[] args) {
-        Terrain terrain = new Terrain();
+        final int mapSize = 100;
+        Terrain terrain = new Terrain(mapSize);
         int[][] generatedMap = terrain.getMap();
 
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
+        for (int i = 0; i < mapSize; i++) {
+            for (int j = 0; j < mapSize; j++) {
                 System.out.print(generatedMap[i][j] + " ");
             }
             System.out.println();
