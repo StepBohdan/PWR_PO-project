@@ -1,4 +1,5 @@
 import java.awt.geom.Point2D;
+import java.util.Random;
 
 public abstract class Warrior {
     public enum Team {
@@ -10,7 +11,7 @@ public abstract class Warrior {
     }
 
     final int attackChance; // In percent, from 0 to 100
-    final int defenceChange; // In percent, from 0 to 100
+    final int defenceChance; // In percent, from 0 to 100
     final double visionRadius;
     final double attackRadius;
     final Team team;
@@ -18,9 +19,9 @@ public abstract class Warrior {
     int x;
     int y;
 
-    public Warrior(int attackChance, int defenceChange, int visionRadius, int attackRadius, Team team, int x, int y) {
+    public Warrior(int attackChance, int defenceChance, int visionRadius, int attackRadius, Team team, int x, int y) {
         this.attackChance = attackChance;
-        this.defenceChange = defenceChange;
+        this.defenceChance = defenceChance;
         this.visionRadius = visionRadius;
         this.attackRadius = attackRadius;
         this.direction = Direction.FORWARD;
@@ -45,6 +46,15 @@ public abstract class Warrior {
 
     public void moveDown() {
         y--;
+    }
+
+    public boolean attack(Warrior enemy, Random random) {
+        final int attackValue = random.nextInt(100);
+        if (attackValue <= attackChance) {
+            final int defenseValue = random.nextInt(100);
+            return defenseValue > enemy.defenceChance;
+        }
+        return false;
     }
 
     public boolean canSee(Warrior enemy) {

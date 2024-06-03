@@ -112,7 +112,6 @@ public class ActionPanel extends JPanel {
         for (Warrior enemy : enemies) {
             if (troop.canAttack(enemy)) {
                 warriorToAttack = enemy;
-                System.out.println("Can Attack");
                 break;
             }
         }
@@ -127,9 +126,16 @@ public class ActionPanel extends JPanel {
         }
 
         if (warriorToAttack != null) {
-
+            final boolean attackResult = troop.attack(warriorToAttack, random);
+            if (attackResult) {
+                System.out.println("Killed a " + warriorToAttack.team.toString() + " troop");
+                troops.remove(warriorToAttack);
+            } else {
+                System.out.println("A " + warriorToAttack.team.toString() + " troop defended the attack");
+            }
         } else if (warriorToNavigateTo != null) {
-
+            // TODO: Implement navigating to other troops
+            advanceTroop(troop);
         } else {
             advanceTroop(troop);
         }
@@ -171,6 +177,7 @@ public class ActionPanel extends JPanel {
                     troop.moveDown();
                 } else {
                     troop.direction = Warrior.Direction.STUCK;
+                    System.out.println("A " + troop.team.toString() + " troop got stuck");
                 }
             }
             case DOWN -> {
@@ -210,7 +217,8 @@ public class ActionPanel extends JPanel {
     }
 
     public void onTimerTick(ActionEvent e) {
-        for (Warrior troop : troops) {
+        ArrayList<Warrior> localTroops = new ArrayList<>(troops);
+        for (Warrior troop : localTroops) {
             checkOpponent(troop);
         }
         repaint();
