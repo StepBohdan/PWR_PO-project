@@ -9,7 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ActionPanel extends JPanel implements ActionListener {
-    Terrain.TerrainType[][] generatedMap;
+    private Terrain.TerrainType[][] generatedMap;
+    private Warrior[][] troops;
     private BufferedImage blueArcherImage;
     private BufferedImage blueSwordsmanImage;
     private BufferedImage blueShieldmanImage;
@@ -17,11 +18,12 @@ public class ActionPanel extends JPanel implements ActionListener {
     private BufferedImage redSwordsmanImage;
     private BufferedImage redShieldmanImage;
     private final int mapLength;
-    ArrayList<ArrayList<Integer>> warriorLocation = new ArrayList<>();
-    Timer timer;
+    private ArrayList<ArrayList<Integer>> warriorLocation = new ArrayList<>();
+    private Timer timer;
 
-    public ActionPanel(Terrain.TerrainType[][] generatedMap) {
+    public ActionPanel(Terrain.TerrainType[][] generatedMap, Warrior[][] troops) {
         this.generatedMap = generatedMap;
+        this.troops = troops;
         this.mapLength = generatedMap.length;
         this.setFocusable(false);
         this.setPreferredSize(new Dimension(700, 700));

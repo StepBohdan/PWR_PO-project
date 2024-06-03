@@ -1,12 +1,16 @@
 import java.util.Arrays;
 
 abstract class Warrior {
-    final String team;
+    public enum Team {
+        RED, BLUE
+    }
+
+    final Team team;
     final int attackDmg;
     final int attackRate;
     final double evasion;
 
-    public Warrior(int attackDmg, int attackRate, double evasion, String team) {
+    public Warrior(int attackDmg, int attackRate, double evasion, Team team) {
         this.attackDmg = attackDmg;
         this.attackRate = attackRate;
         this.evasion = evasion;
@@ -17,8 +21,8 @@ abstract class Warrior {
 }
 
 class Swordsman extends Warrior {
-    public Swordsman(int attackDmg, int attackRate, double evasion, String team) {
-        super(attackDmg, attackRate, evasion, team);
+    public Swordsman(Team team) {
+        super(69, 69, 69, team);
     }
 
     @Override
@@ -38,8 +42,8 @@ class Swordsman extends Warrior {
 }
 
 class Archer extends Warrior {
-    public Archer(int attackDmg, int attackRate, double evasion, String team) {
-        super(attackDmg, attackRate, evasion, team);
+    public Archer(Team team) {
+        super(69, 69, 69, team);
     }
 
     @Override
@@ -59,8 +63,8 @@ class Archer extends Warrior {
 }
 
 class Shieldman extends Warrior {
-    public Shieldman(int attackDmg, int attackRate, double evasion, String team) {
-        super(attackDmg, attackRate, evasion, team);
+    public Shieldman(Team team) {
+        super(69, 69, 69, team);
     }
 
     @Override
