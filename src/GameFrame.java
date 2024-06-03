@@ -2,11 +2,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameFrame extends JFrame {
     private static final int mapHeight = 100;
     private static final int mapWidth = 100;
-    private static final Terrain terrain = new Terrain(mapWidth, mapHeight);
+    private static final Random random = new Random(); // TODO: Consider making the seed configurable for testing
+    private static final Terrain terrain = new Terrain(mapWidth, mapHeight, random);
 
     private final int maxTroops;
     private final int rows;
@@ -150,7 +152,7 @@ public class GameFrame extends JFrame {
             mainPanel.removeAll();
             generateTroops();
 
-            actionPanel = new ActionPanel(terrain, troops);
+            actionPanel = new ActionPanel(terrain, troops, random);
             mainPanel.add(actionPanel, BorderLayout.CENTER);
             mainPanel.revalidate();
             mainPanel.repaint();

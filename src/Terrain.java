@@ -14,12 +14,20 @@ public class Terrain {
     public final int mapHeight;
     private final Random random;
 
-    public Terrain(final int mapWidth, final int mapHeight) {
+    public Terrain(final int mapWidth, final int mapHeight, final Random random) {
         map = new TerrainType[mapWidth][mapHeight];
         this.mapWidth = mapWidth;
         this.mapHeight = mapHeight;
-        random = new Random(); // TODO: Consider making the seed configurable for testing
+        this.random = random;
         generateTerrain();
+    }
+
+    public boolean isInMapBounds(int x, int y) {
+        return x >= 0 && y >= 0 && x < mapWidth && y < mapHeight;
+    }
+
+    public boolean isMountain(int x, int y) {
+        return map[x][y] == TerrainType.MOUNTAIN;
     }
 
     private void generateTerrain() {

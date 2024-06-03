@@ -7,10 +7,12 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class ActionPanel extends JPanel {
     private final Terrain terrain;
     private final ArrayList<Warrior> troops;
+    private final Random random;
 
     private BufferedImage blueArcherImage;
     private BufferedImage blueSwordsmanImage;
@@ -19,9 +21,10 @@ public class ActionPanel extends JPanel {
     private BufferedImage redSwordsmanImage;
     private BufferedImage redShieldmanImage;
 
-    public ActionPanel(Terrain terrain, ArrayList<Warrior> troops) {
+    public ActionPanel(Terrain terrain, ArrayList<Warrior> troops, Random random) {
         this.terrain = terrain;
         this.troops = troops;
+        this.random = random;
         this.setFocusable(false);
         this.setPreferredSize(new Dimension(700, 700));
         this.setVisible(true);
@@ -122,12 +125,68 @@ public class ActionPanel extends JPanel {
         advanceTroop(troop);
     }
 
-    // TODO: Take into accound terrain
     private void advanceTroop(Warrior troop) {
-        switch (troop.team) {
-            case BLUE -> troop.x++;
-            case RED -> troop.x--;
+        if (troop.direction != Warrior.Direction.STUCK) {
+            if (canGoForward(troop)) {
+                troop.direction = Warrior.Direction.FORWARD;
+                troop.moveForward();
+            } else {
+                moveVertically(troop);
+            }
         }
+    }
+
+    private void moveVertically(Warrior troop) {
+        if (troop.direction == Warrior.Direction.FORWARD) {
+            final boolean isUp = random.nextBoolean();
+            troop.direction = isUp ? Warrior.Direction.UP : Warrior.Direction.DOWN;
+        }
+
+        switch (troop.direction) {
+            case UP -> {
+                if (canGoUp(troop)) {
+                    troop.moveUp();
+                } else if (!canGoUp(troop) && canGoDown(troop)) {
+                    troop.direction = Warrior.Direction.DOWN;
+                    troop.moveDown();
+                } else {
+                    troop.direction = Warrior.Direction.STUCK;
+                }
+            }
+            case DOWN -> {
+                if (canGoDown(troop)) {
+                    troop.moveDown();
+                } else if (!canGoDown(troop) && canGoUp(troop)) {
+                    troop.direction = Warrior.Direction.UP;
+                    troop.moveUp();
+                } else {
+                    troop.direction = Warrior.Direction.STUCK;
+                }
+            }
+        }
+    }
+
+    private boolean canGoUp(Warrior troop) {
+        int troopX = troop.x;
+        int newTroopY = troop.y + 1;
+        return terrain.isInMapBounds(troopX, newTroopY) && !terrain.isMountain(troopX, newTroopY);
+    }
+
+    private boolean canGoDown(Warrior troop) {
+        int troopX = troop.x;
+        int newTroopY = troop.y - 1;
+        return terrain.isInMapBounds(troopX, newTroopY) && !terrain.isMountain(troopX, newTroopY);
+    }
+
+    private boolean canGoForward(Warrior troop) {
+        int troopX = troop.x;
+        int newTroopX = troopX;
+        switch (troop.team) {
+            case BLUE -> newTroopX = troopX + 1;
+            case RED -> newTroopX = troopX - 1;
+        }
+        int troopY = troop.y;
+        return terrain.isInMapBounds(newTroopX, troopY) && !terrain.isMountain(newTroopX, troopY);
     }
 
     private void actionOpp(int ii, int jj, int i, int j) {

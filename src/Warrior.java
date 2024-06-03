@@ -3,11 +3,16 @@ public abstract class Warrior {
         RED, BLUE
     }
 
-    final Team team;
+    public enum Direction {
+        FORWARD, UP, DOWN, STUCK
+    }
+
     final int attackChance;
     final int defenceChange;
     final int visionRadius;
     final int attackRadius;
+    final Team team;
+    Direction direction;
     int x;
     int y;
 
@@ -16,9 +21,28 @@ public abstract class Warrior {
         this.defenceChange = defenceChange;
         this.visionRadius = visionRadius;
         this.attackRadius = attackRadius;
+        this.direction = Direction.FORWARD;
         this.team = team;
         this.x = x;
         this.y = y;
+    }
+
+    public void moveForward() {
+        int troopX = x;
+        int newTroopX = troopX;
+        switch (this.team) {
+            case BLUE -> newTroopX = troopX + 1;
+            case RED -> newTroopX = troopX - 1;
+        }
+        x = newTroopX;
+    }
+
+    public void moveUp() {
+        y++;
+    }
+
+    public void moveDown() {
+        y--;
     }
 }
 
