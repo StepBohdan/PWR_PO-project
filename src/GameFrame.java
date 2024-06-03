@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 public class GameFrame extends JFrame {
     private static final int mapSize = 100;
@@ -26,7 +27,7 @@ public class GameFrame extends JFrame {
     private boolean redConfigured;
 
     private ActionPanel actionPanel;
-    private final Warrior[][] troops = new Warrior[mapSize][mapSize];
+    private final ArrayList<Warrior> troops = new ArrayList<>();
 
     GameFrame(int maxTroops, int rows) {
         this.maxTroops = maxTroops;
@@ -194,18 +195,18 @@ public class GameFrame extends JFrame {
                     case BLUE -> {
                         for (int i = 0; i < troopsNumberInt; i++) {
                             if (rowNumberInt % 2 == 0) {
-                                troops[rowNumberInt - 1][i * step + 1] = new Archer(selectedTeam);
+                                troops.add(new Archer(rowNumberInt - 1, i * step + 1, selectedTeam));
                             } else {
-                                troops[rowNumberInt - 1][i * step] = new Archer(selectedTeam);
+                                troops.add(new Archer(rowNumberInt - 1, i * step, selectedTeam));
                             }
                         }
                     }
                     case RED -> {
                         for (int i = 0; i < troopsNumberInt; i++) {
                             if (rowNumberInt % 2 == 0) {
-                                troops[mapSize - rowNumberInt][i * step + 1] = new Archer(selectedTeam);
+                                troops.add(new Archer(mapSize - rowNumberInt, i * step + 1, selectedTeam));
                             } else {
-                                troops[mapSize - rowNumberInt][i * step] = new Archer(selectedTeam);
+                                troops.add(new Archer(mapSize - rowNumberInt, i * step, selectedTeam));
                             }
                         }
                     }
@@ -216,18 +217,18 @@ public class GameFrame extends JFrame {
                     case BLUE -> {
                         for (int i = 0; i < troopsNumberInt; i++) {
                             if (rowNumberInt % 2 == 0) {
-                                troops[rowNumberInt - 1][i * step + 1] = new Swordsman(selectedTeam);
+                                troops.add(new Swordsman(rowNumberInt - 1, i * step + 1, selectedTeam));
                             } else {
-                                troops[rowNumberInt - 1][i * step] = new Swordsman(selectedTeam);
+                                troops.add(new Swordsman(rowNumberInt - 1, i * step, selectedTeam));
                             }
                         }
                     }
                     case RED -> {
                         for (int i = 0; i < troopsNumberInt; i++) {
                             if (rowNumberInt % 2 == 0) {
-                                troops[mapSize - rowNumberInt][i * step + 1] = new Swordsman(selectedTeam);
+                                troops.add(new Swordsman(mapSize - rowNumberInt, i * step + 1, selectedTeam));
                             } else {
-                                troops[mapSize - rowNumberInt][i * step] = new Swordsman(selectedTeam);
+                                troops.add(new Swordsman(mapSize - rowNumberInt, i * step, selectedTeam));
                             }
                         }
                     }
@@ -238,18 +239,18 @@ public class GameFrame extends JFrame {
                     case BLUE -> {
                         for (int i = 0; i < troopsNumberInt; i++) {
                             if (rowNumberInt % 2 == 0) {
-                                troops[rowNumberInt - 1][i * step + 1] = new Shieldman(selectedTeam);
+                                troops.add(new Shieldman(rowNumberInt - 1, i * step + 1, selectedTeam));
                             } else {
-                                troops[rowNumberInt - 1][i * step] = new Shieldman(selectedTeam);
+                                troops.add(new Shieldman(rowNumberInt - 1, i * step, selectedTeam));
                             }
                         }
                     }
                     case RED -> {
                         for (int i = 0; i < troopsNumberInt; i++) {
                             if (rowNumberInt % 2 == 0) {
-                                troops[mapSize - rowNumberInt][i * step + 1] = new Shieldman(selectedTeam);
+                                troops.add(new Shieldman(mapSize - rowNumberInt, i * step + 1, selectedTeam));
                             } else {
-                                troops[mapSize - rowNumberInt][i * step] = new Shieldman(selectedTeam);
+                                troops.add(new Shieldman(mapSize - rowNumberInt, i * step, selectedTeam));
                             }
                         }
                     }

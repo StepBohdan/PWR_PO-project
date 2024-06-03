@@ -7,10 +7,11 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class ActionPanel extends JPanel implements ActionListener {
     private final Terrain.TerrainType[][] generatedMap;
-    private final Warrior[][] troops;
+    private final ArrayList<Warrior> troops;
     private BufferedImage blueArcherImage;
     private BufferedImage blueSwordsmanImage;
     private BufferedImage blueShieldmanImage;
@@ -19,7 +20,7 @@ public class ActionPanel extends JPanel implements ActionListener {
     private BufferedImage redShieldmanImage;
     private final int mapLength;
 
-    public ActionPanel(Terrain.TerrainType[][] generatedMap, Warrior[][] troops) {
+    public ActionPanel(Terrain.TerrainType[][] generatedMap, ArrayList<Warrior> troops) {
         this.generatedMap = generatedMap;
         this.troops = troops;
         this.mapLength = generatedMap.length;
@@ -49,7 +50,6 @@ public class ActionPanel extends JPanel implements ActionListener {
     }
 
     public void draw(Graphics g) {
-        System.out.println("dick");
         Graphics2D g2D = (Graphics2D) g;
         int size = 7;
         int mapWidth = 100;
@@ -87,49 +87,48 @@ public class ActionPanel extends JPanel implements ActionListener {
 
                 // Рисуем фон
                 g2D.fillRect(i * size, j * size, size, size);
-
-                // Рисуем воинов
-                Warrior troop = troops[i][j];
-                if (troop != null) {
-                    switch (troop.team) {
-                        case RED -> {
-                            switch (troop) {
-                                case Archer _ -> g2D.drawImage(redArcherImage, i * size, j * size, size, size, null);
-                                case Swordsman _ ->
-                                        g2D.drawImage(redSwordsmanImage, i * size, j * size, size, size, null);
-                                case Shieldman _ ->
-                                        g2D.drawImage(redShieldmanImage, i * size, j * size, size, size, null);
-                                default -> {
-                                }
-                            }
+            }
+        }
+        // Рисуем воинов
+        for (Warrior troop : troops) {
+            switch (troop.team) {
+                case RED -> {
+                    switch (troop) {
+                        case Archer _ ->
+                                g2D.drawImage(redArcherImage, troop.x * size, troop.y * size, size, size, null);
+                        case Swordsman _ ->
+                                g2D.drawImage(redSwordsmanImage, troop.x * size, troop.y * size, size, size, null);
+                        case Shieldman _ ->
+                                g2D.drawImage(redShieldmanImage, troop.x * size, troop.y * size, size, size, null);
+                        default -> {
                         }
-                        case BLUE -> {
-                            switch (troop) {
-                                case Archer _ -> g2D.drawImage(blueArcherImage, i * size, j * size, size, size, null);
-                                case Swordsman _ ->
-                                        g2D.drawImage(blueSwordsmanImage, i * size, j * size, size, size, null);
-                                case Shieldman _ ->
-                                        g2D.drawImage(blueShieldmanImage, i * size, j * size, size, size, null);
-                                default -> {
-                                }
-                            }
+                    }
+                }
+                case BLUE -> {
+                    switch (troop) {
+                        case Archer _ ->
+                                g2D.drawImage(blueArcherImage, troop.x * size, troop.y * size, size, size, null);
+                        case Swordsman _ ->
+                                g2D.drawImage(blueSwordsmanImage, troop.x * size, troop.y * size, size, size, null);
+                        case Shieldman _ ->
+                                g2D.drawImage(blueShieldmanImage, troop.x * size, troop.y * size, size, size, null);
+                        default -> {
                         }
                     }
                 }
             }
         }
-        System.out.println("dick map");
     }
 
     public void startGame() {
         // TODO: Add configurable delay
-        Timer timer = new Timer(1000, this);
+        Timer timer = new Timer(100, this);
         timer.start();
     }
 
     private final int range = 5;
 
-    private void checkOpponent(int currentX, int currentY) {
+    private void checkOpponent(Warrior troop) {
         for (int i = Math.max(0, currentX - range); i < Math.min(mapLength, currentX + range); i++) {
             for (int j = Math.max(0, currentY - range); j < Math.min(mapLength, currentY + range); j++) {
                 final Warrior troop = troops[i][j];
@@ -142,23 +141,14 @@ public class ActionPanel extends JPanel implements ActionListener {
             }
         }
 
-        advanceTroop(currentX, currentY);
+        advanceTroop(troop);
     }
 
-    private void advanceTroop(int currentX, int currentY) {
-        final Warrior troop = troops[currentX][currentY];
-        if (troop != null) {
-            switch (troop.team) {
-                case BLUE -> setNewTroopCords(currentX, currentY, currentX + 1, currentY);
-                case RED -> setNewTroopCords(currentX, currentY, currentX - 1, currentY);
-            }
+    private void advanceTroop(Warrior troop) {
+        switch (troop.team) {
+            case BLUE -> troop.x++;
+            case RED -> troop.x--;
         }
-    }
-
-    private void setNewTroopCords(int oldX, int oldY, int newX, int newY) {
-        Warrior troop = troops[oldX][oldY];
-        troops[oldX][oldY] = null;
-        troops[newX][newY] = troop;
     }
 
     private void actionOpp(int ii, int jj, int i, int j) {
@@ -173,11 +163,8 @@ public class ActionPanel extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // TODO: Pass map size
-        for (int i = 0; i < 99; i++) {
-            for (int j = 0; j < 99; j++) {
-                checkOpponent(i, j);
-            }
+        for (Warrior troop : troops) {
+            checkOpponent(troop);
         }
         repaint();
     }
