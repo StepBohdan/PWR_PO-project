@@ -2,7 +2,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -106,23 +105,44 @@ public class ActionPanel extends JPanel {
         timer.start();
     }
 
-    // TODO: use range from warrior
-    private final int range = 5;
-
     private void checkOpponent(Warrior troop) {
-        for (int i = Math.max(0, currentX - range); i < Math.min(mapLength, currentX + range); i++) {
-            for (int j = Math.max(0, currentY - range); j < Math.min(mapLength, currentY + range); j++) {
-                final Warrior troop = troops[i][j];
-                final Warrior opponentTroop = troops[currentX][currentY];
-                if (troop != null && opponentTroop != null) {
-                    if (troop.team != opponentTroop.team) { // check if opposite teams
-                        actionOpp(currentX, currentY, i, j);
-                    }
+        ArrayList<Warrior> enemies = getAllEnemyTroops(troop);
+        Warrior warriorToAttack = null;
+        Warrior warriorToNavigateTo = null;
+        for (Warrior enemy : enemies) {
+            if (troop.canAttack(enemy)) {
+                warriorToAttack = enemy;
+                System.out.println("Can Attack");
+                break;
+            }
+        }
+        if (warriorToAttack == null) {
+            for (Warrior enemy : enemies) {
+                if (troop.canSee(enemy)) {
+                    warriorToNavigateTo = enemy;
+                    System.out.println("Can See");
+                    break;
                 }
             }
         }
 
-        advanceTroop(troop);
+        if (warriorToAttack != null) {
+
+        } else if (warriorToNavigateTo != null) {
+
+        } else {
+            advanceTroop(troop);
+        }
+    }
+
+    private ArrayList<Warrior> getAllEnemyTroops(Warrior troop) {
+        ArrayList<Warrior> enemyTroops = new ArrayList<>();
+        for (Warrior warrior : troops) {
+            if (warrior.team != troop.team) {
+                enemyTroops.add(warrior);
+            }
+        }
+        return enemyTroops;
     }
 
     private void advanceTroop(Warrior troop) {
@@ -187,16 +207,6 @@ public class ActionPanel extends JPanel {
         }
         int troopY = troop.y;
         return terrain.isInMapBounds(newTroopX, troopY) && !terrain.isMountain(newTroopX, troopY);
-    }
-
-    private void actionOpp(int ii, int jj, int i, int j) {
-        if (Point2D.distance(ii, jj, i, j) <= range - 3) {
-            attack();
-        }
-    }
-
-    private void attack() {
-        System.out.println("dick attacked");
     }
 
     public void onTimerTick(ActionEvent e) {

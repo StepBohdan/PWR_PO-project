@@ -1,3 +1,5 @@
+import java.awt.geom.Point2D;
+
 public abstract class Warrior {
     public enum Team {
         RED, BLUE
@@ -7,10 +9,10 @@ public abstract class Warrior {
         FORWARD, UP, DOWN, STUCK
     }
 
-    final int attackChance;
-    final int defenceChange;
-    final int visionRadius;
-    final int attackRadius;
+    final int attackChance; // In percent, from 0 to 100
+    final int defenceChange; // In percent, from 0 to 100
+    final double visionRadius;
+    final double attackRadius;
     final Team team;
     Direction direction;
     int x;
@@ -44,22 +46,34 @@ public abstract class Warrior {
     public void moveDown() {
         y--;
     }
+
+    public boolean canSee(Warrior enemy) {
+        return isInRange(enemy, visionRadius);
+    }
+
+    public boolean canAttack(Warrior enemy) {
+        return isInRange(enemy, attackRadius);
+    }
+
+    private boolean isInRange(Warrior enemy, double range) {
+        return Point2D.distance(x, y, enemy.x, enemy.y) <= range;
+    }
 }
 
 class Swordsman extends Warrior {
     public Swordsman(int x, int y, Team team) {
-        super(69, 69, 69, 69, team, x, y);
+        super(69, 69, 7, 7, team, x, y);
     }
 }
 
 class Archer extends Warrior {
     public Archer(int x, int y, Team team) {
-        super(69, 69, 69, 69, team, x, y);
+        super(69, 69, 20, 10, team, x, y);
     }
 }
 
 class Shieldman extends Warrior {
     public Shieldman(int x, int y, Team team) {
-        super(69, 69, 69, 69, team, x, y);
+        super(69, 69, 5, 3, team, x, y);
     }
 }
