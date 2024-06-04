@@ -10,6 +10,8 @@ import java.util.Random;
 import java.util.function.Function;
 
 public class ActionPanel extends JPanel {
+    private static final int pixelSize = 7;
+
     private final Terrain terrain;
     private final ArrayList<Warrior> troops;
     private final Random random;
@@ -56,7 +58,6 @@ public class ActionPanel extends JPanel {
 
     private void draw(final Graphics g) {
         Graphics2D g2D = (Graphics2D) g;
-        final int pixelSize = 7;
 
         for (int x = 0; x < terrain.mapWidth; x++) {
             for (int y = 0; y < terrain.mapHeight; y++) {

@@ -36,6 +36,7 @@ public class GameFrame extends JFrame {
         this.maxTroops = maxTroops;
 
         this.setSize(1500, 800);
+        this.setResizable(false);
         this.setLayout(new BorderLayout(10, 10)); // probably will be changed to GridBagLayout
 
         final JPanel menuPanel = new JPanel();
@@ -60,7 +61,6 @@ public class GameFrame extends JFrame {
         final JCheckBox sideCheckBox = new JCheckBox("Select a side");
         sideCheckBox.addActionListener(_ -> selectedTeam = sideCheckBox.isSelected() ? Warrior.Team.RED : Warrior.Team.BLUE);
         selectedTeam = Warrior.Team.BLUE;
-        sideCheckBox.setFocusable(false);
         final ImageIcon blueTeamIcon = new ImageIcon("src/images/blue.png");
         sideCheckBox.setIcon(blueTeamIcon);
         final ImageIcon redTeamIcon = new ImageIcon("src/images/red.png");
@@ -215,10 +215,6 @@ public class GameFrame extends JFrame {
 
     private void styleButton(final JButton button) {
         button.setFont(new Font("Arial", Font.BOLD, 12));
-        button.setBackground(Color.DARK_GRAY);
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         button.setPreferredSize(new Dimension(100, 30));
     }
 
