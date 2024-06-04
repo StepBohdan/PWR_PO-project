@@ -7,11 +7,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.function.Function;
 
 public class ActionPanel extends JPanel {
     private final Terrain terrain;
     private final ArrayList<Warrior> troops;
     private final Random random;
+    private final Function<String, Void> onGameEnd;
 
     private BufferedImage blueArcherImage;
     private BufferedImage blueSwordsmanImage;
@@ -22,10 +24,11 @@ public class ActionPanel extends JPanel {
 
     private Timer timer;
 
-    public ActionPanel(Terrain terrain, ArrayList<Warrior> troops, Random random) {
+    public ActionPanel(Terrain terrain, ArrayList<Warrior> troops, Random random, Function<String, Void> onGameEnd) {
         this.terrain = terrain;
         this.troops = troops;
         this.random = random;
+        this.onGameEnd = onGameEnd;
         this.setFocusable(false);
         this.setPreferredSize(new Dimension(700, 700));
         this.setVisible(true);
@@ -117,9 +120,8 @@ public class ActionPanel extends JPanel {
     private void checkOpponent(Warrior troop) {
         ArrayList<Warrior> enemies = getAllEnemyTroops(troop);
         if (enemies.isEmpty()) {
-            System.out.println(troop.team.toString() + " won by killing all enemies");
+            onGameEnd.apply(troop.team.toString() + " won by killing all enemies");
             stopGame();
-            // TODO: Update UI when all enemies are dead
         }
 
         // TODO: consider randomizing warrior to attack
@@ -250,9 +252,8 @@ public class ActionPanel extends JPanel {
         boolean redReachedMapEnd = false;
         ArrayList<Warrior> localTroops = new ArrayList<>(troops);
         if (localTroops.isEmpty()) {
-            System.out.println("It's a draw. Everybody died");
+            onGameEnd.apply("It's a draw. Everybody died");
             stopGame();
-            // TODO: Update UI when everybody is dead
         }
         for (Warrior troop : localTroops) {
             checkOpponent(troop);
@@ -262,15 +263,14 @@ public class ActionPanel extends JPanel {
             }
         }
 
-        // TODO: Update UI accordingly
         if (blueReachedMapEnd && redReachedMapEnd) {
-            System.out.println("It's a draw. Both teams reached the end at the same time");
+            onGameEnd.apply("It's a draw. Both teams reached the end at the same time");
             stopGame();
         } else if (blueReachedMapEnd) {
-            System.out.println("BLUE won by reaching the end first");
+            onGameEnd.apply("BLUE won by reaching the end first");
             stopGame();
         } else if (redReachedMapEnd) {
-            System.out.println("RED won by reaching the end first");
+            onGameEnd.apply("RED won by reaching the end first");
             stopGame();
         }
 

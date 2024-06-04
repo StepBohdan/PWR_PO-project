@@ -13,6 +13,7 @@ public class GameFrame extends JFrame {
 
     private final int maxTroops;
 
+    private final JLabel statusLabel;
     private final JTextField rowNumberTextField;
     private final JTextField troopsNumberTextField;
     private final JButton submitButton;
@@ -42,10 +43,17 @@ public class GameFrame extends JFrame {
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.insets = new Insets(5, 5, 5, 5);
 
+        statusLabel = new JLabel("Configure both teams to start");
+        statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
+        menuPanel.add(statusLabel, gridBagConstraints);
+
         JLabel menuLabel = new JLabel("MENU");
         menuLabel.setFont(new Font("Arial", Font.BOLD, 16));
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 3;
         menuPanel.add(menuLabel, gridBagConstraints);
 
@@ -58,14 +66,14 @@ public class GameFrame extends JFrame {
         ImageIcon redTeamIcon = new ImageIcon("src/images/red.png");
         sideCheckBox.setSelectedIcon(redTeamIcon);
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 1;
         menuPanel.add(sideCheckBox, gridBagConstraints);
 
         JLabel troopsNumberLabel = new JLabel("Troops amount (max: " + maxTroops + "): ");
         troopsNumberTextField = new JTextField(8);
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         menuPanel.add(troopsNumberLabel, gridBagConstraints);
         gridBagConstraints.gridx = 1;
         menuPanel.add(troopsNumberTextField, gridBagConstraints);
@@ -73,7 +81,7 @@ public class GameFrame extends JFrame {
         JLabel rowNumberLabel = new JLabel("Row number (max: " + maxTroopRows + "): ");
         rowNumberTextField = new JTextField(8);
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridy = 4;
         menuPanel.add(rowNumberLabel, gridBagConstraints);
         gridBagConstraints.gridx = 1;
         menuPanel.add(rowNumberTextField, gridBagConstraints);
@@ -88,7 +96,7 @@ public class GameFrame extends JFrame {
         styleButton(submitButton);
         submitButton.addActionListener(this::onSubmitButtonClick);
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.gridheight = 1;
         menuPanel.add(submitButton, gridBagConstraints);
@@ -98,7 +106,7 @@ public class GameFrame extends JFrame {
         startButton.setEnabled(false);
         startButton.addActionListener(this::onStartButtonClick);
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 4;
+        gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 1;
         menuPanel.add(startButton, gridBagConstraints);
 
@@ -171,7 +179,7 @@ public class GameFrame extends JFrame {
         mainPanel.removeAll();
         generateTroops(troopsAmount, rowNumber);
 
-        actionPanel = new ActionPanel(terrain, troops, random);
+        actionPanel = new ActionPanel(terrain, troops, random, this::onGameEnd);
         mainPanel.add(actionPanel, BorderLayout.CENTER);
         mainPanel.revalidate();
         mainPanel.repaint();
@@ -182,8 +190,15 @@ public class GameFrame extends JFrame {
         }
 
         if (blueConfigured && redConfigured) {
+            statusLabel.setText("Game not started");
             startButton.setEnabled(true);
         }
+    }
+
+    private Void onGameEnd(String message) {
+        statusLabel.setText(message);
+        System.out.println(message);
+        return null;
     }
 
     private void onStartButtonClick(ActionEvent e) {
@@ -194,6 +209,7 @@ public class GameFrame extends JFrame {
         //mainPanel.revalidate();
         //mainPanel.repaint();
         actionPanel.startGame();
+        statusLabel.setText("Game in progress");
         System.out.println("Game started");
     }
 
