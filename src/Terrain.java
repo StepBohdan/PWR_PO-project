@@ -6,9 +6,10 @@ public class Terrain {
         LAND, WATER, GRAVEL, MOUNTAIN
     }
 
-    private static int landPenalty = 1;
-    private static int gravelDefensePenalty = 2;
-    private static int waterAttackPenalty = 3;
+    // TODO: Add real values
+    private static final int landPenalty = 1;
+    private static final int gravelDefensePenalty = 2;
+    private static final int waterAttackPenalty = 3;
 
     public final TerrainType[][] map;
     public final int mapWidth;
@@ -25,7 +26,7 @@ public class Terrain {
         generateTerrain();
     }
 
-    public int getAttackPenalty(int x, int y) {
+    public int getAttackPenalty(final int x, final int y) {
         if (isInMapBounds(x, y) && map[x][y] == TerrainType.WATER) {
             return waterAttackPenalty;
         } else {
@@ -33,7 +34,7 @@ public class Terrain {
         }
     }
 
-    public int getDefensePenalty(int x, int y) {
+    public int getDefensePenalty(final int x, final int y) {
         if (isInMapBounds(x, y) && map[x][y] == TerrainType.GRAVEL) {
             return gravelDefensePenalty;
         } else {
@@ -41,11 +42,11 @@ public class Terrain {
         }
     }
 
-    public boolean isInMapBounds(int x, int y) {
+    public boolean isInMapBounds(final int x, final int y) {
         return x >= 0 && y >= 0 && x < mapWidth && y < mapHeight;
     }
 
-    public boolean isMountain(int x, int y) {
+    public boolean isMountain(final int x, final int y) {
         return map[x][y] == TerrainType.MOUNTAIN;
     }
 
@@ -77,7 +78,7 @@ public class Terrain {
         while (currentY < mapHeight) { // Go all the way to the bottom
             map[currentX][currentY] = TerrainType.WATER;
 
-            int direction = random.nextInt(4);
+            final int direction = random.nextInt(4);
             if (direction == 0 && currentX > verticalSafeZoneSize) {
                 currentX--;
             } else if (direction == 1 && currentX < mapWidth - verticalSafeZoneSize - 1) {
@@ -87,17 +88,17 @@ public class Terrain {
         }
     }
 
-    private void generateTerrainFeature(TerrainType terrainType, int amount, int maxRadius) {
+    private void generateTerrainFeature(final TerrainType terrainType, final int amount, final int maxRadius) {
         for (int index = 0; index < amount; index++) {
-            int x = random.nextInt(mapWidth - 2 * verticalSafeZoneSize) + verticalSafeZoneSize;
-            int y = random.nextInt(mapHeight); // No border restriction for Y (top to bottom)
-            int radius = random.nextInt(maxRadius) + 3;
+            final int x = random.nextInt(mapWidth - 2 * verticalSafeZoneSize) + verticalSafeZoneSize;
+            final int y = random.nextInt(mapHeight); // No border restriction for Y (top to bottom)
+            final int radius = random.nextInt(maxRadius) + 3;
 
             // Randomly adjust the radius to create non-circular shapes
             for (int j = -radius; j <= radius; j++) {
                 for (int k = -radius; k <= radius; k++) {
-                    int newY = y + j;
-                    int newX = x + k;
+                    final int newY = y + j;
+                    final int newX = x + k;
                     int distance = (int) Math.sqrt(j * j + k * k);
 
                     // Randomly adjust distance to create irregularity

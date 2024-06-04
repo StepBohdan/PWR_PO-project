@@ -24,14 +24,14 @@ public class ActionPanel extends JPanel {
 
     private Timer timer;
 
-    public ActionPanel(Terrain terrain, ArrayList<Warrior> troops, Random random, Function<String, Void> onGameEnd) {
+    public ActionPanel(final Terrain terrain, final ArrayList<Warrior> troops, final Random random, final Function<String, Void> onGameEnd) {
         this.terrain = terrain;
         this.troops = troops;
         this.random = random;
         this.onGameEnd = onGameEnd;
         this.setFocusable(false);
-        this.setPreferredSize(new Dimension(700, 700));
-        this.setVisible(true);
+        //this.setPreferredSize(new Dimension(700, 700));
+        //this.setVisible(true);
         loadImages();
     }
 
@@ -49,14 +49,14 @@ public class ActionPanel extends JPanel {
     }
 
     @Override
-    public void paintComponent(Graphics g) {
+    public void paintComponent(final Graphics g) {
         super.paintComponent(g);
         draw(g);
     }
 
-    public void draw(Graphics g) {
+    private void draw(final Graphics g) {
         Graphics2D g2D = (Graphics2D) g;
-        int pixelSize = 7;
+        final int pixelSize = 7;
 
         for (int x = 0; x < terrain.mapWidth; x++) {
             for (int y = 0; y < terrain.mapHeight; y++) {
@@ -72,7 +72,7 @@ public class ActionPanel extends JPanel {
             }
         }
         // Рисуем воинов
-        for (Warrior troop : troops) {
+        for (final Warrior troop : troops) {
             final int troopImageX = troop.x * pixelSize;
             final int troopImageY = troop.y * pixelSize;
             switch (troop.team) {
@@ -117,8 +117,8 @@ public class ActionPanel extends JPanel {
         }
     }
 
-    private void checkOpponent(Warrior troop) {
-        ArrayList<Warrior> enemies = getAllEnemyTroops(troop);
+    private void checkOpponent(final Warrior troop) {
+        final ArrayList<Warrior> enemies = getAllEnemyTroops(troop);
         if (enemies.isEmpty()) {
             onGameEnd.apply(troop.team.toString() + " won by killing all enemies");
             stopGame();
@@ -127,14 +127,14 @@ public class ActionPanel extends JPanel {
         // TODO: consider randomizing warrior to attack
         Warrior warriorToAttack = null;
         Warrior warriorToNavigateTo = null;
-        for (Warrior enemy : enemies) {
+        for (final Warrior enemy : enemies) {
             if (troop.canAttack(enemy)) {
                 warriorToAttack = enemy;
                 break;
             }
         }
         if (warriorToAttack == null) {
-            for (Warrior enemy : enemies) {
+            for (final Warrior enemy : enemies) {
                 if (troop.canSee(enemy)) {
                     warriorToNavigateTo = enemy;
                     break;
@@ -159,9 +159,9 @@ public class ActionPanel extends JPanel {
         }
     }
 
-    private ArrayList<Warrior> getAllEnemyTroops(Warrior troop) {
-        ArrayList<Warrior> enemyTroops = new ArrayList<>();
-        for (Warrior warrior : troops) {
+    private ArrayList<Warrior> getAllEnemyTroops(final Warrior troop) {
+        final ArrayList<Warrior> enemyTroops = new ArrayList<>();
+        for (final Warrior warrior : troops) {
             if (warrior.team != troop.team) {
                 enemyTroops.add(warrior);
             }
@@ -169,7 +169,7 @@ public class ActionPanel extends JPanel {
         return enemyTroops;
     }
 
-    private void moveTowardsAnEnemy(Warrior troop, Warrior enemy) {
+    private void moveTowardsAnEnemy(final Warrior troop, final Warrior enemy) {
         if (troop.attackRadius <= Math.abs(troop.y - enemy.y)) {
             if (troop.y > enemy.y) {
                 if (canGoDown(troop)) {
@@ -186,7 +186,7 @@ public class ActionPanel extends JPanel {
         advanceTroop(troop);
     }
 
-    private void advanceTroop(Warrior troop) {
+    private void advanceTroop(final Warrior troop) {
         if (troop.direction != Warrior.Direction.STUCK) {
             if (canGoForward(troop)) {
                 troop.direction = Warrior.Direction.FORWARD;
@@ -197,7 +197,7 @@ public class ActionPanel extends JPanel {
         }
     }
 
-    private void moveVertically(Warrior troop) {
+    private void moveVertically(final Warrior troop) {
         if (troop.direction == Warrior.Direction.FORWARD) {
             final boolean isUp = random.nextBoolean();
             troop.direction = isUp ? Warrior.Direction.UP : Warrior.Direction.DOWN;
@@ -228,30 +228,30 @@ public class ActionPanel extends JPanel {
         }
     }
 
-    private boolean canGoUp(Warrior troop) {
-        int troopX = troop.x;
-        int newTroopY = troop.y + 1;
+    private boolean canGoUp(final Warrior troop) {
+        final int troopX = troop.x;
+        final int newTroopY = troop.y + 1;
         return terrain.isInMapBounds(troopX, newTroopY) && !terrain.isMountain(troopX, newTroopY);
     }
 
-    private boolean canGoDown(Warrior troop) {
-        int troopX = troop.x;
-        int newTroopY = troop.y - 1;
+    private boolean canGoDown(final Warrior troop) {
+        final int troopX = troop.x;
+        final int newTroopY = troop.y - 1;
         return terrain.isInMapBounds(troopX, newTroopY) && !terrain.isMountain(troopX, newTroopY);
     }
 
-    private boolean canGoForward(Warrior troop) {
-        int troopX = troop.x;
+    private boolean canGoForward(final Warrior troop) {
+        final int troopX = troop.x;
         int newTroopX = troopX;
         switch (troop.team) {
             case BLUE -> newTroopX = troopX + 1;
             case RED -> newTroopX = troopX - 1;
         }
-        int troopY = troop.y;
+        final int troopY = troop.y;
         return terrain.isInMapBounds(newTroopX, troopY) && !terrain.isMountain(newTroopX, troopY);
     }
 
-    private boolean isAtMapEnd(Warrior troop) {
+    private boolean isAtMapEnd(final Warrior troop) {
         switch (troop.team) {
             case BLUE -> {
                 return troop.x == terrain.mapWidth - 1;
@@ -263,15 +263,15 @@ public class ActionPanel extends JPanel {
         return false;
     }
 
-    public void onTimerTick(ActionEvent e) {
+    public void onTimerTick(final ActionEvent e) {
         boolean blueReachedMapEnd = false;
         boolean redReachedMapEnd = false;
-        ArrayList<Warrior> localTroops = new ArrayList<>(troops);
+        final ArrayList<Warrior> localTroops = new ArrayList<>(troops);
         if (localTroops.isEmpty()) {
             onGameEnd.apply("It's a draw. Everybody died");
             stopGame();
         }
-        for (Warrior troop : localTroops) {
+        for (final Warrior troop : localTroops) {
             checkOpponent(troop);
             switch (troop.team) {
                 case RED -> redReachedMapEnd = isAtMapEnd(troop);
