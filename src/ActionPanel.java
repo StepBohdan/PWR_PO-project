@@ -20,6 +20,8 @@ public class ActionPanel extends JPanel {
     private BufferedImage redSwordsmanImage;
     private BufferedImage redShieldmanImage;
 
+    private Timer timer;
+
     public ActionPanel(Terrain terrain, ArrayList<Warrior> troops, Random random) {
         this.terrain = terrain;
         this.troops = troops;
@@ -101,12 +103,25 @@ public class ActionPanel extends JPanel {
 
     public void startGame() {
         // TODO: Add configurable delay
-        Timer timer = new Timer(100, this::onTimerTick);
+        timer = new Timer(100, this::onTimerTick);
         timer.start();
+    }
+
+    private void stopGame() {
+        if (timer != null && timer.isRunning()) {
+            timer.stop();
+            timer = null;
+        }
     }
 
     private void checkOpponent(Warrior troop) {
         ArrayList<Warrior> enemies = getAllEnemyTroops(troop);
+        if (enemies.isEmpty()) {
+            System.out.println(troop.team.toString() + " won");
+            stopGame();
+            // TODO: Change UI when all enemies die
+        }
+
         // TODO: consider randomizing warrior to attack
         Warrior warriorToAttack = null;
         Warrior warriorToNavigateTo = null;
@@ -120,7 +135,7 @@ public class ActionPanel extends JPanel {
             for (Warrior enemy : enemies) {
                 if (troop.canSee(enemy)) {
                     warriorToNavigateTo = enemy;
-                    System.out.println("Can See");
+                    //System.out.println("Can See");
                     break;
                 }
             }
@@ -221,6 +236,11 @@ public class ActionPanel extends JPanel {
 
     public void onTimerTick(ActionEvent e) {
         ArrayList<Warrior> localTroops = new ArrayList<>(troops);
+        if (localTroops.isEmpty()) {
+            System.out.println("It's a draw");
+            stopGame();
+            // TODO: Change UI when everybody dies
+        }
         for (Warrior troop : localTroops) {
             checkOpponent(troop);
         }
