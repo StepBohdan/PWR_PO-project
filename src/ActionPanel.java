@@ -117,9 +117,9 @@ public class ActionPanel extends JPanel {
     private void checkOpponent(Warrior troop) {
         ArrayList<Warrior> enemies = getAllEnemyTroops(troop);
         if (enemies.isEmpty()) {
-            System.out.println(troop.team.toString() + " won");
+            System.out.println(troop.team.toString() + " won by killing all enemies");
             stopGame();
-            // TODO: Change UI when all enemies die
+            // TODO: Update UI when all enemies are dead
         }
 
         // TODO: consider randomizing warrior to attack
@@ -135,7 +135,6 @@ public class ActionPanel extends JPanel {
             for (Warrior enemy : enemies) {
                 if (troop.canSee(enemy)) {
                     warriorToNavigateTo = enemy;
-                    //System.out.println("Can See");
                     break;
                 }
             }
@@ -234,16 +233,47 @@ public class ActionPanel extends JPanel {
         return terrain.isInMapBounds(newTroopX, troopY) && !terrain.isMountain(newTroopX, troopY);
     }
 
+    private boolean isAtMapEnd(Warrior troop) {
+        switch (troop.team) {
+            case BLUE -> {
+                return troop.x == terrain.mapWidth - 1;
+            }
+            case RED -> {
+                return troop.x == 0;
+            }
+        }
+        return false;
+    }
+
     public void onTimerTick(ActionEvent e) {
+        boolean blueReachedMapEnd = false;
+        boolean redReachedMapEnd = false;
         ArrayList<Warrior> localTroops = new ArrayList<>(troops);
         if (localTroops.isEmpty()) {
-            System.out.println("It's a draw");
+            System.out.println("It's a draw. Everybody died");
             stopGame();
-            // TODO: Change UI when everybody dies
+            // TODO: Update UI when everybody is dead
         }
         for (Warrior troop : localTroops) {
             checkOpponent(troop);
+            switch (troop.team) {
+                case RED -> redReachedMapEnd = isAtMapEnd(troop);
+                case BLUE -> blueReachedMapEnd = isAtMapEnd(troop);
+            }
         }
+
+        // TODO: Update UI accordingly
+        if (blueReachedMapEnd && redReachedMapEnd) {
+            System.out.println("It's a draw. Both teams reached the end at the same time");
+            stopGame();
+        } else if (blueReachedMapEnd) {
+            System.out.println("BLUE won by reaching the end first");
+            stopGame();
+        } else if (redReachedMapEnd) {
+            System.out.println("RED won by reaching the end first");
+            stopGame();
+        }
+
         repaint();
     }
 }
