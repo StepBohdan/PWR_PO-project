@@ -74,7 +74,7 @@ public abstract class Warrior {
 class Swordsman extends Warrior {
     public Swordsman(final int x, final int y, final Team team) {
         // TODO: Add real values
-        super(69, 50, 7, 7, team, x, y);
+        super(69, 50, 7, 2, team, x, y);
     }
 }
 
@@ -88,6 +88,6 @@ class Archer extends Warrior {
 class Shieldman extends Warrior {
     public Shieldman(final int x, final int y, final Team team) {
         // TODO: Add real values
-        super(30, 80, 5, 3, team, x, y);
+        super(30, 80, 5, 1, team, x, y);
     }
 }

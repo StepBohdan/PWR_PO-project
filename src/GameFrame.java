@@ -37,9 +37,10 @@ public class GameFrame extends JFrame {
     GameFrame(final int maxTroops) {
         this.maxTroops = maxTroops;
 
-        ImageIcon icon = new ImageIcon("src/images/logo.png");
+        ImageIcon icon = new ImageIcon("src/images/logo2.png");
         this.setIconImage(icon.getImage());
         this.setTitle("Castle battle");
+        this.setLocationRelativeTo(null);
         this.setSize(1500, 800);
         this.setResizable(false);
         this.setLayout(new BorderLayout(10, 10)); // probably will be changed to GridBagLayout
