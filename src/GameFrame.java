@@ -69,6 +69,7 @@ public class GameFrame extends JFrame {
         selectedTeam = Warrior.Team.BLUE;
         final ImageIcon blueTeamIcon = new ImageIcon("src/images/blue.png");
         sideCheckBox.setIcon(blueTeamIcon);
+        sideCheckBox.setIcon(blueTeamIcon);
         final ImageIcon redTeamIcon = new ImageIcon("src/images/red.png");
         sideCheckBox.setSelectedIcon(redTeamIcon);
         gridBagConstraints.gridx = 0;
@@ -107,7 +108,7 @@ public class GameFrame extends JFrame {
         menuPanel.add(submitButton, gridBagConstraints);
 
         resetButton = new JButton("Reset");
-        resetButton.setEnabled(true);
+        resetButton.setEnabled(false);
         resetButton.addActionListener(this::onResetButtonClick);
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 5;
@@ -166,7 +167,7 @@ public class GameFrame extends JFrame {
     }
     private void onSubmitButtonClick(final ActionEvent event) {
         System.out.println("Submit button pressed");
-
+        resetButton.setEnabled(true);
         int troopsAmount;
         int rowNumber;
         try {
@@ -216,7 +217,7 @@ public class GameFrame extends JFrame {
     private void onResetButtonClick(final ActionEvent event) {
         // Clear the troops array
         troops.clear();
-
+        resetButton.setEnabled(false);
         // Reset configuration flags
         blueConfigured = false;
         redConfigured = false;
@@ -244,8 +245,10 @@ public class GameFrame extends JFrame {
         mainPanel.add(new JLabel(gameLogoIcon), BorderLayout.CENTER);
 
         // Optionally, reset the selected troop type and team side
+//        archerRadioButton.isSelected(true);
         selectedTroopType = TroopType.ARCHER;
         selectedTeam = Warrior.Team.BLUE;
+
     }
 
     private void styleButton(JButton button) {
