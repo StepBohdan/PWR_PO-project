@@ -6,6 +6,10 @@ public class Terrain {
         LAND, WATER, GRAVEL, MOUNTAIN
     }
 
+    private static int landPenalty = 1;
+    private static int gravelDefensePenalty = 2;
+    private static int waterAttackPenalty = 3;
+
     public final TerrainType[][] map;
     public final int mapWidth;
     public final int mapHeight;
@@ -19,6 +23,22 @@ public class Terrain {
         this.verticalSafeZoneSize = verticalSafeZoneSize;
         this.random = random;
         generateTerrain();
+    }
+
+    public int getAttackPenalty(int x, int y) {
+        if (isInMapBounds(x, y) && map[x][y] == TerrainType.WATER) {
+            return waterAttackPenalty;
+        } else {
+            return landPenalty;
+        }
+    }
+
+    public int getDefensePenalty(int x, int y) {
+        if (isInMapBounds(x, y) && map[x][y] == TerrainType.GRAVEL) {
+            return gravelDefensePenalty;
+        } else {
+            return landPenalty;
+        }
     }
 
     public boolean isInMapBounds(int x, int y) {

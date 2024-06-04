@@ -127,13 +127,14 @@ public class ActionPanel extends JPanel {
         }
 
         if (warriorToAttack != null) {
-            // TODO: Add attack/defence decrease due to terrain
-            final boolean attackResult = troop.attack(warriorToAttack, random);
+            final int attackPenalty = terrain.getAttackPenalty(troop.x, troop.y);
+            final int defensePenalty = terrain.getDefensePenalty(warriorToAttack.x, warriorToAttack.y);
+            final boolean attackResult = troop.attack(warriorToAttack, random, attackPenalty, defensePenalty);
             if (attackResult) {
-                System.out.println("Killed a " + warriorToAttack.team.toString() + " troop");
+                System.out.println(troop.team.toString() + " " + troop.getClass().getCanonicalName() + " killed a " + warriorToAttack.team.toString() + " " + warriorToAttack.getClass().getCanonicalName());
                 troops.remove(warriorToAttack);
             } else {
-                System.out.println("A " + warriorToAttack.team.toString() + " troop defended the attack");
+                System.out.println(warriorToAttack.team.toString() + " " + warriorToAttack.getClass().getCanonicalName() + " defended the attack of " + troop.team.toString() + " " + troop.getClass().getCanonicalName());
             }
         } else if (warriorToNavigateTo != null) {
             // TODO: Implement navigating to other troops
@@ -179,7 +180,7 @@ public class ActionPanel extends JPanel {
                     troop.moveDown();
                 } else {
                     troop.direction = Warrior.Direction.STUCK;
-                    System.out.println("A " + troop.team.toString() + " troop got stuck");
+                    System.out.println(troop.team.toString() + " " + troop.getClass().getCanonicalName() + " got stuck");
                 }
             }
             case DOWN -> {

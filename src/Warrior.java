@@ -11,7 +11,7 @@ public abstract class Warrior {
     }
 
     final int attackChance; // In percent, from 0 to 100
-    final int defenceChance; // In percent, from 0 to 100
+    final int defenseChance; // In percent, from 0 to 100
     final double visionRadius;
     final double attackRadius;
     final Team team;
@@ -19,9 +19,9 @@ public abstract class Warrior {
     int x;
     int y;
 
-    public Warrior(int attackChance, int defenceChance, int visionRadius, int attackRadius, Team team, int x, int y) {
+    public Warrior(int attackChance, int defenseChance, int visionRadius, int attackRadius, Team team, int x, int y) {
         this.attackChance = attackChance;
-        this.defenceChance = defenceChance;
+        this.defenseChance = defenseChance;
         this.visionRadius = visionRadius;
         this.attackRadius = attackRadius;
         this.direction = Direction.FORWARD;
@@ -48,11 +48,11 @@ public abstract class Warrior {
         y--;
     }
 
-    public boolean attack(Warrior enemy, Random random) {
+    public boolean attack(Warrior enemy, Random random, int attackPenalty, int defensePenalty) {
         final int attackValue = random.nextInt(100);
-        if (attackValue <= attackChance) {
+        if (attackValue <= (attackChance / attackPenalty)) {
             final int defenseValue = random.nextInt(100);
-            return defenseValue > enemy.defenceChance;
+            return defenseValue > (enemy.defenseChance / defensePenalty);
         }
         return false;
     }
