@@ -17,6 +17,8 @@ public class GameFrame extends JFrame {
     private final JTextField rowNumberTextField;
     private final JTextField troopsNumberTextField;
     private final JButton submitButton;
+
+    private final JButton resetButton;
     private final JButton startButton;
     private final JPanel mainPanel;
 
@@ -35,6 +37,9 @@ public class GameFrame extends JFrame {
     GameFrame(final int maxTroops) {
         this.maxTroops = maxTroops;
 
+        ImageIcon icon = new ImageIcon("src/images/logo.png");
+        this.setIconImage(icon.getImage());
+
         this.setSize(1500, 800);
         this.setResizable(false);
         this.setLayout(new BorderLayout(10, 10)); // probably will be changed to GridBagLayout
@@ -44,8 +49,9 @@ public class GameFrame extends JFrame {
         GridBagConstraints gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.insets = new Insets(5, 5, 5, 5);
 
+
         statusLabel = new JLabel("Configure both teams to start");
-        statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        statusLabel.setFont(new Font("Arial", Font.BOLD, 12));
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 3;
@@ -93,35 +99,40 @@ public class GameFrame extends JFrame {
         menuPanel.add(troopsTypePanel, gridBagConstraints);
 
         submitButton = new JButton("Submit");
-        styleButton(submitButton);
         submitButton.addActionListener(this::onSubmitButtonClick);
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 5;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.gridheight = 1;
+        gridBagConstraints.gridwidth = 1;
+        styleButton(submitButton);
         menuPanel.add(submitButton, gridBagConstraints);
 
+        resetButton = new JButton("Reset");
+        resetButton.setEnabled(true);
+        resetButton.addActionListener(this::onResetButtonClick);
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 1;
+        styleButton(resetButton);
+        menuPanel.add(resetButton, gridBagConstraints);
+
         startButton = new JButton("Start");
-        styleButton(startButton);
         startButton.setEnabled(false);
         startButton.addActionListener(this::onStartButtonClick);
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 5;
         gridBagConstraints.gridwidth = 1;
+        styleButton(startButton);
         menuPanel.add(startButton, gridBagConstraints);
 
-        // Настройка главной панели
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setPreferredSize(new Dimension(700, 700));
         final ImageIcon gameLogoIcon = new ImageIcon("src/images/frame.png");
         mainPanel.add(new JLabel(gameLogoIcon), BorderLayout.CENTER);
 
-        // Настройка комбобокса типа местности
         final JComboBox<String> terrainTypeComboBox = new JComboBox<>();
         terrainTypeComboBox.setPreferredSize(new Dimension(100, 100));
 
-        // Добавление компонентов в фрейм
         this.add(menuPanel, BorderLayout.LINE_START);
         this.add(mainPanel, BorderLayout.CENTER);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -149,7 +160,10 @@ public class GameFrame extends JFrame {
         troopsTypePanel.add(shieldmanRadioButton);
         return troopsTypePanel;
     }
-
+    private void clearTroopsInRow(final int rowNumber) {
+        int targetX = (selectedTeam == Warrior.Team.BLUE) ? rowNumber - 1 : mapWidth - rowNumber;
+        troops.removeIf(troop -> troop.x == targetX && troop.team == selectedTeam);
+    }
     private void onSubmitButtonClick(final ActionEvent event) {
         System.out.println("Submit button pressed");
 
@@ -176,6 +190,9 @@ public class GameFrame extends JFrame {
             return;
         }
 
+
+        clearTroopsInRow(rowNumber);
+
         mainPanel.removeAll();
         generateTroops(troopsAmount, rowNumber);
 
@@ -190,11 +207,56 @@ public class GameFrame extends JFrame {
         }
 
         if (blueConfigured && redConfigured) {
+            statusLabel.setFont(new Font("Arial", Font.BOLD, 12));
             statusLabel.setText("Game not started");
             startButton.setEnabled(true);
         }
     }
 
+    private void onResetButtonClick(final ActionEvent event) {
+        // Clear the troops array
+        troops.clear();
+
+        // Reset configuration flags
+        blueConfigured = false;
+        redConfigured = false;
+
+        // Clear the main panel
+        mainPanel.removeAll();
+        mainPanel.repaint();
+
+        // Clear text fields
+        rowNumberTextField.setText("");
+        troopsNumberTextField.setText("");
+
+        // Reset status label and disable start button
+        statusLabel.setText("Configure both teams to start");
+        startButton.setEnabled(false);
+
+        // Reset submit button if necessary
+        submitButton.setEnabled(true);
+
+        // If there's an ongoing action panel game, stop it
+        if (actionPanel != null) {
+            actionPanel.stopGame();
+        }
+        final ImageIcon gameLogoIcon = new ImageIcon("src/images/frame.png");
+        mainPanel.add(new JLabel(gameLogoIcon), BorderLayout.CENTER);
+
+        // Optionally, reset the selected troop type and team side
+        selectedTroopType = TroopType.ARCHER;
+        selectedTeam = Warrior.Team.BLUE;
+    }
+
+    private void styleButton(JButton button) {
+
+        button.setFont(new Font("Arial", Font.BOLD, 12));
+        button.setBackground(Color.DARK_GRAY);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        button.setPreferredSize(new Dimension(100, 30));
+    }
     private Void onGameEnd(final String message) {
         statusLabel.setText(message);
         System.out.println(message);
@@ -209,14 +271,11 @@ public class GameFrame extends JFrame {
         //mainPanel.revalidate();
         //mainPanel.repaint();
         actionPanel.startGame();
+        statusLabel.setFont(new Font("Arial", Font.BOLD, 12));
         statusLabel.setText("Game in progress");
         System.out.println("Game started");
     }
 
-    private void styleButton(final JButton button) {
-        button.setFont(new Font("Arial", Font.BOLD, 12));
-        button.setPreferredSize(new Dimension(100, 30));
-    }
 
     public void generateTroops(final int amount, final int rowNumber) {
         final int step = mapHeight / amount;

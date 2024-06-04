@@ -1,3 +1,4 @@
+import java.awt.event.ActionEvent;
 import java.util.Random;
 
 public class Terrain {
@@ -87,6 +88,8 @@ public class Terrain {
             currentY++;
         }
     }
+
+
 
     private void generateTerrainFeature(final TerrainType terrainType, final int amount, final int maxRadius) {
         for (int index = 0; index < amount; index++) {

@@ -111,7 +111,7 @@ public class ActionPanel extends JPanel {
         timer.start();
     }
 
-    private void stopGame() {
+    public void stopGame() {
         if (timer != null && timer.isRunning()) {
             timer.stop();
             timer = null;
