@@ -153,8 +153,7 @@ public class ActionPanel extends JPanel {
                 System.out.println(warriorToAttack.team.toString() + " " + warriorToAttack.getClass().getCanonicalName() + " defended the attack of " + troop.team.toString() + " " + troop.getClass().getCanonicalName());
             }
         } else if (warriorToNavigateTo != null) {
-            // TODO: Implement navigating to other troops
-            advanceTroop(troop);
+            moveTowardsAnEnemy(troop, warriorToNavigateTo);
         } else {
             advanceTroop(troop);
         }
@@ -168,6 +167,23 @@ public class ActionPanel extends JPanel {
             }
         }
         return enemyTroops;
+    }
+
+    private void moveTowardsAnEnemy(Warrior troop, Warrior enemy) {
+        if (troop.attackRadius <= Math.abs(troop.y - enemy.y)) {
+            if (troop.y > enemy.y) {
+                if (canGoDown(troop)) {
+                    troop.moveDown();
+                    return;
+                }
+            } else {
+                if (canGoUp(troop)) {
+                    troop.moveUp();
+                    return;
+                }
+            }
+        }
+        advanceTroop(troop);
     }
 
     private void advanceTroop(Warrior troop) {
