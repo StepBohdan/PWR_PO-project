@@ -1,29 +1,60 @@
-
 import java.util.Random;
 
-
 public class Terrain {
-     static final int SIZE = 100;
-    private static final int SIDE_BORDER_WIDTH = 5;
-
-    // Using enums for better readability (but still outputting numbers)
-    private enum TerrainType {
-        LAND, WATER, GRAVEL, MOUNTAIN // 0,1,2,3 according
+    // Using enums for better readability
+    public enum TerrainType {
+        LAND, WATER, GRAVEL, MOUNTAIN
     }
-    private final TerrainType[][] map;
+
+    // TODO: Add real values
+    private static final int landPenalty = 1;
+    private static final int gravelDefensePenalty = 2;
+    private static final int waterAttackPenalty = 3;
+
+    public final TerrainType[][] map;
+    public final int mapWidth;
+    public final int mapHeight;
+    private final int verticalSafeZoneSize;
     private final Random random;
 
-    public Terrain() {
-        map = new TerrainType[SIZE][SIZE];
-        random = new Random(); // Consider making the seed configurable for testing
+    public Terrain(final int mapWidth, final int mapHeight, final int verticalSafeZoneSize, final Random random) {
+        map = new TerrainType[mapWidth][mapHeight];
+        this.mapWidth = mapWidth;
+        this.mapHeight = mapHeight;
+        this.verticalSafeZoneSize = verticalSafeZoneSize;
+        this.random = random;
         generateTerrain();
     }
 
+    public int getAttackPenalty(final int x, final int y) {
+        if (isInMapBounds(x, y) && map[x][y] == TerrainType.WATER) {
+            return waterAttackPenalty;
+        } else {
+            return landPenalty;
+        }
+    }
+
+    public int getDefensePenalty(final int x, final int y) {
+        if (isInMapBounds(x, y) && map[x][y] == TerrainType.GRAVEL) {
+            return gravelDefensePenalty;
+        } else {
+            return landPenalty;
+        }
+    }
+
+    public boolean isInMapBounds(final int x, final int y) {
+        return x >= 0 && y >= 0 && x < mapWidth && y < mapHeight;
+    }
+
+    public boolean isMountain(final int x, final int y) {
+        return map[x][y] == TerrainType.MOUNTAIN;
+    }
+
     private void generateTerrain() {
-        // Fill with land, but maybe consider a more interesting starting point
-        for (int j = 0; j < SIZE; j++) {
-            for (int i = 0; i < SIZE; i++) {
-                map[j][i] = TerrainType.LAND;
+        // Fill with land, TODO: maybe consider a more interesting starting point
+        for (int x = 0; x < mapWidth; x++) {
+            for (int y = 0; y < mapHeight; y++) {
+                map[x][y] = TerrainType.LAND;
             }
         }
 
@@ -32,37 +63,42 @@ public class Terrain {
         generateRiver();
     }
 
+    private void generateMountains() {
+        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(10) + 3, 6);
+    }
+
+    private void generateGravel() {
+        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(10) + 4, 1);
+    }
+
     private void generateRiver() {
-
-
-        int currentX = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
+        int currentX = random.nextInt(mapWidth - 2 * verticalSafeZoneSize) + verticalSafeZoneSize;
         int currentY = 0; // Start at the very top
 
-        while (currentY < SIZE) { // Go all the way to the bottom
+        while (currentY < mapHeight) { // Go all the way to the bottom
             map[currentX][currentY] = TerrainType.WATER;
 
-            int direction = random.nextInt(4);
-            if (direction == 0 && currentX > SIDE_BORDER_WIDTH) {
+            final int direction = random.nextInt(4);
+            if (direction == 0 && currentX > verticalSafeZoneSize) {
                 currentX--;
-            } else if (direction == 1 && currentX < SIZE - SIDE_BORDER_WIDTH - 1) {
+            } else if (direction == 1 && currentX < mapWidth - verticalSafeZoneSize - 1) {
                 currentX++;
             }
             currentY++;
         }
     }
 
-
-    private void generateTerrainFeature(TerrainType terrainType, int numFeatures, int maxRadius) {
-        for (int i = 0; i < numFeatures; i++) {
-            int y = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
-            int x = random.nextInt(SIZE); // No border restriction for Y (top to bottom)
-            int radius = random.nextInt(maxRadius) + 3;
+    private void generateTerrainFeature(final TerrainType terrainType, final int amount, final int maxRadius) {
+        for (int index = 0; index < amount; index++) {
+            final int x = random.nextInt(mapWidth - 2 * verticalSafeZoneSize) + verticalSafeZoneSize;
+            final int y = random.nextInt(mapHeight); // No border restriction for Y (top to bottom)
+            final int radius = random.nextInt(maxRadius) + 3;
 
             // Randomly adjust the radius to create non-circular shapes
             for (int j = -radius; j <= radius; j++) {
                 for (int k = -radius; k <= radius; k++) {
-                    int newX = x + j;
-                    int newY = y + k;
+                    final int newY = y + j;
+                    final int newX = x + k;
                     int distance = (int) Math.sqrt(j * j + k * k);
 
                     // Randomly adjust distance to create irregularity
@@ -70,46 +106,16 @@ public class Terrain {
                         distance += random.nextInt(2) - 1;
                     }
 
-                    if (newX >= SIDE_BORDER_WIDTH && newX < SIZE - SIDE_BORDER_WIDTH &&
-                            newY >= 0 && newY < SIZE && distance <= radius) {
+                    if (newX >= verticalSafeZoneSize &&
+                            newX < mapWidth - verticalSafeZoneSize &&
+                            newY >= 0 &&
+                            newY < mapHeight &&
+                            distance <= radius
+                    ) {
                         map[newX][newY] = terrainType;
                     }
                 }
             }
-        }
-    }
-
-    private void generateMountains() {
-        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(10) + 3, 6);
-    }
-
-    private void generateGravel() {
-
-        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(10) + 4, 1);
-
-        }
-
-    public int[][] getMap() {
-        // Convert TerrainType to integer values (0, 1, 2, 3)
-        int[][] intMap = new int[SIZE][SIZE];
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                intMap[i][j] = map[i][j].ordinal(); // Get the ordinal value of the enum
-            }
-        }
-        return intMap;
-    }
-
-    // Main method for testing
-    public static void main(String[] args) {
-        Terrain terrain = new Terrain();
-        int[][] generatedMap = terrain.getMap();
-
-        for (int i = 0; i < SIZE; i++) {
-            for (int j = 0; j < SIZE; j++) {
-                System.out.print(generatedMap[i][j] + " ");
-            }
-            System.out.println();
         }
     }
 }

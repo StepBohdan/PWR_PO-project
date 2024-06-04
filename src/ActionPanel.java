@@ -1,37 +1,40 @@
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.function.Function;
 
-public class ActionPanel extends JPanel implements ActionListener {
-    int[][] generatedMap;
-    int[][] originGenMap;
+public class ActionPanel extends JPanel {
+    private static final int pixelSize = 7;
+
+    private final Terrain terrain;
+    private final ArrayList<Warrior> troops;
+    private final Random random;
+    private final Function<String, Void> onGameEnd;
+
     private BufferedImage blueArcherImage;
     private BufferedImage blueSwordsmanImage;
     private BufferedImage blueShieldmanImage;
     private BufferedImage redArcherImage;
     private BufferedImage redSwordsmanImage;
     private BufferedImage redShieldmanImage;
-    private final int mapLength;
-    ArrayList<ArrayList<Integer>> warriorLocation = new ArrayList<>();
-    Timer timer;
 
-    public ActionPanel(int[][] generatedMap) {
-        this.generatedMap = generatedMap;
-        originGenMap = generatedMap.clone();
-        this.mapLength = generatedMap.length;
+    private Timer timer;
+
+    public ActionPanel(final Terrain terrain, final ArrayList<Warrior> troops, final Random random, final Function<String, Void> onGameEnd) {
+        this.terrain = terrain;
+        this.troops = troops;
+        this.random = random;
+        this.onGameEnd = onGameEnd;
         this.setFocusable(false);
-        this.setPreferredSize(new Dimension(700, 700));
-        this.setVisible(true);
+        //this.setPreferredSize(new Dimension(700, 700));
+        //this.setVisible(true);
         loadImages();
-        create_war_loc();
     }
 
     private void loadImages() {
@@ -47,193 +50,247 @@ public class ActionPanel extends JPanel implements ActionListener {
         }
     }
 
-
     @Override
-    public void paintComponent(Graphics g) {
+    public void paintComponent(final Graphics g) {
         super.paintComponent(g);
         draw(g);
     }
 
-    public void draw(Graphics g) {
-        System.out.println("dick");
+    private void draw(final Graphics g) {
         Graphics2D g2D = (Graphics2D) g;
-        int size = 7;
-        int mapWidth = 100;
-        int mapHeight = 100;
 
-        // Определяем размер и положение серой области
-        int grayWidth = 30 * size;
-        int grayHeight = 30 * size;
-        int grayX = (mapWidth * size - grayWidth) / 2;
-        int grayY = (mapHeight * size - grayHeight) / 2;
-
-        for (int i = 0; i < mapWidth; i++) {
-            for (int j = 0; j < mapHeight; j++) {
-                // Проверяем, находится ли точка в серой области
-                if (i * size >= grayX && i * size < grayX + grayWidth &&
-                        j * size >= grayY && j * size < grayHeight) {
-                    // Если точка в серой области, рисуем её серым цветом
-                    g2D.setPaint(Color.GRAY);
-                } else {
-                    // Иначе, рисуем её соответствующим цветом из generatedMap
-                    switch (generatedMap[i][j]) {
-                        case 0:
-                            g2D.setPaint(new Color(28, 107, 1));
-                            break;
-                        case 1:
-                            g2D.setPaint(Color.BLUE);
-                            break;
-                        case 2:
-                            g2D.setPaint(Color.GRAY);
-                            break;
-                        case 3:
-                            g2D.setPaint(Color.DARK_GRAY);
-                            break;
-                        default:
-                            g2D.setPaint(new Color(28, 107, 1));
-                            break;
-                    }
+        for (int x = 0; x < terrain.mapWidth; x++) {
+            for (int y = 0; y < terrain.mapHeight; y++) {
+                switch (terrain.map[x][y]) {
+                    case LAND -> g2D.setPaint(new Color(28, 107, 1));
+                    case WATER -> g2D.setPaint(Color.BLUE);
+                    case GRAVEL -> g2D.setPaint(Color.GRAY);
+                    case MOUNTAIN -> g2D.setPaint(Color.DARK_GRAY);
                 }
 
                 // Рисуем фон
-                g2D.fillRect(i * size, j * size, size, size);
-
-                // Рисуем изображение, если необходимо
-                switch (generatedMap[i][j]) {
-                    case 4:
-                        g2D.drawImage(blueSwordsmanImage, i * size, j * size, size, size, null);
-                        break;
-                    case 5:
-                        g2D.drawImage(blueArcherImage, i * size, j * size, size, size, null);
-                        break;
-                    case 6:
-                        g2D.drawImage(blueShieldmanImage, i * size, j * size, size, size, null);
-                        break;
-                    case 7:
-                        g2D.drawImage(redArcherImage, i * size, j * size, size, size, null);
-                        break;
-                    case 8:
-                        g2D.drawImage(redSwordsmanImage, i * size, j * size, size, size, null);
-                        break;
-                    case 9:
-                        g2D.drawImage(redShieldmanImage, i * size, j * size, size, size, null);
-                        break;
-                }
+                g2D.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
             }
         }
-        System.out.println("dick map");
-    }
-
-    public void create_war_loc() {
-//      generates warriorLocation array
-        ArrayList<Integer> temp = new ArrayList<>();
-        for(int i = 0;i < mapLength; i++){
-            for(int j = 0;j < mapLength; j++){ // better method it to have a list of cords of warriors
-                if(generatedMap[i][j] > 3){ // so you dont check for them every time
-                    temp.add(i);
-                    temp.add(j);
-                    warriorLocation.add((ArrayList<Integer>) temp.clone());
-                    System.out.println("Added " + temp);
-                    temp.clear();
+        // Рисуем воинов
+        for (final Warrior troop : troops) {
+            final int troopImageX = troop.x * pixelSize;
+            final int troopImageY = troop.y * pixelSize;
+            switch (troop.team) {
+                case RED -> {
+                    switch (troop) {
+                        case Archer _ ->
+                                g2D.drawImage(redArcherImage, troopImageX, troopImageY, pixelSize, pixelSize, null);
+                        case Swordsman _ ->
+                                g2D.drawImage(redSwordsmanImage, troopImageX, troopImageY, pixelSize, pixelSize, null);
+                        case Shieldman _ ->
+                                g2D.drawImage(redShieldmanImage, troopImageX, troopImageY, pixelSize, pixelSize, null);
+                        default -> {
+                        }
+                    }
                 }
-            }
-        }
-        for(Object e:warriorLocation){
-            System.out.println(e.toString());
-        }
-        System.out.println("dick"); //test
-    }
-
-    public void start_game() {
-
-        timer = new Timer(300, this);
-        timer.start();
-    }
-    private int range = 5;
-
-    private void check_opponent(int ii, int jj, int ind) {
-        for(int i = Math.max(0, ii - range); i < Math.min(mapLength, ii + range); i++){
-            for(int j = Math.max(0, jj - range); j < Math.min(mapLength, jj + range); j++) {
-                if(generatedMap[i][j] > 3){
-                    if(getUnitSide(ii,jj) != getUnitSide(i,j)){ // check if opposite teams
-                        actionOpp(ii,jj,ind,i,j);
-                        break;
+                case BLUE -> {
+                    switch (troop) {
+                        case Archer _ ->
+                                g2D.drawImage(blueArcherImage, troopImageX, troopImageY, pixelSize, pixelSize, null);
+                        case Swordsman _ ->
+                                g2D.drawImage(blueSwordsmanImage, troopImageX, troopImageY, pixelSize, pixelSize, null);
+                        case Shieldman _ ->
+                                g2D.drawImage(blueShieldmanImage, troopImageX, troopImageY, pixelSize, pixelSize, null);
+                        default -> {
+                        }
                     }
                 }
             }
         }
-        moveCenter(ii,jj,ind);
     }
-    private int getUnitSide(int i, int j){
-        if(generatedMap[i][j] > 3 && generatedMap[i][j] < 7){
-            return 0;
-        } else if(generatedMap[i][j] > 6 && generatedMap[i][j] < 10){
-            return 1;
-        } else{
-            System.err.println("at ActionPanel.getUnitSide: Not unit checked");
-            System.err.printf("%d %d %d\n",generatedMap[i][j], i, j);// should not invoke
+
+    public void startGame() {
+        // TODO: Add configurable delay
+        timer = new Timer(100, this::onTimerTick);
+        timer.start();
+    }
+
+    private void stopGame() {
+        if (timer != null && timer.isRunning()) {
+            timer.stop();
+            timer = null;
         }
-        System.err.println("at ActionPanel.getUnitSide: Not unit checked");
-        System.err.printf("%d %d %d\n",generatedMap[i][j], i, j);// should not invoke
-        return -1;
     }
 
-    private void moveCenter(int i,int j,int ind) {
-        if(generatedMap[i][j] > 3 && generatedMap[i][j] < 7){
-            generatedMap[i + 1][j] = generatedMap[i][j];
-            setNewCords(i + 1, j, ind);
-        } else {
-            generatedMap[i - 1][j] = generatedMap[i][j];
-            setNewCords(i - 1, j, ind);
+    private void checkOpponent(final Warrior troop) {
+        final ArrayList<Warrior> enemies = getAllEnemyTroops(troop);
+        if (enemies.isEmpty()) {
+            onGameEnd.apply(troop.team.toString() + " won by killing all enemies");
+            stopGame();
         }
-        generatedMap[i][j] = originGenMap[i][j];
 
-    }
-    private void setNewCords(int i, int j, int ind){
-        ArrayList<Integer> temp = new ArrayList<>();
-        temp.add(i);
-        temp.add(j);
-        System.out.println(warriorLocation.get(ind) +" "+ temp);
-        warriorLocation.set(ind, (ArrayList<Integer>) temp.clone());
-        temp.clear();
-    }
-
-    private void actionOpp(int ii,int jj, int ind, int i, int j){
-        if(Point2D.distance(ii,jj,i,j) <= range){
-            attack();
-        } else {
-            if(ii < i){
-                generatedMap[ii + 1][jj] = generatedMap[ii][jj];
-                generatedMap[ii][jj] = originGenMap[ii][jj];
-                setNewCords(ii + 1, j, ind);
-            } else if (ii > i){
-                generatedMap[ii - 1][jj] = generatedMap[ii][jj];
-                generatedMap[ii][jj] = originGenMap[ii][jj];
-                setNewCords(ii - 1, j, ind);
-            }
-            if(jj < j){
-                generatedMap[ii][jj + 1] = generatedMap[ii][jj];
-                generatedMap[ii][jj] = originGenMap[ii][jj];
-                setNewCords(ii, jj + 1, ind);
-            } else if (jj > j){
-                generatedMap[ii][jj - 1] = generatedMap[ii][jj];
-                generatedMap[ii][jj] = originGenMap[ii][jj];
-                setNewCords(ii, jj - 1, ind);
+        // TODO: consider randomizing warrior to attack
+        Warrior warriorToAttack = null;
+        Warrior warriorToNavigateTo = null;
+        for (final Warrior enemy : enemies) {
+            if (troop.canAttack(enemy)) {
+                warriorToAttack = enemy;
+                break;
             }
         }
-    }
-
-    private void attack() {
-        System.out.println("dick attacked");
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        int i = 0;
-        for(ArrayList<Integer> a:warriorLocation){
-            check_opponent(a.getFirst(),a.getLast(), i);
-            i++;
+        if (warriorToAttack == null) {
+            for (final Warrior enemy : enemies) {
+                if (troop.canSee(enemy)) {
+                    warriorToNavigateTo = enemy;
+                    break;
+                }
+            }
         }
+
+        if (warriorToAttack != null) {
+            final int attackPenalty = terrain.getAttackPenalty(troop.x, troop.y);
+            final int defensePenalty = terrain.getDefensePenalty(warriorToAttack.x, warriorToAttack.y);
+            final boolean attackResult = troop.attack(warriorToAttack, random, attackPenalty, defensePenalty);
+            if (attackResult) {
+                System.out.println(troop.team.toString() + " " + troop.getClass().getCanonicalName() + " killed a " + warriorToAttack.team.toString() + " " + warriorToAttack.getClass().getCanonicalName());
+                troops.remove(warriorToAttack);
+            } else {
+                System.out.println(warriorToAttack.team.toString() + " " + warriorToAttack.getClass().getCanonicalName() + " defended the attack of " + troop.team.toString() + " " + troop.getClass().getCanonicalName());
+            }
+        } else if (warriorToNavigateTo != null) {
+            moveTowardsAnEnemy(troop, warriorToNavigateTo);
+        } else {
+            advanceTroop(troop);
+        }
+    }
+
+    private ArrayList<Warrior> getAllEnemyTroops(final Warrior troop) {
+        final ArrayList<Warrior> enemyTroops = new ArrayList<>();
+        for (final Warrior warrior : troops) {
+            if (warrior.team != troop.team) {
+                enemyTroops.add(warrior);
+            }
+        }
+        return enemyTroops;
+    }
+
+    private void moveTowardsAnEnemy(final Warrior troop, final Warrior enemy) {
+        if (troop.attackRadius <= Math.abs(troop.y - enemy.y)) {
+            if (troop.y > enemy.y) {
+                if (canGoDown(troop)) {
+                    troop.moveDown();
+                    return;
+                }
+            } else {
+                if (canGoUp(troop)) {
+                    troop.moveUp();
+                    return;
+                }
+            }
+        }
+        advanceTroop(troop);
+    }
+
+    private void advanceTroop(final Warrior troop) {
+        if (troop.direction != Warrior.Direction.STUCK) {
+            if (canGoForward(troop)) {
+                troop.direction = Warrior.Direction.FORWARD;
+                troop.moveForward();
+            } else {
+                moveVertically(troop);
+            }
+        }
+    }
+
+    private void moveVertically(final Warrior troop) {
+        if (troop.direction == Warrior.Direction.FORWARD) {
+            final boolean isUp = random.nextBoolean();
+            troop.direction = isUp ? Warrior.Direction.UP : Warrior.Direction.DOWN;
+        }
+
+        switch (troop.direction) {
+            case UP -> {
+                if (canGoUp(troop)) {
+                    troop.moveUp();
+                } else if (!canGoUp(troop) && canGoDown(troop)) {
+                    troop.direction = Warrior.Direction.DOWN;
+                    troop.moveDown();
+                } else {
+                    troop.direction = Warrior.Direction.STUCK;
+                    System.out.println(troop.team.toString() + " " + troop.getClass().getCanonicalName() + " got stuck");
+                }
+            }
+            case DOWN -> {
+                if (canGoDown(troop)) {
+                    troop.moveDown();
+                } else if (!canGoDown(troop) && canGoUp(troop)) {
+                    troop.direction = Warrior.Direction.UP;
+                    troop.moveUp();
+                } else {
+                    troop.direction = Warrior.Direction.STUCK;
+                }
+            }
+        }
+    }
+
+    private boolean canGoUp(final Warrior troop) {
+        final int troopX = troop.x;
+        final int newTroopY = troop.y + 1;
+        return terrain.isInMapBounds(troopX, newTroopY) && !terrain.isMountain(troopX, newTroopY);
+    }
+
+    private boolean canGoDown(final Warrior troop) {
+        final int troopX = troop.x;
+        final int newTroopY = troop.y - 1;
+        return terrain.isInMapBounds(troopX, newTroopY) && !terrain.isMountain(troopX, newTroopY);
+    }
+
+    private boolean canGoForward(final Warrior troop) {
+        final int troopX = troop.x;
+        int newTroopX = troopX;
+        switch (troop.team) {
+            case BLUE -> newTroopX = troopX + 1;
+            case RED -> newTroopX = troopX - 1;
+        }
+        final int troopY = troop.y;
+        return terrain.isInMapBounds(newTroopX, troopY) && !terrain.isMountain(newTroopX, troopY);
+    }
+
+    private boolean isAtMapEnd(final Warrior troop) {
+        switch (troop.team) {
+            case BLUE -> {
+                return troop.x == terrain.mapWidth - 1;
+            }
+            case RED -> {
+                return troop.x == 0;
+            }
+        }
+        return false;
+    }
+
+    public void onTimerTick(final ActionEvent e) {
+        boolean blueReachedMapEnd = false;
+        boolean redReachedMapEnd = false;
+        final ArrayList<Warrior> localTroops = new ArrayList<>(troops);
+        if (localTroops.isEmpty()) {
+            onGameEnd.apply("It's a draw. Everybody died");
+            stopGame();
+        }
+        for (final Warrior troop : localTroops) {
+            checkOpponent(troop);
+            switch (troop.team) {
+                case RED -> redReachedMapEnd = isAtMapEnd(troop);
+                case BLUE -> blueReachedMapEnd = isAtMapEnd(troop);
+            }
+        }
+
+        if (blueReachedMapEnd && redReachedMapEnd) {
+            onGameEnd.apply("It's a draw. Both teams reached the end at the same time");
+            stopGame();
+        } else if (blueReachedMapEnd) {
+            onGameEnd.apply("BLUE won by reaching the end first");
+            stopGame();
+        } else if (redReachedMapEnd) {
+            onGameEnd.apply("RED won by reaching the end first");
+            stopGame();
+        }
+
         repaint();
     }
 }

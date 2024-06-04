@@ -1,136 +1,128 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Random;
 
-public class GameFrame extends JFrame implements ActionListener {
-    JCheckBox side;
-    ImageIcon trueCheck = new ImageIcon("src/images/red.png");
-    ImageIcon falseCheck = new ImageIcon("src/images/blue.png");
-    ImageIcon gameLogo = new ImageIcon("src/images/frame.png");
-    JLabel troopsNumberLabel;
-    JLabel rowNumberLabel;
-    JTextField rowNumber;
-    JTextField troopsNumber;
-    ButtonGroup troopsType;
-    JPanel troopsTypePanel;
-    JRadioButton archer;
-    JRadioButton swordsman;
-    JRadioButton shieldman;
+public class GameFrame extends JFrame {
+    private static final int mapHeight = 100;
+    private static final int mapWidth = 100;
+    private static final int maxTroopRows = 5;
+    private static final Random random = new Random(); // TODO: Consider making the seed configurable for testing
+    private static final Terrain terrain = new Terrain(mapWidth, mapHeight, maxTroopRows, random);
 
-    JButton submit;
-    JButton start;
+    private final int maxTroops;
 
-    JPanel mainPanel;
-    JPanel menu;
-    JComboBox<String> terrainType;
-    int max_troops;
-    int rows;
-    boolean left_side = false;
-    boolean right_side = false;
-    private boolean leftSelected = false;
-    private boolean rightSelected = false;
+    private final JLabel statusLabel;
+    private final JTextField rowNumberTextField;
+    private final JTextField troopsNumberTextField;
+    private final JButton submitButton;
+    private final JButton startButton;
+    private final JPanel mainPanel;
 
-    static Terrain terrain = new Terrain();
-    static int[][] generatedMap = terrain.getMap();
-    static final int SIZE = generatedMap.length;
+    private enum TroopType {
+        ARCHER, SWORDSMAN, SHIELDMAN
+    }
 
-    ActionPanel actionPanel;
+    private TroopType selectedTroopType;
+    private Warrior.Team selectedTeam;
+    private boolean blueConfigured;
+    private boolean redConfigured;
 
-    GameFrame(int max_troops, int rows) {
-        this.max_troops = max_troops;
-        this.rows = rows;
+    private ActionPanel actionPanel;
+    private final ArrayList<Warrior> troops = new ArrayList<>();
+
+    GameFrame(final int maxTroops) {
+        this.maxTroops = maxTroops;
+
         this.setSize(1500, 800);
+        this.setResizable(false);
         this.setLayout(new BorderLayout(10, 10)); // probably will be changed to GridBagLayout
 
-        menu = new JPanel();
-        menu.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+        final JPanel menuPanel = new JPanel();
+        menuPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
+        gridBagConstraints.insets = new Insets(5, 5, 5, 5);
 
-        JLabel menuLabel = new JLabel("MENU");
+        statusLabel = new JLabel("Configure both teams to start");
+        statusLabel.setFont(new Font("Arial", Font.PLAIN, 12));
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = 3;
+        menuPanel.add(statusLabel, gridBagConstraints);
+
+        final JLabel menuLabel = new JLabel("MENU");
         menuLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 3;
-        menu.add(menuLabel, gbc);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 3;
+        menuPanel.add(menuLabel, gridBagConstraints);
 
-        side = new JCheckBox("Select a side");
-        side.setFocusable(false);
-        side.setIcon(falseCheck);
-        side.setSelectedIcon(trueCheck);
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        menu.add(side, gbc);
+        final JCheckBox sideCheckBox = new JCheckBox("Select a side");
+        sideCheckBox.addActionListener(_ -> selectedTeam = sideCheckBox.isSelected() ? Warrior.Team.RED : Warrior.Team.BLUE);
+        selectedTeam = Warrior.Team.BLUE;
+        final ImageIcon blueTeamIcon = new ImageIcon("src/images/blue.png");
+        sideCheckBox.setIcon(blueTeamIcon);
+        final ImageIcon redTeamIcon = new ImageIcon("src/images/red.png");
+        sideCheckBox.setSelectedIcon(redTeamIcon);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 1;
+        menuPanel.add(sideCheckBox, gridBagConstraints);
 
-        troopsNumberLabel = new JLabel("Troops amount (max: 50): ");
-        troopsNumber = new JTextField(8);
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        menu.add(troopsNumberLabel, gbc);
-        gbc.gridx = 1;
-        menu.add(troopsNumber, gbc);
+        final JLabel troopsNumberLabel = new JLabel("Troops amount (max: " + maxTroops + "): ");
+        troopsNumberTextField = new JTextField(8);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        menuPanel.add(troopsNumberLabel, gridBagConstraints);
+        gridBagConstraints.gridx = 1;
+        menuPanel.add(troopsNumberTextField, gridBagConstraints);
 
-        rowNumberLabel = new JLabel("Row number (max: 5): ");
-        rowNumber = new JTextField(8);
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        menu.add(rowNumberLabel, gbc);
-        gbc.gridx = 1;
-        menu.add(rowNumber, gbc);
+        final JLabel rowNumberLabel = new JLabel("Row number (max: " + maxTroopRows + "): ");
+        rowNumberTextField = new JTextField(8);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        menuPanel.add(rowNumberLabel, gridBagConstraints);
+        gridBagConstraints.gridx = 1;
+        menuPanel.add(rowNumberTextField, gridBagConstraints);
 
-        troopsType = new ButtonGroup();
-        troopsTypePanel = new JPanel();
-        troopsTypePanel.setLayout(new GridLayout(3, 1));
-        archer = new JRadioButton("Archer", true);
-        swordsman = new JRadioButton("Swordsman");
-        shieldman = new JRadioButton("Shieldman");
-        archer.addActionListener(this);
-        swordsman.addActionListener(this);
-        shieldman.addActionListener(this);
-        troopsType.add(archer);
-        troopsType.add(swordsman);
-        troopsType.add(shieldman);
-        troopsTypePanel.add(archer);
-        troopsTypePanel.add(swordsman);
-        troopsTypePanel.add(shieldman);
-        gbc.gridx = 2;
-        gbc.gridy = 2;
-        gbc.gridheight = 2;
-        menu.add(troopsTypePanel, gbc);
+        final JPanel troopsTypePanel = getTroopsTypePanel(this);
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridheight = 2;
+        menuPanel.add(troopsTypePanel, gridBagConstraints);
 
-        submit = new JButton("Submit");
-        styleButton(submit);
-        submit.addActionListener(this);
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        gbc.gridwidth = 2;
-        gbc.gridheight = 1;
-        menu.add(submit, gbc);
+        submitButton = new JButton("Submit");
+        styleButton(submitButton);
+        submitButton.addActionListener(this::onSubmitButtonClick);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridheight = 1;
+        menuPanel.add(submitButton, gridBagConstraints);
 
-        start = new JButton("Start");
-        styleButton(start);
-        start.setEnabled(false);
-        start.addActionListener(this);
-        gbc.gridx = 2;
-        gbc.gridy = 4;
-        gbc.gridwidth = 1;
-        menu.add(start, gbc);
+        startButton = new JButton("Start");
+        styleButton(startButton);
+        startButton.setEnabled(false);
+        startButton.addActionListener(this::onStartButtonClick);
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = 1;
+        menuPanel.add(startButton, gridBagConstraints);
 
         // Настройка главной панели
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setPreferredSize(new Dimension(700, 700));
-        mainPanel.add(new JLabel(gameLogo), BorderLayout.CENTER);
+        final ImageIcon gameLogoIcon = new ImageIcon("src/images/frame.png");
+        mainPanel.add(new JLabel(gameLogoIcon), BorderLayout.CENTER);
 
         // Настройка комбобокса типа местности
-        terrainType = new JComboBox<>();
-        terrainType.setPreferredSize(new Dimension(100, 100));
+        final JComboBox<String> terrainTypeComboBox = new JComboBox<>();
+        terrainTypeComboBox.setPreferredSize(new Dimension(100, 100));
 
         // Добавление компонентов в фрейм
-        this.add(menu, BorderLayout.LINE_START);
+        this.add(menuPanel, BorderLayout.LINE_START);
         this.add(mainPanel, BorderLayout.CENTER);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
@@ -138,131 +130,114 @@ public class GameFrame extends JFrame implements ActionListener {
         this.setVisible(true);
     }
 
-    private void styleButton(JButton button) {
+    private static JPanel getTroopsTypePanel(final GameFrame gameFrame) {
+        final ButtonGroup troopsTypeButtonGroup = new ButtonGroup();
+        final JPanel troopsTypePanel = new JPanel();
+        troopsTypePanel.setLayout(new GridLayout(3, 1));
+        final JRadioButton archerRadioButton = new JRadioButton("Archer", true);
+        gameFrame.selectedTroopType = TroopType.ARCHER;
+        final JRadioButton swordsmanRadioButton = new JRadioButton("Swordsman");
+        final JRadioButton shieldmanRadioButton = new JRadioButton("Shieldman");
+        archerRadioButton.addActionListener(_ -> gameFrame.selectedTroopType = TroopType.ARCHER);
+        swordsmanRadioButton.addActionListener(_ -> gameFrame.selectedTroopType = TroopType.SWORDSMAN);
+        shieldmanRadioButton.addActionListener(_ -> gameFrame.selectedTroopType = TroopType.SHIELDMAN);
+        troopsTypeButtonGroup.add(archerRadioButton);
+        troopsTypeButtonGroup.add(swordsmanRadioButton);
+        troopsTypeButtonGroup.add(shieldmanRadioButton);
+        troopsTypePanel.add(archerRadioButton);
+        troopsTypePanel.add(swordsmanRadioButton);
+        troopsTypePanel.add(shieldmanRadioButton);
+        return troopsTypePanel;
+    }
+
+    private void onSubmitButtonClick(final ActionEvent event) {
+        System.out.println("Submit button pressed");
+
+        int troopsAmount;
+        int rowNumber;
+        try {
+            troopsAmount = Integer.parseInt(troopsNumberTextField.getText());
+        } catch (NumberFormatException e) {
+            troopsNumberTextField.setText("");
+            return;
+        }
+        try {
+            rowNumber = Integer.parseInt(rowNumberTextField.getText());
+        } catch (NumberFormatException e) {
+            rowNumberTextField.setText("");
+            return;
+        }
+        if (troopsAmount < 0 || troopsAmount > maxTroops) {
+            troopsNumberTextField.setText("");
+            return;
+        }
+        if (rowNumber < 0 || rowNumber > maxTroopRows) {
+            rowNumberTextField.setText("");
+            return;
+        }
+
+        mainPanel.removeAll();
+        generateTroops(troopsAmount, rowNumber);
+
+        actionPanel = new ActionPanel(terrain, troops, random, this::onGameEnd);
+        mainPanel.add(actionPanel, BorderLayout.CENTER);
+        mainPanel.revalidate();
+        mainPanel.repaint();
+
+        switch (selectedTeam) {
+            case BLUE -> blueConfigured = true;
+            case RED -> redConfigured = true;
+        }
+
+        if (blueConfigured && redConfigured) {
+            statusLabel.setText("Game not started");
+            startButton.setEnabled(true);
+        }
+    }
+
+    private Void onGameEnd(final String message) {
+        statusLabel.setText(message);
+        System.out.println(message);
+        return null;
+    }
+
+    private void onStartButtonClick(final ActionEvent e) {
+        System.out.println("Start button pressed");
+
+        startButton.setEnabled(false);
+        submitButton.setEnabled(false);
+        //mainPanel.revalidate();
+        //mainPanel.repaint();
+        actionPanel.startGame();
+        statusLabel.setText("Game in progress");
+        System.out.println("Game started");
+    }
+
+    private void styleButton(final JButton button) {
         button.setFont(new Font("Arial", Font.BOLD, 12));
-        button.setBackground(Color.DARK_GRAY);
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         button.setPreferredSize(new Dimension(100, 30));
     }
-    private void clearRow(int row) {
-        left_side = !side.isSelected();
-        right_side = side.isSelected();
-        for (int i = 0; i < SIZE; i++) {
-            if(left_side){
-                generatedMap[row][i] = 0;
-            }else if(right_side){
-                generatedMap[SIZE-row-1][i] = 0;
-            }
 
+    public void generateTroops(final int amount, final int rowNumber) {
+        final int step = mapHeight / amount;
+
+        int troopX = 0;
+        switch (selectedTeam) {
+            case BLUE -> troopX = rowNumber - 1;
+            case RED -> troopX = mapWidth - rowNumber;
         }
-    }
-    public void warriorArrangement() {
-        // Red team
-        // Swordsman - 4, Archer - 5, Shieldsman - 6
-        // Blue team
-        // Swordsman -7, Archer - 8, Shieldsman - 9
-        int troopsNumberInt = Integer.parseInt(troopsNumber.getText());
-        int rowNumberInt = Integer.parseInt(rowNumber.getText());
-        int step = SIZE / troopsNumberInt;
-        clearRow(rowNumberInt-1);
-
-        if (archer.isSelected()) {
-            if (left_side) {
-                for (int i = 0; i < troopsNumberInt; i++) {
-                    if(rowNumberInt % 2 == 0) {
-                        generatedMap[rowNumberInt-1][i * step +1] = 5;
-                    }else{
-                        generatedMap[rowNumberInt-1][i * step] = 5;
-                    }
-                }
-            } else if (right_side) {
-
-                for (int i = 0; i < troopsNumberInt; i++) {
-                    if(rowNumberInt % 2 == 0) {
-                        generatedMap[SIZE - rowNumberInt][i * step+1] = 7;
-                    }else{
-                        generatedMap[SIZE - rowNumberInt][i * step] = 7;
-                    }
-                }
+        for (int troopIndex = 0; troopIndex < amount; troopIndex++) {
+            int troopY = troopIndex * step;
+            // Offset every second row
+            if (rowNumber % 2 == 0) {
+                troopY++;
             }
-        } else if (swordsman.isSelected()) {
-            if (left_side) {
-                for (int i = 0; i < troopsNumberInt; i++) {
-                    if(rowNumberInt % 2 == 0) {
-                        generatedMap[rowNumberInt-1][i * step + 1] = 4;
-                    }else{
-                        generatedMap[rowNumberInt-1][i * step] = 4;
-                    }
-                }
-            } else if (right_side) {
-                for (int i = 0; i < troopsNumberInt; i++) {
-                    if(rowNumberInt % 2 == 0) {
-                            generatedMap[SIZE - rowNumberInt][i * step+1] = 8;
-                        }else{
-                            generatedMap[SIZE - rowNumberInt][i * step] = 8;
-                    }
-                }
+
+            switch (selectedTroopType) {
+                case ARCHER -> troops.add(new Archer(troopX, troopY, selectedTeam));
+                case SWORDSMAN -> troops.add(new Swordsman(troopX, troopY, selectedTeam));
+                case SHIELDMAN -> troops.add(new Shieldman(troopX, troopY, selectedTeam));
             }
-        } else if (shieldman.isSelected()) {
-            if (left_side) {
-
-                for (int i = 0; i < troopsNumberInt; i++) {
-                    if(rowNumberInt % 2 == 0) {
-                        generatedMap[rowNumberInt-1][i * step+1] = 6;
-                    }else{
-                        generatedMap[rowNumberInt-1][i * step] = 6;
-                    }
-                }
-            } else if (right_side) {
-                for (int i = 0; i < troopsNumberInt; i++) {
-                    if(rowNumberInt % 2 == 0) {
-                        generatedMap[SIZE - rowNumberInt][i * step+1] = 9;
-                    }else{
-                        generatedMap[SIZE - rowNumberInt][i * step] = 9;
-                    }
-                }
-            }
-        }
-    }
-
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == submit) {
-            System.out.println("Submit button pressed");
-
-            if (Integer.parseInt(troopsNumber.getText()) <= max_troops &&
-                    Integer.parseInt(rowNumber.getText()) <= rows) {
-                mainPanel.removeAll();
-                left_side = !side.isSelected();
-                right_side = side.isSelected();
-                warriorArrangement();
-
-                actionPanel = new ActionPanel(generatedMap);
-                mainPanel.add(actionPanel, BorderLayout.CENTER);
-                mainPanel.revalidate();
-                mainPanel.repaint();
-                if (left_side) {
-                    leftSelected = true;
-                }
-                if (right_side) {
-                    rightSelected = true;
-                }
-
-                if (leftSelected && rightSelected) {
-                    start.setEnabled(true);
-                }
-            }
-        } else if (e.getSource() == start) {
-            System.out.println("Start button pressed");
-            start.setEnabled(false);
-            submit.setEnabled(false);
-//            mainPanel.revalidate();
-//            mainPanel.repaint();
-            actionPanel.start_game();
-            System.out.println("Game started");
         }
     }
 }
-
