@@ -85,39 +85,39 @@ public class Terrain {
     }
 
     private void generategay() {
-        int numRivers = random.nextInt(5) + 2;
-        double gravelRadius = 1.4;
-        for (int r = 0; r < numRivers; r++) {
-            int x = random.nextInt(SIZE);
-            int y = random.nextInt(SIZE);
-            int length = random.nextInt(SIZE / 2) + SIZE / 4;
+    int numRivers = random.nextInt(5) + 2;
+    double gravelRadius = 1.4; 
+    for (int r = 0; r < numRivers; r++) {
+        int x = random.nextInt(SIZE);
+        int y = random.nextInt(SIZE);
+        int length = random.nextInt(SIZE / 2) + SIZE / 4;
 
-            for (int i = 0; i < length; i++) {
-                if (x >= 0 && x < SIZE && y >= 0 && y < SIZE) {
-                    for (double dx = -gravelRadius; dx <= gravelRadius; dx++) {
-                        for (double dy = -gravelRadius; dy <= gravelRadius; dy++) {
-                            double gravelX = x + dx;
-                            double gravelY = y + dy;
+        for (int i = 0; i < length; i++) {
+            if (x >= 0 && x < SIZE && y >= 0 && y < SIZE) {
+                for (double dx = -gravelRadius; dx <= gravelRadius; dx++) {
+                    for (double dy = -gravelRadius; dy <= gravelRadius; dy++) {
+                        double gravelX = x + dx;
+                        double gravelY = y + dy;
 
-                            if (gravelX >= 0 && gravelX < SIZE &&
-                                    gravelY >= 0 && gravelY < SIZE &&
-                                    map[(int) gravelX][(int) gravelY] != TerrainType.MOUNTAIN) {
+                        // Check for both boundaries AND if it's NOT a mountain:
+                        if (gravelX >= 0 && gravelX < SIZE &&
+                            gravelY >= 0 && gravelY < SIZE &&
+                            map[(int) gravelX][(int) gravelY] != TerrainType.MOUNTAIN) { 
 
-                                map[(int) gravelX][(int) gravelY] = TerrainType.GRAVEL;
-                            }
+                            map[(int) gravelX][(int) gravelY] = TerrainType.GRAVEL;
                         }
                     }
-                    int direction = random.nextInt(10);
-                    if (direction < 5) {
-                        x += random.nextInt(3) - 1;
-                    } else {
-                        y += random.nextInt(3) - 1;
-                    }
+                }
+                int direction = random.nextInt(10);
+                if (direction < 5) {
+                    x += random.nextInt(3) - 1;
+                } else {
+                    y += random.nextInt(3) - 1;
                 }
             }
         }
     }
-
+}
     public int[][] getMap() {
         int[][] intMap = new int[SIZE][SIZE];
         for (int i = 0; i < SIZE; i++) {
