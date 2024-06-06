@@ -1,52 +1,44 @@
 package pl.edu.twoj.pakiet;
 
 import java.util.Random;
-import java.util.List;
-import java.util.ArrayList;
 
 public class Terrain {
     private static final int SIZE = 100;
-    private static final int SIDE_BORDER_WIDTH = 3; // Width of the border on the sides
+    private static final int SIDE_BORDER_WIDTH = 3;
 
-    // Using enums for better readability (but still outputting numbers)
     private enum TerrainType {
-        LAND, WATER, GRAVEL, MOUNTAIN //д 0,1,2,3 according
+        LAND, WATER, GRAVEL, MOUNTAIN
     }
+
     private TerrainType[][] map;
     private Random random;
 
     public Terrain() {
         map = new TerrainType[SIZE][SIZE];
-        random = new Random(); // Consider making the seed configurable for testing
+        random = new Random();
         generateTerrain();
     }
 
     private void generateTerrain() {
-        // Fill with land
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 map[i][j] = TerrainType.LAND;
             }
         }
-
+        generategay();
         generateMountains();
-        generateGravel();
         generateRiver();
-
-
     }
 
     private void generateRiver() {
         int startX = random.nextInt(SIZE - 2 * SIDE_BORDER_WIDTH) + SIDE_BORDER_WIDTH;
-
         int currentX = startX;
-        int currentY = 0; // Start at the very top
+        int currentY = 0;
 
-        while (currentY < SIZE) {// Go all the way to the bottom
-            if( map[currentX][currentY] != TerrainType.MOUNTAIN){
+        while (currentY < SIZE) {
+            if (map[currentY][currentX] != TerrainType.MOUNTAIN) {
                 map[currentY][currentX] = TerrainType.WATER;
             }
-
 
             int direction = random.nextInt(2);
             if (direction == 0 && currentX > SIDE_BORDER_WIDTH) {
@@ -92,39 +84,39 @@ public class Terrain {
         generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(4) + 1, 5);
     }
 
-    private void generateGravel() {
-        int numRivers = random.nextInt(5) + 2; // Increased range for more variety
+    private void generategay() {
+        int numRivers = random.nextInt(5) + 2;
+        double gravelRadius = 1.4;
         for (int r = 0; r < numRivers; r++) {
-            List<Integer[]> riverPoints = new ArrayList<>();
             int x = random.nextInt(SIZE);
             int y = random.nextInt(SIZE);
             int length = random.nextInt(SIZE / 2) + SIZE / 4;
 
             for (int i = 0; i < length; i++) {
                 if (x >= 0 && x < SIZE && y >= 0 && y < SIZE) {
-                    riverPoints.add(new Integer[]{x, y});
+                    for (double dx = -gravelRadius; dx <= gravelRadius; dx++) {
+                        for (double dy = -gravelRadius; dy <= gravelRadius; dy++) {
+                            double gravelX = x + dx;
+                            double gravelY = y + dy;
 
-                    // More organic movement using a weighted random direction
+                            if (gravelX >= 0 && gravelX < SIZE &&
+                                    gravelY >= 0 && gravelY < SIZE &&
+                                    map[(int) gravelX][(int) gravelY] != TerrainType.MOUNTAIN) {
+
+                                map[(int) gravelX][(int) gravelY] = TerrainType.GRAVEL;
+                            }
+                        }
+                    }
                     int direction = random.nextInt(10);
                     if (direction < 5) {
-                        x += random.nextInt(3) - 1; // Horizontal movement
+                        x += random.nextInt(3) - 1;
                     } else {
-                        y += random.nextInt(3) - 1; // Vertical movement
+                        y += random.nextInt(3) - 1;
                     }
-                } else {
-
-                }
-            }
-
-            // "Draw" the river on the map
-            for (Integer[] point : riverPoints) {
-                if (map[point[0]][point[1]] != TerrainType.MOUNTAIN){
-                    map[point[0]][point[1]] = TerrainType.GRAVEL;
                 }
             }
         }
     }
-
 
     public int[][] getMap() {
         int[][] intMap = new int[SIZE][SIZE];
