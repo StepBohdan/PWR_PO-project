@@ -69,7 +69,38 @@ public class Terrain {
     }
 
     private void generateGravel() {
-        generateTerrainFeature(TerrainType.GRAVEL, random.nextInt(10) + 4, 1);
+        int numRivers = random.nextInt(5) + 2;
+        double gravelRadius = 1.4;
+        for (int r = 0; r < numRivers; r++) {
+            int x = random.nextInt(100);
+            int y = random.nextInt(100);
+            int length = random.nextInt(100 / 2) + 100 / 4;
+
+            for (int i = 0; i < length; i++) {
+                if (x >= 0 && x < 100 && y >= 0 && y < 100) {
+                    for (double dx = -gravelRadius; dx <= gravelRadius; dx++) {
+                        for (double dy = -gravelRadius; dy <= gravelRadius; dy++) {
+                            double gravelX = x + dx;
+                            double gravelY = y + dy;
+
+                            // Check for both boundaries AND if it's NOT a mountain:
+                            if (gravelX >= 0 && gravelX < 100 &&
+                                    gravelY >= 0 && gravelY < 100 &&
+                                    map[(int) gravelX][(int) gravelY] != TerrainType.MOUNTAIN) {
+
+                                map[(int) gravelX][(int) gravelY] = TerrainType.GRAVEL;
+                            }
+                        }
+                    }
+                    int direction = random.nextInt(10);
+                    if (direction < 5) {
+                        x += random.nextInt(3) - 1;
+                    } else {
+                        y += random.nextInt(3) - 1;
+                    }
+                }
+            }
+        }
     }
 
     private void generateRiver() {

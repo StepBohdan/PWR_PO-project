@@ -128,7 +128,7 @@ public class GameFrame extends JFrame {
 
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
-        mainPanel.setPreferredSize(new Dimension(700, 700));
+        mainPanel.setPreferredSize(new Dimension(1000, 1000));
         final ImageIcon gameLogoIcon = new ImageIcon("src/images/frame.png");
         mainPanel.add(new JLabel(gameLogoIcon), BorderLayout.CENTER);
 

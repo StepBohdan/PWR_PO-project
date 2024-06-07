@@ -10,7 +10,7 @@ import java.util.Random;
 import java.util.function.Function;
 
 public class ActionPanel extends JPanel {
-    private static final int pixelSize = 7;
+    private static final int pixelSize = 10;
 
     private final Terrain terrain;
     private final ArrayList<Warrior> troops;
