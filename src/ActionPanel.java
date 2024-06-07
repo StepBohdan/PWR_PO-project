@@ -32,8 +32,6 @@ public class ActionPanel extends JPanel {
         this.random = random;
         this.onGameEnd = onGameEnd;
         this.setFocusable(false);
-        //this.setPreferredSize(new Dimension(700, 700));
-        //this.setVisible(true);
         loadImages();
     }
 
@@ -57,21 +55,7 @@ public class ActionPanel extends JPanel {
     }
 
     private void draw(final Graphics g) {
-        Graphics2D g2D = (Graphics2D) g;
-
-        for (int x = 0; x < terrain.mapWidth; x++) {
-            for (int y = 0; y < terrain.mapHeight; y++) {
-                switch (terrain.map[x][y]) {
-                    case LAND -> g2D.setPaint(new Color(28, 107, 1));
-                    case WATER -> g2D.setPaint(Color.BLUE);
-                    case GRAVEL -> g2D.setPaint(Color.GRAY);
-                    case MOUNTAIN -> g2D.setPaint(Color.DARK_GRAY);
-                }
-
-                // Рисуем фон
-                g2D.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
-            }
-        }
+        Graphics2D g2D = getGraphics2D((Graphics2D) g);
         // Рисуем воинов
         for (final Warrior troop : troops) {
             final int troopImageX = troop.x * pixelSize;
@@ -105,6 +89,24 @@ public class ActionPanel extends JPanel {
         }
     }
 
+    private Graphics2D getGraphics2D(Graphics2D g) {
+
+        for (int x = 0; x < terrain.mapWidth; x++) {
+            for (int y = 0; y < terrain.mapHeight; y++) {
+                switch (terrain.map[x][y]) {
+                    case LAND -> g.setPaint(new Color(28, 107, 1));
+                    case WATER -> g.setPaint(Color.BLUE);
+                    case GRAVEL -> g.setPaint(Color.GRAY);
+                    case MOUNTAIN -> g.setPaint(Color.DARK_GRAY);
+                }
+
+                // Рисуем фон
+                g.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
+            }
+        }
+        return g;
+    }
+
     public void startGame() {
         // TODO: Add configurable delay
         timer = new Timer(100, this::onTimerTick);
@@ -121,7 +123,7 @@ public class ActionPanel extends JPanel {
     private void checkOpponent(final Warrior troop) {
         final ArrayList<Warrior> enemies = getAllEnemyTroops(troop);
         if (enemies.isEmpty()) {
-            onGameEnd.apply(troop.team.toString() + " won by killing all enemies");
+            onGameEnd.apply(STR."\{troop.team.toString()} won by killing all enemies");
             stopGame();
         }
 
@@ -148,10 +150,10 @@ public class ActionPanel extends JPanel {
             final int defensePenalty = terrain.getDefensePenalty(warriorToAttack.x, warriorToAttack.y);
             final boolean attackResult = troop.attack(warriorToAttack, random, attackPenalty, defensePenalty);
             if (attackResult) {
-                System.out.println(troop.team.toString() + " " + troop.getClass().getCanonicalName() + " killed a " + warriorToAttack.team.toString() + " " + warriorToAttack.getClass().getCanonicalName());
+                System.out.println(STR."\{troop.team.toString()} \{troop.getClass().getCanonicalName()} killed a \{warriorToAttack.team.toString()} \{warriorToAttack.getClass().getCanonicalName()}");
                 troops.remove(warriorToAttack);
             } else {
-                System.out.println(warriorToAttack.team.toString() + " " + warriorToAttack.getClass().getCanonicalName() + " defended the attack of " + troop.team.toString() + " " + troop.getClass().getCanonicalName());
+                System.out.println(STR."\{warriorToAttack.team.toString()} \{warriorToAttack.getClass().getCanonicalName()} defended the attack of \{troop.team.toString()} \{troop.getClass().getCanonicalName()}");
             }
         } else if (warriorToNavigateTo != null) {
             moveTowardsAnEnemy(troop, warriorToNavigateTo);
@@ -213,7 +215,7 @@ public class ActionPanel extends JPanel {
                     troop.moveDown();
                 } else {
                     troop.direction = Warrior.Direction.STUCK;
-                    System.out.println(troop.team.toString() + " " + troop.getClass().getCanonicalName() + " got stuck");
+                    System.out.println(STR."\{troop.team.toString()} \{troop.getClass().getCanonicalName()} got stuck");
                 }
             }
             case DOWN -> {
