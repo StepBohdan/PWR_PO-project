@@ -11,9 +11,9 @@ public abstract class Warrior {
         FORWARD, UP, DOWN, STUCK
     }
 
-    private final int attackChance; // In percent, from 0 to 100
-    private final int defenseChance; // In percent, from 0 to 100
-    private final double visionRadius;
+    final int attackChance; // In percent, from 0 to 100
+    final int defenseChance; // In percent, from 0 to 100
+    final double visionRadius;
     public final double attackRadius;
     public final Team team;
     public Direction direction;
@@ -74,14 +74,14 @@ public abstract class Warrior {
 class Swordsman extends Warrior {
     public Swordsman(final int x, final int y, final Team team) {
         // TODO: Add real values
-        super(69, 50, 7, 2, team, x, y);
+        super(70, 50, 7, 2, team, x, y);
     }
 }
 
 class Archer extends Warrior {
     public Archer(final int x, final int y, final Team team) {
         // TODO: Add real values
-        super(50, 20, 20, 10, team, x, y);
+        super(50, 20, 10, 5, team, x, y);
     }
 }
 

@@ -21,6 +21,7 @@ public class GameFrame extends JFrame {
     private final JButton resetButton;
     private final JButton startButton;
     private final JPanel mainPanel;
+    final ImageIcon gameLogoIcon = new ImageIcon("src/images/frame.png");
 
     private enum TroopType {
         ARCHER, SWORDSMAN, SHIELDMAN
@@ -78,7 +79,7 @@ public class GameFrame extends JFrame {
         gridBagConstraints.gridwidth = 1;
         menuPanel.add(sideCheckBox, gridBagConstraints);
 
-        final JLabel troopsNumberLabel = new JLabel("Troops amount (max: " + maxTroops + "): ");
+        final JLabel troopsNumberLabel = new JLabel(STR."Troops amount (max: \{maxTroops}): ");
         troopsNumberTextField = new JTextField(8);
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -86,7 +87,7 @@ public class GameFrame extends JFrame {
         gridBagConstraints.gridx = 1;
         menuPanel.add(troopsNumberTextField, gridBagConstraints);
 
-        final JLabel rowNumberLabel = new JLabel("Row number (max: " + maxTroopRows + "): ");
+        final JLabel rowNumberLabel = new JLabel(STR."Row number (max: \{maxTroopRows}): ");
         rowNumberTextField = new JTextField(8);
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -129,7 +130,6 @@ public class GameFrame extends JFrame {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setPreferredSize(new Dimension(1000, 1000));
-        final ImageIcon gameLogoIcon = new ImageIcon("src/images/frame.png");
         mainPanel.add(new JLabel(gameLogoIcon), BorderLayout.CENTER);
 
         final JComboBox<String> terrainTypeComboBox = new JComboBox<>();
@@ -173,25 +173,24 @@ public class GameFrame extends JFrame {
         int rowNumber;
         try {
             troopsAmount = Integer.parseInt(troopsNumberTextField.getText());
+            if (troopsAmount < 0 || troopsAmount > maxTroops) {
+                throw new NumberFormatException("Troops amount out of range");
+            }
         } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, STR."Please enter a valid number of troops (0-\{maxTroops}).", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             troopsNumberTextField.setText("");
             return;
         }
         try {
             rowNumber = Integer.parseInt(rowNumberTextField.getText());
+            if (rowNumber < 0 || rowNumber > maxTroopRows) {
+                throw new NumberFormatException("Row number out of range");
+            }
         } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, STR."Please enter a valid row number (0-\{maxTroopRows}).", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             rowNumberTextField.setText("");
             return;
         }
-        if (troopsAmount < 0 || troopsAmount > maxTroops) {
-            troopsNumberTextField.setText("");
-            return;
-        }
-        if (rowNumber < 0 || rowNumber > maxTroopRows) {
-            rowNumberTextField.setText("");
-            return;
-        }
-
 
         clearTroopsInRow(rowNumber);
 
@@ -215,38 +214,35 @@ public class GameFrame extends JFrame {
         }
     }
 
+
     private void onResetButtonClick(final ActionEvent event) {
-        // Clear the troops array
+
         troops.clear();
         resetButton.setEnabled(false);
-        // Reset configuration flags
+
         blueConfigured = false;
         redConfigured = false;
 
-        // Clear the main panel
+
         mainPanel.removeAll();
         mainPanel.repaint();
 
-        // Clear text fields
+
         rowNumberTextField.setText("");
         troopsNumberTextField.setText("");
 
-        // Reset status label and disable start button
+
         statusLabel.setText("Configure both teams to start");
         startButton.setEnabled(false);
 
-        // Reset submit button if necessary
+
         submitButton.setEnabled(true);
 
-        // If there's an ongoing action panel game, stop it
         if (actionPanel != null) {
             actionPanel.stopGame();
         }
-        final ImageIcon gameLogoIcon = new ImageIcon("src/images/frame.png");
         mainPanel.add(new JLabel(gameLogoIcon), BorderLayout.CENTER);
 
-        // Optionally, reset the selected troop type and team side
-//        archerRadioButton.isSelected(true);
         selectedTroopType = TroopType.ARCHER;
         selectedTeam = Warrior.Team.BLUE;
 
@@ -272,8 +268,6 @@ public class GameFrame extends JFrame {
 
         startButton.setEnabled(false);
         submitButton.setEnabled(false);
-        //mainPanel.revalidate();
-        //mainPanel.repaint();
         actionPanel.startGame();
         statusLabel.setFont(new Font("Arial", Font.BOLD, 12));
         statusLabel.setText("Game in progress");
