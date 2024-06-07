@@ -108,7 +108,6 @@ public class ActionPanel extends JPanel {
     }
 
     public void startGame() {
-        // TODO: Add configurable delay
         timer = new Timer(100, this::onTimerTick);
         timer.start();
     }
@@ -127,7 +126,6 @@ public class ActionPanel extends JPanel {
             stopGame();
         }
 
-        // TODO: consider randomizing warrior to attack
         Warrior warriorToAttack = null;
         Warrior warriorToNavigateTo = null;
         for (final Warrior enemy : enemies) {
@@ -266,6 +264,15 @@ public class ActionPanel extends JPanel {
         return false;
     }
 
+    private boolean isDrawOnStuck(ArrayList<Warrior> localTroops) {
+        for (final Warrior troop : localTroops) {
+            if (troop.direction != Warrior.Direction.STUCK) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void onTimerTick(final ActionEvent e) {
         boolean blueReachedMapEnd = false;
         boolean redReachedMapEnd = false;
@@ -273,6 +280,10 @@ public class ActionPanel extends JPanel {
         if (localTroops.isEmpty()) {
             onGameEnd.apply("It's a draw. Everybody died");
             stopGame();
+        }
+        if (isDrawOnStuck(localTroops)) {
+            onGameEnd.apply("It's a draw. Everybody is stuck");
+            startGame();
         }
         for (final Warrior troop : localTroops) {
             checkOpponent(troop);
