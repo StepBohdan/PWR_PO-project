@@ -88,6 +88,6 @@ class Archer extends Warrior {
 class Shieldman extends Warrior {
     public Shieldman(final int x, final int y, final Team team) {
         // TODO: Add real values
-        super(30, 80, 5, 1, team, x, y);
+        super(20, 80, 5, 1, team, x, y);
     }
 }

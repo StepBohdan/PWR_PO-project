@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Function;
+import java.util.logging.ErrorManager;
 
 public class ActionPanel extends JPanel {
     private static final int pixelSize = 10;
@@ -44,7 +45,8 @@ public class ActionPanel extends JPanel {
             redSwordsmanImage = ImageIO.read(new File("src/images/red-swordsman.png"));
             redShieldmanImage = ImageIO.read(new File("src/images/red-shieldman.png"));
         } catch (IOException e) {
-            e.printStackTrace();
+            ErrorManager log = new ErrorManager();
+            log.error("Image reading failed", e, 0);
         }
     }
 
@@ -56,7 +58,6 @@ public class ActionPanel extends JPanel {
 
     private void draw(final Graphics g) {
         Graphics2D g2D = getGraphics2D((Graphics2D) g);
-        // Рисуем воинов
         for (final Warrior troop : troops) {
             final int troopImageX = troop.x * pixelSize;
             final int troopImageY = troop.y * pixelSize;
@@ -99,8 +100,6 @@ public class ActionPanel extends JPanel {
                     case GRAVEL -> g.setPaint(Color.GRAY);
                     case MOUNTAIN -> g.setPaint(Color.DARK_GRAY);
                 }
-
-                // Рисуем фон
                 g.fillRect(x * pixelSize, y * pixelSize, pixelSize, pixelSize);
             }
         }
@@ -122,7 +121,7 @@ public class ActionPanel extends JPanel {
     private void checkOpponent(final Warrior troop) {
         final ArrayList<Warrior> enemies = getAllEnemyTroops(troop);
         if (enemies.isEmpty()) {
-            onGameEnd.apply(STR."\{troop.team.toString()} won by killing all enemies");
+            onGameEnd.apply(String.format("%s won by killing all enemies", troop.team.toString()));
             stopGame();
         }
 
@@ -148,10 +147,11 @@ public class ActionPanel extends JPanel {
             final int defensePenalty = terrain.getDefensePenalty(warriorToAttack.x, warriorToAttack.y);
             final boolean attackResult = troop.attack(warriorToAttack, random, attackPenalty, defensePenalty);
             if (attackResult) {
-                System.out.println(STR."\{troop.team.toString()} \{troop.getClass().getCanonicalName()} killed a \{warriorToAttack.team.toString()} \{warriorToAttack.getClass().getCanonicalName()}");
+                System.out.printf("%s %s killed a %s %s%n\n",troop.team.toString(), troop.getClass().getCanonicalName(), warriorToAttack.team.toString(), warriorToAttack.getClass().getCanonicalName());
                 troops.remove(warriorToAttack);
             } else {
-                System.out.println(STR."\{warriorToAttack.team.toString()} \{warriorToAttack.getClass().getCanonicalName()} defended the attack of \{troop.team.toString()} \{troop.getClass().getCanonicalName()}");
+                System.out.printf("%s %s defended the attack of %s %s%n\n", warriorToAttack.team.toString(), warriorToAttack.getClass().getCanonicalName(), troop.team.toString(), troop.getClass().getCanonicalName());
+
             }
         } else if (warriorToNavigateTo != null) {
             moveTowardsAnEnemy(troop, warriorToNavigateTo);
@@ -213,7 +213,7 @@ public class ActionPanel extends JPanel {
                     troop.moveDown();
                 } else {
                     troop.direction = Warrior.Direction.STUCK;
-                    System.out.println(STR."\{troop.team.toString()} \{troop.getClass().getCanonicalName()} got stuck");
+                    System.out.printf("%s %s got stuck\n", troop.team.toString(), troop.getClass().getCanonicalName());
                 }
             }
             case DOWN -> {
