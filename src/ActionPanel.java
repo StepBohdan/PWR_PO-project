@@ -48,12 +48,12 @@ public class ActionPanel extends JPanel {
         loadImages();
         for (Warrior warrior : troops) {
             int teamIndex = getTeamIndex(warrior.team);
-            if (warrior instanceof Archer) {
-                initialArchers[teamIndex]++;
-            } else if (warrior instanceof Swordsman) {
-                initialSwordsmen[teamIndex]++;
-            } else if (warrior instanceof Shieldman) {
-                initialShieldmen[teamIndex]++;
+            switch (warrior) {
+                case Archer _ -> initialArchers[teamIndex]++;
+                case Swordsman _ -> initialSwordsmen[teamIndex]++;
+                case Shieldman _ -> initialShieldmen[teamIndex]++;
+                default -> {
+                }
             }
         }
     }
@@ -198,12 +198,12 @@ public class ActionPanel extends JPanel {
                 System.out.printf("%s %s killed a %s %s%n\n",troop.team.toString(), troop.getClass().getCanonicalName(), warriorToAttack.team.toString(), warriorToAttack.getClass().getCanonicalName());
                 troops.remove(warriorToAttack);
                 int teamIndex = getTeamIndex(warriorToAttack.team);
-                if (warriorToAttack instanceof Archer) {
-                    archerLosses[teamIndex]++;
-                } else if (warriorToAttack instanceof Swordsman) {
-                    swordsmanLosses[teamIndex]++;
-                } else if (warriorToAttack instanceof Shieldman) {
-                    shieldmanLosses[teamIndex]++;
+                switch (warriorToAttack) {
+                    case Archer _ -> archerLosses[teamIndex]++;
+                    case Swordsman _ -> swordsmanLosses[teamIndex]++;
+                    case Shieldman _ -> shieldmanLosses[teamIndex]++;
+                    default -> {
+                    }
                 }
             } else {
                 System.out.printf("%s %s defended the attack of %s %s%n\n", warriorToAttack.team.toString(), warriorToAttack.getClass().getCanonicalName(), troop.team.toString(), troop.getClass().getCanonicalName());
@@ -336,8 +336,7 @@ public class ActionPanel extends JPanel {
         if (localTroops.isEmpty()) {
             onGameEnd.apply("It's a draw. Everybody died");
             stopGame();
-        }
-        if (isDrawOnStuck(localTroops)) {
+        }else if (isDrawOnStuck(localTroops)) {
             onGameEnd.apply("It's a draw. Everybody is stuck");
             startGame();
         }

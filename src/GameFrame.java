@@ -17,7 +17,7 @@ public class GameFrame extends JFrame {
     private final JTextField rowNumberTextField;
     private final JTextField troopsNumberTextField;
     private final JButton submitButton;
-
+    private final JCheckBox sideCheckBox;
     private final JButton resetButton;
     private final JButton startButton;
     private final JButton exitButton;
@@ -66,7 +66,7 @@ public class GameFrame extends JFrame {
         gridBagConstraints.gridwidth = 3;
         menuPanel.add(menuLabel, gridBagConstraints);
 
-        final JCheckBox sideCheckBox = new JCheckBox("Select a side");
+        sideCheckBox = new JCheckBox("Select a side");
         sideCheckBox.addActionListener(_ -> selectedTeam = sideCheckBox.isSelected() ? Warrior.Team.RED : Warrior.Team.BLUE);
         selectedTeam = Warrior.Team.BLUE;
         final ImageIcon blueTeamIcon = new ImageIcon("src/images/blue.png");
@@ -273,6 +273,7 @@ public class GameFrame extends JFrame {
 
         rowNumberTextField.setText("");
         troopsNumberTextField.setText("");
+        sideCheckBox.setSelected(false);
 
         statusLabel.setText("Configure both teams to start");
         startButton.setEnabled(false);
