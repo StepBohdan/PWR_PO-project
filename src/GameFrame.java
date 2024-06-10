@@ -23,7 +23,7 @@ public class GameFrame extends JFrame {
     private final JButton exitButton;
     private final JButton generateNewMap;
     private JPanel mainPanel;
-    final ImageIcon gameLogoIcon = new ImageIcon("src/images/frame.png");
+    final ImageIcon gameLogoIcon = new ImageIcon("src/images/frame4.png");
 
     private enum TroopType {
         ARCHER, SWORDSMAN, SHIELDMAN
@@ -44,7 +44,7 @@ public class GameFrame extends JFrame {
         this.setIconImage(icon.getImage());
         this.setTitle("Castle battle");
         this.setLocationRelativeTo(null);
-        this.setSize(1500, 800);
+//        this.setSize(1500, 800);
         this.setLayout(new BorderLayout(10, 10));
 
         final JPanel menuPanel = new JPanel();
