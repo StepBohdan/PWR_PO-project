@@ -9,15 +9,27 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.logging.ErrorManager;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
 
 public class ActionPanel extends JPanel {
     private static final int pixelSize = 10;
-
+    private static final int TEAM_RED = 0;
+    private static final int TEAM_BLUE = 1;
+    private static final int NUM_TEAMS = 2;
     private final Terrain terrain;
     private final ArrayList<Warrior> troops;
     private final Random random;
     private final Function<String, Void> onGameEnd;
+    // Variables to store the initial number of warriors and losses for each team and warrior type
+    private final int[] initialArchers = new int[NUM_TEAMS];
+    private final int[] initialSwordsmen = new int[NUM_TEAMS];
+    private final int[] initialShieldmen = new int[NUM_TEAMS];
 
+    private final int[] archerLosses = new int[NUM_TEAMS];
+    private final int[] swordsmanLosses = new int[NUM_TEAMS];
+    private final int[] shieldmanLosses = new int[NUM_TEAMS];
     private BufferedImage blueArcherImage;
     private BufferedImage blueSwordsmanImage;
     private BufferedImage blueShieldmanImage;
@@ -34,6 +46,42 @@ public class ActionPanel extends JPanel {
         this.onGameEnd = onGameEnd;
         this.setFocusable(false);
         loadImages();
+        for (Warrior warrior : troops) {
+            int teamIndex = getTeamIndex(warrior.team);
+            if (warrior instanceof Archer) {
+                initialArchers[teamIndex]++;
+            } else if (warrior instanceof Swordsman) {
+                initialSwordsmen[teamIndex]++;
+            } else if (warrior instanceof Shieldman) {
+                initialShieldmen[teamIndex]++;
+            }
+        }
+    }
+
+    // Method to get the team index
+    private int getTeamIndex(Warrior.Team team) {
+        return switch (team) {
+            case RED -> TEAM_RED;
+            case BLUE -> TEAM_BLUE;
+        };
+    }
+    private void writeMatchResultsToFile(final String message) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("match_results.txt"))) {
+            writer.write("Results of the battle\n");
+            writer.write("----------------\n");
+            writer.write(STR."Winner is: \{message}\n\n");
+
+            for (Warrior.Team team : Warrior.Team.values()) {
+                int teamIndex = getTeamIndex(team);
+                writer.write(STR."Team \{team}:\n");
+                writer.write(STR."  - Archers: Intial Archers count: \{initialArchers[teamIndex]}, Casualties: \{archerLosses[teamIndex]}, Left: \{initialArchers[teamIndex] - archerLosses[teamIndex]}\n");
+                writer.write(STR."  - Swordsmen: Intial Swordsmen count: \{initialSwordsmen[teamIndex]}, Casualties: \{swordsmanLosses[teamIndex]}, Left: \{initialSwordsmen[teamIndex] - swordsmanLosses[teamIndex]}\n");
+                writer.write(STR."  - Shieldmen: Initial Shieldmen count: \{initialShieldmen[teamIndex]}, Casualties: \{shieldmanLosses[teamIndex]}, Left: \{initialShieldmen[teamIndex] - shieldmanLosses[teamIndex]}\n");
+                writer.write("\n");
+            }
+        } catch (IOException e) {
+            System.err.println(STR."Error while wrtiting results to the file: \{e.getMessage()}");
+        }
     }
 
     private void loadImages() {
@@ -149,6 +197,14 @@ public class ActionPanel extends JPanel {
             if (attackResult) {
                 System.out.printf("%s %s killed a %s %s%n\n",troop.team.toString(), troop.getClass().getCanonicalName(), warriorToAttack.team.toString(), warriorToAttack.getClass().getCanonicalName());
                 troops.remove(warriorToAttack);
+                int teamIndex = getTeamIndex(warriorToAttack.team);
+                if (warriorToAttack instanceof Archer) {
+                    archerLosses[teamIndex]++;
+                } else if (warriorToAttack instanceof Swordsman) {
+                    swordsmanLosses[teamIndex]++;
+                } else if (warriorToAttack instanceof Shieldman) {
+                    shieldmanLosses[teamIndex]++;
+                }
             } else {
                 System.out.printf("%s %s defended the attack of %s %s%n\n", warriorToAttack.team.toString(), warriorToAttack.getClass().getCanonicalName(), troop.team.toString(), troop.getClass().getCanonicalName());
 
@@ -296,12 +352,15 @@ public class ActionPanel extends JPanel {
         if (blueReachedMapEnd && redReachedMapEnd) {
             onGameEnd.apply("It's a draw. Both teams reached the end at the same time");
             stopGame();
+            writeMatchResultsToFile("Draw");
         } else if (blueReachedMapEnd) {
             onGameEnd.apply("BLUE won by reaching the end first");
             stopGame();
+            writeMatchResultsToFile("Blue");
         } else if (redReachedMapEnd) {
             onGameEnd.apply("RED won by reaching the end first");
             stopGame();
+            writeMatchResultsToFile("Red");
         }
 
         repaint();
