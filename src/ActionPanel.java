@@ -47,28 +47,27 @@ public class ActionPanel extends JPanel {
         this.setFocusable(false);
         loadImages();
         for (Warrior warrior : troops) {
-            int teamIndex = getTeamIndex(warrior.team);
-            if (warrior instanceof Archer) {
-                initialArchers[teamIndex]++;
-            } else if (warrior instanceof Swordsman) {
-                initialSwordsmen[teamIndex]++;
-            } else if (warrior instanceof Shieldman) {
-                initialShieldmen[teamIndex]++;
+            if (warrior.team == Warrior.Team.RED) {
+                if (warrior instanceof Archer) {
+                    initialArchers[TEAM_RED]++;
+                } else if (warrior instanceof Swordsman) {
+                    initialSwordsmen[TEAM_RED]++;
+                } else if (warrior instanceof Shieldman) {
+                    initialShieldmen[TEAM_RED]++;
+                }
+            } else if (warrior.team == Warrior.Team.BLUE) {
+                if (warrior instanceof Archer) {
+                    initialArchers[TEAM_BLUE]++;
+                } else if (warrior instanceof Swordsman) {
+                    initialSwordsmen[TEAM_BLUE]++;
+                } else if (warrior instanceof Shieldman) {
+                    initialShieldmen[TEAM_BLUE]++;
+                }
             }
         }
     }
 
-// Method to get the team index
-private int getTeamIndex(Warrior.Team team) {
-    switch (team) {
-        case RED:
-            return TEAM_RED;
-        case BLUE:
-            return TEAM_BLUE;
-        default:
-            throw new IllegalArgumentException("Unknown team: " + team);
-    }
-}
+
     private void writeMatchResultsToFile(final String message) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("match_results.txt"))) {
             writer.write("Results of the battle\n");
@@ -76,17 +75,16 @@ private int getTeamIndex(Warrior.Team team) {
             writer.write("Winner is: " + message + "\n\n");
 
             for (Warrior.Team team : Warrior.Team.values()) {
-                int teamIndex = getTeamIndex(team);
                 writer.write("Team " + team + ":\n");
-                writer.write("  - Archers: Intial Archers count: " + initialArchers[teamIndex] +
-                        ", Casualties: " + archerLosses[teamIndex] + ", Left: " +
-                        (initialArchers[teamIndex] - archerLosses[teamIndex]) + "\n");
-                writer.write("  - Swordsmen: Intial Swordsmen count: " + initialSwordsmen[teamIndex] +
-                        ", Casualties: " + swordsmanLosses[teamIndex] + ", Left: " +
-                        (initialSwordsmen[teamIndex] - swordsmanLosses[teamIndex]) + "\n");
-                writer.write("  - Shieldmen: Initial Shieldmen count: " + initialShieldmen[teamIndex] +
-                        ", Casualties: " + shieldmanLosses[teamIndex] + ", Left: " +
-                        (initialShieldmen[teamIndex] - shieldmanLosses[teamIndex]) + "\n");
+                writer.write("  - Archers: Intial Archers count: " + initialArchers[team == Warrior.Team.RED ? TEAM_RED : TEAM_BLUE] +
+                        ", Casualties: " + archerLosses[team == Warrior.Team.RED ? TEAM_RED : TEAM_BLUE] + ", Left: " +
+                        (initialArchers[team == Warrior.Team.RED ? TEAM_RED : TEAM_BLUE] - archerLosses[team == Warrior.Team.RED ? TEAM_RED : TEAM_BLUE]) + "\n");
+                writer.write("  - Swordsmen: Intial Swordsmen count: " + initialSwordsmen[team == Warrior.Team.RED ? TEAM_RED : TEAM_BLUE] +
+                        ", Casualties: " + swordsmanLosses[team == Warrior.Team.RED ? TEAM_RED : TEAM_BLUE] + ", Left: " +
+                        (initialSwordsmen[team == Warrior.Team.RED ? TEAM_RED : TEAM_BLUE] - swordsmanLosses[team == Warrior.Team.RED ? TEAM_RED : TEAM_BLUE]) + "\n");
+                writer.write("  - Shieldmen: Initial Shieldmen count: " + initialShieldmen[team == Warrior.Team.RED ? TEAM_RED : TEAM_BLUE] +
+                        ", Casualties: " + shieldmanLosses[team == Warrior.Team.RED ? TEAM_RED : TEAM_BLUE] + ", Left: " +
+                        (initialShieldmen[team == Warrior.Team.RED ? TEAM_RED : TEAM_BLUE] - shieldmanLosses[team == Warrior.Team.RED ? TEAM_RED : TEAM_BLUE]) + "\n");
                 writer.write("\n");
             }
         } catch (IOException e) {
@@ -208,13 +206,22 @@ private int getTeamIndex(Warrior.Team team) {
                 System.out.printf("%s %s killed a %s %s%n\n",troop.team.toString(), troop.getClass().getCanonicalName(), warriorToAttack.team.toString(), warriorToAttack.getClass().getCanonicalName());
                 troops.remove(warriorToAttack);
                 // Увеличиваем счетчик потерь:
-                int teamIndex = getTeamIndex(warriorToAttack.team);
-                if (warriorToAttack instanceof Archer) {
-                    archerLosses[teamIndex]++;
-                } else if (warriorToAttack instanceof Swordsman) {
-                    swordsmanLosses[teamIndex]++;
-                } else if (warriorToAttack instanceof Shieldman) {
-                    shieldmanLosses[teamIndex]++;
+                if (warriorToAttack.team == Warrior.Team.RED) {
+                    if (warriorToAttack instanceof Archer) {
+                        archerLosses[TEAM_RED]++;
+                    } else if (warriorToAttack instanceof Swordsman) {
+                        swordsmanLosses[TEAM_RED]++;
+                    } else if (warriorToAttack instanceof Shieldman) {
+                        shieldmanLosses[TEAM_RED]++;
+                    }
+                } else if (warriorToAttack.team == Warrior.Team.BLUE) {
+                    if (warriorToAttack instanceof Archer) {
+                        archerLosses[TEAM_BLUE]++;
+                    } else if (warriorToAttack instanceof Swordsman) {
+                        swordsmanLosses[TEAM_BLUE]++;
+                    } else if (warriorToAttack instanceof Shieldman) {
+                        shieldmanLosses[TEAM_BLUE]++;
+                    }
                 }
             } else {
                 System.out.printf("%s %s defended the attack of %s %s%n\n", warriorToAttack.team.toString(), warriorToAttack.getClass().getCanonicalName(), troop.team.toString(), troop.getClass().getCanonicalName());
