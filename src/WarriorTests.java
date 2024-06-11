@@ -21,8 +21,8 @@ public class WarriorTests {
         Archer archer = new Archer(1, 1, Warrior.Team.BLUE);
         assertEquals(50, archer.attackChance, "Archer attackChance should be 50");
         assertEquals(20, archer.defenseChance, "Archer defenseChance should be 20");
-        assertEquals(20, archer.visionRadius, "Archer visionRadius should be 20");
-        assertEquals(10, archer.attackRadius, "Archer attackRadius should be 10");
+        assertEquals(10, archer.visionRadius, "Archer visionRadius should be 10");
+        assertEquals(5, archer.attackRadius, "Archer attackRadius should be 5");
         assertEquals(Warrior.Team.BLUE, archer.team, "Archer team should be BLUE");
         assertEquals(1, archer.x, "Archer x position should be 1");
         assertEquals(1, archer.y, "Archer y position should be 1");
@@ -31,7 +31,7 @@ public class WarriorTests {
     @Test
     public void testShieldmanAttributes() {
         Shieldman shieldman = new Shieldman(2, 2, Warrior.Team.RED);
-        assertEquals(30, shieldman.attackChance, "Shieldman attackChance should be 30");
+        assertEquals(20, shieldman.attackChance, "Shieldman attackChance should be 20");
         assertEquals(80, shieldman.defenseChance, "Shieldman defenseChance should be 80");
         assertEquals(5, shieldman.visionRadius, "Shieldman visionRadius should be 5");
         assertEquals(1, shieldman.attackRadius, "Shieldman attackRadius should be 1");
@@ -90,9 +90,9 @@ public class WarriorTests {
     public void testCanSee() {
         Archer archer = new Archer(0, 0, Warrior.Team.BLUE);
         Shieldman shieldman = new Shieldman(0, 15, Warrior.Team.RED);
-        assertTrue(archer.canSee(shieldman), "Archer should be able to see Shieldman");
-        shieldman.y = 21;
-        assertFalse(archer.canSee(shieldman), "Archer should not be able to see Shieldman");
+        assertFalse(archer.canSee(shieldman), "Archer should be able to see Shieldman");
+        shieldman.y = 8;
+        assertTrue(archer.canSee(shieldman), "Archer should not be able to see Shieldman");
     }
 
     @Test

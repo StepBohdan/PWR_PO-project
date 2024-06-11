@@ -69,18 +69,19 @@ public class ActionPanel extends JPanel {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("match_results.txt"))) {
             writer.write("Results of the battle\n");
             writer.write("----------------\n");
-            writer.write(STR."Winner is: \{message}\n\n");
+            writer.write(String.format("Winner is: %s\n\n", message));
 
             for (Warrior.Team team : Warrior.Team.values()) {
                 int teamIndex = getTeamIndex(team);
-                writer.write(STR."Team \{team}:\n");
-                writer.write(STR."  - Archers: Intial Archers count: \{initialArchers[teamIndex]}, Casualties: \{archerLosses[teamIndex]}, Left: \{initialArchers[teamIndex] - archerLosses[teamIndex]}\n");
-                writer.write(STR."  - Swordsmen: Intial Swordsmen count: \{initialSwordsmen[teamIndex]}, Casualties: \{swordsmanLosses[teamIndex]}, Left: \{initialSwordsmen[teamIndex] - swordsmanLosses[teamIndex]}\n");
-                writer.write(STR."  - Shieldmen: Initial Shieldmen count: \{initialShieldmen[teamIndex]}, Casualties: \{shieldmanLosses[teamIndex]}, Left: \{initialShieldmen[teamIndex] - shieldmanLosses[teamIndex]}\n");
-                writer.write("\n");
+                writer.write(String.format("  - Archers: Initial Archers count: %d, Casualties: %d, Left: %d\n",
+                        initialArchers[teamIndex], archerLosses[teamIndex], initialArchers[teamIndex] - archerLosses[teamIndex]));
+                writer.write(String.format("  - Swordsmen: Initial Swordsmen count: %d, Casualties: %d, Left: %d\n",
+                        initialSwordsmen[teamIndex], swordsmanLosses[teamIndex], initialSwordsmen[teamIndex] - swordsmanLosses[teamIndex]));
+                writer.write(String.format("  - Shieldmen: Initial Shieldmen count: %d, Casualties: %d, Left: %d\n\n",
+                        initialShieldmen[teamIndex], shieldmanLosses[teamIndex], initialShieldmen[teamIndex] - shieldmanLosses[teamIndex]));
             }
         } catch (IOException e) {
-            System.err.println(STR."Error while wrtiting results to the file: \{e.getMessage()}");
+            System.err.printf("Error while writing results to the file: %s\n", e.getMessage());
         }
     }
 

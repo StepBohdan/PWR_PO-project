@@ -65,7 +65,7 @@ public class Terrain {
     }
 
     private void generateMountains() {
-        generateTerrainFeature(TerrainType.MOUNTAIN, random.nextInt(10) + 3, 6);
+        generateTerrainFeature(random.nextInt(10) + 3, 6);
     }
 
     private void generateGravel() {
@@ -122,7 +122,7 @@ public class Terrain {
 
 
 
-    private void generateTerrainFeature(final TerrainType terrainType, final int amount, final int maxRadius) {
+    private void generateTerrainFeature(final int amount, final int maxRadius) {
         for (int index = 0; index < amount; index++) {
             final int x = random.nextInt(mapWidth - 2 * verticalSafeZoneSize) + verticalSafeZoneSize;
             final int y = random.nextInt(mapHeight); // No border restriction for Y (top to bottom)
@@ -146,7 +146,7 @@ public class Terrain {
                             newY < mapHeight &&
                             distance <= radius
                     ) {
-                        map[newX][newY] = terrainType;
+                        map[newX][newY] = TerrainType.MOUNTAIN;
                     }
                 }
             }

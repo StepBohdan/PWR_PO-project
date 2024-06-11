@@ -79,7 +79,7 @@ public class GameFrame extends JFrame {
         gridBagConstraints.gridwidth = 1;
         menuPanel.add(sideCheckBox, gridBagConstraints);
 
-        final JLabel troopsNumberLabel = new JLabel(STR."Troops amount (max: \{maxTroops}): ");
+        final JLabel troopsNumberLabel = new JLabel(String.format("Troops amount (max: %d): ", maxTroops));
         troopsNumberTextField = new JTextField(8);
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
@@ -87,7 +87,7 @@ public class GameFrame extends JFrame {
         gridBagConstraints.gridx = 1;
         menuPanel.add(troopsNumberTextField, gridBagConstraints);
 
-        final JLabel rowNumberLabel = new JLabel(STR."Row number (max: \{maxTroopRows}): ");
+        final JLabel rowNumberLabel = new JLabel(String.format("Row number (max: %d): ", maxTroopRows));
         rowNumberTextField = new JTextField(8);
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
@@ -212,7 +212,7 @@ public class GameFrame extends JFrame {
                 throw new NumberFormatException("Troops amount out of range");
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, STR."Please enter a valid number of troops (0-\{maxTroops}).", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, String.format("Please enter a valid number of troops (0-%d).", maxTroops), "Invalid Input", JOptionPane.ERROR_MESSAGE);
             troopsNumberTextField.setText("");
             return;
         }
@@ -222,7 +222,7 @@ public class GameFrame extends JFrame {
                 throw new NumberFormatException("Row number out of range");
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, STR."Please enter a valid row number (0-\{maxTroopRows}).", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, String.format("Please enter a valid row number (0-%d).", maxTroopRows), "Invalid Input", JOptionPane.ERROR_MESSAGE);
             rowNumberTextField.setText("");
             return;
         }
