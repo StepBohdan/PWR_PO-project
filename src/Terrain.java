@@ -7,7 +7,6 @@ public class Terrain {
         LAND, WATER, GRAVEL, MOUNTAIN
     }
 
-    // TODO: Add real values
     private static final int landPenalty = 1;
     private static final int gravelDefensePenalty = 2;
     private static final int waterAttackPenalty = 3;
@@ -18,6 +17,14 @@ public class Terrain {
     private final int verticalSafeZoneSize;
     private final Random random;
 
+    /**
+     * Terrain
+     *
+     * @param mapWidth             The width of the map.
+     * @param mapHeight            The height of the map.
+     * @param verticalSafeZoneSize The size of the vertical safe zone.
+     * @param random               A Random instance for generating random values.
+     */
     public Terrain(final int mapWidth, final int mapHeight, final int verticalSafeZoneSize, final Random random) {
         map = new TerrainType[mapWidth][mapHeight];
         this.mapWidth = mapWidth;
@@ -27,6 +34,14 @@ public class Terrain {
         generateTerrain();
     }
 
+    /**
+     * getAttackPenalty
+     * Returns the attack penalty for the terrain at the specified coordinates.
+     *
+     * @param x The x-coordinate.
+     * @param y The y-coordinate.
+     * @return The attack penalty value.
+     */
     public int getAttackPenalty(final int x, final int y) {
         if (isInMapBounds(x, y) && map[x][y] == TerrainType.WATER) {
             return waterAttackPenalty;
@@ -35,6 +50,14 @@ public class Terrain {
         }
     }
 
+    /**
+     * getDefensePenalty
+     * Returns the defense penalty for the terrain at the specified coordinates.
+     *
+     * @param x The x-coordinate.
+     * @param y The y-coordinate.
+     * @return The defense penalty value.
+     */
     public int getDefensePenalty(final int x, final int y) {
         if (isInMapBounds(x, y) && map[x][y] == TerrainType.GRAVEL) {
             return gravelDefensePenalty;
@@ -43,14 +66,34 @@ public class Terrain {
         }
     }
 
+    /**
+     * isInMapBounds
+     * Checks if the specified coordinates are within the map bounds.
+     *
+     * @param x The x-coordinate.
+     * @param y The y-coordinate.
+     * @return True if the coordinates are within bounds, otherwise false.
+     */
     public boolean isInMapBounds(final int x, final int y) {
         return x >= 0 && y >= 0 && x < mapWidth && y < mapHeight;
     }
 
+    /**
+     * isMountain
+     * Checks if the terrain at the specified coordinates is a mountain.
+     *
+     * @param x The x-coordinate.
+     * @param y The y-coordinate.
+     * @return True if the terrain is a mountain, otherwise false.
+     */
     public boolean isMountain(final int x, final int y) {
         return map[x][y] == TerrainType.MOUNTAIN;
     }
 
+    /**
+     * generateTerrain
+     * Generates the initial terrain map.
+     */
     private void generateTerrain() {
         // Fill with land, TODO: maybe consider a more interesting starting point
         for (int x = 0; x < mapWidth; x++) {
@@ -64,10 +107,18 @@ public class Terrain {
         generateRiver();
     }
 
+    /**
+     * generateMountains
+     * Generates mountains on the map.
+     */
     private void generateMountains() {
         generateTerrainFeature(random.nextInt(10) + 3, 6);
     }
 
+    /**
+     * generateGravel
+     * Generates gravel terrain features on the map.
+     */
     private void generateGravel() {
         int numRivers = random.nextInt(5) + 2;
         double gravelRadius = 1.4;
@@ -103,6 +154,10 @@ public class Terrain {
         }
     }
 
+    /**
+     * generateRiver
+     * Generates a river on the map.
+     */
     private void generateRiver() {
         int currentX = random.nextInt(mapWidth - 2 * verticalSafeZoneSize) + verticalSafeZoneSize;
         int currentY = 0; // Start at the very top
@@ -120,8 +175,13 @@ public class Terrain {
         }
     }
 
-
-
+    /**
+     * generateTerrainFeature
+     * Generates a terrain feature with the specified amount and maximum radius.
+     *
+     * @param amount    The number of features to generate.
+     * @param maxRadius The maximum radius of the feature.
+     */
     private void generateTerrainFeature(final int amount, final int maxRadius) {
         for (int index = 0; index < amount; index++) {
             final int x = random.nextInt(mapWidth - 2 * verticalSafeZoneSize) + verticalSafeZoneSize;

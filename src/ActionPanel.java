@@ -12,7 +12,9 @@ import java.util.logging.ErrorManager;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 
-
+/**
+ * ActionPanel class manages the user interface for action selection and troop management.
+ */
 public class ActionPanel extends JPanel {
     private static final int pixelSize = 10;
     private static final int TEAM_RED = 0;
@@ -39,6 +41,10 @@ public class ActionPanel extends JPanel {
 
     private Timer timer;
 
+    /**
+     * Constructor for ActionPanel.
+     * Initializes the panel with necessary components and layout.
+     */
     public ActionPanel(final Terrain terrain, final ArrayList<Warrior> troops, final Random random, final Function<String, Void> onGameEnd) {
         this.terrain = terrain;
         this.troops = troops;
@@ -58,13 +64,24 @@ public class ActionPanel extends JPanel {
         }
     }
 
-    // Method to get the team index
+    /**
+     * Get the index of a team
+     *
+     * @param team The team whose index is required
+     * @return The index of the team
+     */
     private int getTeamIndex(Warrior.Team team) {
         return switch (team) {
             case RED -> TEAM_RED;
             case BLUE -> TEAM_BLUE;
         };
     }
+
+    /**
+     * Method to write match results to a file
+     *
+     * @param message The match result message to write
+     */
     private void writeMatchResultsToFile(final String message) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("match_results.txt"))) {
             writer.write("Results of the battle\n");
@@ -85,6 +102,9 @@ public class ActionPanel extends JPanel {
         }
     }
 
+    /**
+     * Loads images for the action panel.
+     */
     private void loadImages() {
         try {
             blueArcherImage = ImageIO.read(new File("src/images/blue-archer.png"));
@@ -105,6 +125,11 @@ public class ActionPanel extends JPanel {
         draw(g);
     }
 
+    /**
+     * Draw the graphics on the panel.
+     *
+     * @param g The graphics object to draw on.
+     */
     private void draw(final Graphics g) {
         Graphics2D g2D = getGraphics2D((Graphics2D) g);
         for (final Warrior troop : troops) {
@@ -139,6 +164,12 @@ public class ActionPanel extends JPanel {
         }
     }
 
+    /**
+     * Get the Graphics2D object for drawing.
+     *
+     * @param g The graphics object to convert.
+     * @return The converted Graphics2D object.
+     */
     private Graphics2D getGraphics2D(Graphics2D g) {
 
         for (int x = 0; x < terrain.mapWidth; x++) {
@@ -155,11 +186,17 @@ public class ActionPanel extends JPanel {
         return g;
     }
 
+    /**
+     * Start the game by initializing and starting the timer.
+     */
     public void startGame() {
         timer = new Timer(100, this::onTimerTick);
         timer.start();
     }
 
+    /**
+     * Stop the game by stopping the timer.
+     */
     public void stopGame() {
         if (timer != null && timer.isRunning()) {
             timer.stop();
@@ -167,6 +204,11 @@ public class ActionPanel extends JPanel {
         }
     }
 
+    /**
+     * Check the opponent status for a given troop.
+     *
+     * @param troop The troop to check.
+     */
     private void checkOpponent(final Warrior troop) {
         final ArrayList<Warrior> enemies = getAllEnemyTroops(troop);
         if (enemies.isEmpty()) {
@@ -196,7 +238,7 @@ public class ActionPanel extends JPanel {
             final int defensePenalty = terrain.getDefensePenalty(warriorToAttack.x, warriorToAttack.y);
             final boolean attackResult = troop.attack(warriorToAttack, random, attackPenalty, defensePenalty);
             if (attackResult) {
-                System.out.printf("%s %s killed a %s %s%n\n",troop.team.toString(), troop.getClass().getCanonicalName(), warriorToAttack.team.toString(), warriorToAttack.getClass().getCanonicalName());
+                System.out.printf("%s %s killed a %s %s%n\n", troop.team.toString(), troop.getClass().getCanonicalName(), warriorToAttack.team.toString(), warriorToAttack.getClass().getCanonicalName());
                 troops.remove(warriorToAttack);
                 int teamIndex = getTeamIndex(warriorToAttack.team);
                 switch (warriorToAttack) {
@@ -217,6 +259,12 @@ public class ActionPanel extends JPanel {
         }
     }
 
+    /**
+     * Get all enemy troops for a given troop.
+     *
+     * @param troop The troop to check for enemies.
+     * @return A list of enemy troops.
+     */
     private ArrayList<Warrior> getAllEnemyTroops(final Warrior troop) {
         final ArrayList<Warrior> enemyTroops = new ArrayList<>();
         for (final Warrior warrior : troops) {
@@ -227,6 +275,12 @@ public class ActionPanel extends JPanel {
         return enemyTroops;
     }
 
+    /**
+     * Move a troop towards an enemy.
+     *
+     * @param troop The troop to move.
+     * @param enemy The enemy to move towards.
+     */
     private void moveTowardsAnEnemy(final Warrior troop, final Warrior enemy) {
         if (troop.attackRadius <= Math.abs(troop.y - enemy.y)) {
             if (troop.y > enemy.y) {
@@ -244,6 +298,11 @@ public class ActionPanel extends JPanel {
         advanceTroop(troop);
     }
 
+    /**
+     * Advance a troop forward.
+     *
+     * @param troop The troop to advance.
+     */
     private void advanceTroop(final Warrior troop) {
         if (troop.direction != Warrior.Direction.STUCK) {
             if (canGoForward(troop)) {
@@ -255,6 +314,11 @@ public class ActionPanel extends JPanel {
         }
     }
 
+    /**
+     * Move a troop vertically.
+     *
+     * @param troop The troop to move.
+     */
     private void moveVertically(final Warrior troop) {
         if (troop.direction == Warrior.Direction.FORWARD) {
             final boolean isUp = random.nextBoolean();
@@ -286,18 +350,36 @@ public class ActionPanel extends JPanel {
         }
     }
 
+    /**
+     * Check if a troop can move up.
+     *
+     * @param troop The troop to check.
+     * @return True if the troop can move up, false otherwise.
+     */
     private boolean canGoUp(final Warrior troop) {
         final int troopX = troop.x;
         final int newTroopY = troop.y + 1;
         return terrain.isInMapBounds(troopX, newTroopY) && !terrain.isMountain(troopX, newTroopY);
     }
 
+    /**
+     * Check if a troop can move down.
+     *
+     * @param troop The troop to check.
+     * @return True if the troop can move down, false otherwise.
+     */
     private boolean canGoDown(final Warrior troop) {
         final int troopX = troop.x;
         final int newTroopY = troop.y - 1;
         return terrain.isInMapBounds(troopX, newTroopY) && !terrain.isMountain(troopX, newTroopY);
     }
 
+    /**
+     * Check if a troop can move forward.
+     *
+     * @param troop The troop to check.
+     * @return True if the troop can move forward, false otherwise.
+     */
     private boolean canGoForward(final Warrior troop) {
         final int troopX = troop.x;
         int newTroopX = troopX;
@@ -309,6 +391,12 @@ public class ActionPanel extends JPanel {
         return terrain.isInMapBounds(newTroopX, troopY) && !terrain.isMountain(newTroopX, troopY);
     }
 
+    /**
+     * Check if a troop is at the end of the map.
+     *
+     * @param troop The troop to check.
+     * @return True if the troop is at the end of the map, false otherwise.
+     */
     private boolean isAtMapEnd(final Warrior troop) {
         switch (troop.team) {
             case BLUE -> {
@@ -321,6 +409,12 @@ public class ActionPanel extends JPanel {
         return false;
     }
 
+    /**
+     * Check if it is a draw due to all troops being stuck.
+     *
+     * @param localTroops The list of local troops to check.
+     * @return True if all troops are stuck, false otherwise.
+     */
     private boolean isDrawOnStuck(ArrayList<Warrior> localTroops) {
         for (final Warrior troop : localTroops) {
             if (troop.direction != Warrior.Direction.STUCK) {
@@ -330,6 +424,11 @@ public class ActionPanel extends JPanel {
         return true;
     }
 
+    /**
+     * Handle the timer tick event.
+     *
+     * @param e The action event triggered by the timer.
+     */
     public void onTimerTick(final ActionEvent e) {
         boolean blueReachedMapEnd = false;
         boolean redReachedMapEnd = false;
@@ -337,7 +436,7 @@ public class ActionPanel extends JPanel {
         if (localTroops.isEmpty()) {
             onGameEnd.apply("It's a draw. Everybody died");
             stopGame();
-        }else if (isDrawOnStuck(localTroops)) {
+        } else if (isDrawOnStuck(localTroops)) {
             onGameEnd.apply("It's a draw. Everybody is stuck");
             startGame();
         }

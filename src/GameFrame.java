@@ -37,6 +37,11 @@ public class GameFrame extends JFrame {
     private ActionPanel actionPanel;
     private final ArrayList<Warrior> troops = new ArrayList<>();
 
+    /**
+     * GameFrame
+     *
+     * @param maxTroops The maximum number of troops allowed in the game.
+     */
     GameFrame(final int maxTroops) {
         this.maxTroops = maxTroops;
 
@@ -163,6 +168,10 @@ public class GameFrame extends JFrame {
         this.setVisible(true);
     }
 
+    /**
+     * setMainPanel
+     * Sets the main panel for the game frame.
+     */
     private void setMainPanel() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -171,6 +180,13 @@ public class GameFrame extends JFrame {
         mainPanel.setVisible(true);
     }
 
+    /**
+     * getTroopsTypePanel
+     * Creates and returns a panel with radio buttons for selecting the type of troops.
+     *
+     * @param gameFrame The game frame that contains this panel.
+     * @return A JPanel with radio buttons for troop type selection.
+     */
     private static JPanel getTroopsTypePanel(final GameFrame gameFrame) {
         final ButtonGroup troopsTypeButtonGroup = new ButtonGroup();
         final JPanel troopsTypePanel = new JPanel();
@@ -191,15 +207,33 @@ public class GameFrame extends JFrame {
         return troopsTypePanel;
     }
 
+    /**
+     * clearTroopsInRow
+     * Clears the troops in the specified row.
+     *
+     * @param rowNumber The row number from which to clear the troops.
+     */
     private void clearTroopsInRow(final int rowNumber) {
         int targetX = (selectedTeam == Warrior.Team.BLUE) ? rowNumber - 1 : mapWidth - rowNumber;
         troops.removeIf(troop -> troop.x == targetX && troop.team == selectedTeam);
     }
 
+    /**
+     * onExitButtonClick
+     * Handles the action when the exit button is clicked.
+     *
+     * @param actionEvent The action event triggered by the exit button click.
+     */
     private void onExitButtonClick(ActionEvent actionEvent) {
         this.dispose();
     }
 
+    /**
+     * onSubmitButtonClick
+     * Handles the action when the submit button is clicked, validating inputs and configuring troops.
+     *
+     * @param event The action event triggered by the submit button click.
+     */
     private void onSubmitButtonClick(final ActionEvent event) {
         System.out.println("Submit button pressed");
         resetButton.setEnabled(true);
@@ -249,12 +283,24 @@ public class GameFrame extends JFrame {
         }
     }
 
+    /**
+     * onGenerateNewMapClick
+     * Handles the action when the generate new map button is clicked, resetting the game and generating a new map.
+     *
+     * @param actionEvent The action event triggered by the generate new map button click.
+     */
     private void onGenerateNewMapClick(ActionEvent actionEvent) {
         onResetButtonClick(actionEvent);
         terrain = new Terrain(mapWidth, mapHeight, maxTroopRows, random);
         actionPanel = new ActionPanel(terrain, troops, random, this::onGameEnd);
     }
 
+    /**
+     * onResetButtonClick
+     * Handles the action when the reset button is clicked, resetting the game configuration and UI.
+     *
+     * @param event The action event triggered by the reset button click.
+     */
     private void onResetButtonClick(final ActionEvent event) {
 
         troops.clear();
@@ -288,6 +334,12 @@ public class GameFrame extends JFrame {
         selectedTeam = Warrior.Team.BLUE;
     }
 
+    /**
+     * styleButton
+     * Styles a given JButton with specific font, background color, and other properties.
+     *
+     * @param button The JButton to style.
+     */
     private void styleButton(JButton button) {
         button.setFont(new Font("Arial", Font.BOLD, 12));
         button.setBackground(Color.DARK_GRAY);
@@ -297,6 +349,13 @@ public class GameFrame extends JFrame {
         button.setPreferredSize(new Dimension(100, 30));
     }
 
+    /**
+     * onGameEnd
+     * Handles the end of the game, updating the status label and enabling the exit button.
+     *
+     * @param message The message to display when the game ends.
+     * @return null
+     */
     private Void onGameEnd(final String message) {
         statusLabel.setText(message);
         System.out.println(message);
@@ -304,6 +363,12 @@ public class GameFrame extends JFrame {
         return null;
     }
 
+    /**
+     * onStartButtonClick
+     * Handles the action when the start button is clicked, starting the game and updating the UI accordingly.
+     *
+     * @param e The action event triggered by the start button click.
+     */
     private void onStartButtonClick(final ActionEvent e) {
         System.out.println("Start button pressed");
         generateNewMap.setEnabled(false);
@@ -316,7 +381,13 @@ public class GameFrame extends JFrame {
         System.out.println("Game started");
     }
 
-
+    /**
+     * generateTroops
+     * Generates troops based on the specified amount and row number.
+     *
+     * @param amount    The number of troops to generate.
+     * @param rowNumber The row number in which to place the troops.
+     */
     public void generateTroops(final int amount, final int rowNumber) {
         final int step = mapHeight / amount;
 
