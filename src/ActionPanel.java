@@ -179,6 +179,8 @@ public class ActionPanel extends JPanel {
         if (enemies.isEmpty()) {
             onGameEnd.apply(String.format("%s won by killing all enemies", troop.team.toString()));
             stopGame();
+            writeMatchResultsToFile(troop.team.toString());
+            return; // Прекращаем проверку после победы
         }
 
         Warrior warriorToAttack = null;
@@ -354,10 +356,14 @@ public class ActionPanel extends JPanel {
         if (localTroops.isEmpty()) {
             onGameEnd.apply("It's a draw. Everybody died");
             stopGame();
+            writeMatchResultsToFile("Draw"); // Запись результатов при ничьей
+            return;
         }
         if (isDrawOnStuck(localTroops)) {
             onGameEnd.apply("It's a draw. Everybody is stuck");
             startGame();
+            writeMatchResultsToFile("Draw"); // Запись результатов при ничьей
+            return;
         }
         for (final Warrior troop : localTroops) {
             checkOpponent(troop);
