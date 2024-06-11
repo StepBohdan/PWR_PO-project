@@ -1,6 +1,9 @@
 
 import java.util.Random;
 
+/**
+ * Represents the game terrain. This class handles the different types of terrain that can exist in the game, which may affect the movement and abilities of the warriors.
+ */
 public class Terrain {
     // Using enums for better readability
     public enum TerrainType {

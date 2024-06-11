@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Random;
 
+/**
+ *  Contains unit tests for the Warrior class to ensure its methods and functionalities work as expected. This is essential for maintaining code reliability and catching any bugs or issues in the Warrior class.
+ */
 public class WarriorTests {
 
     @Test

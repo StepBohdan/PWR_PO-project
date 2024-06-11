@@ -1,6 +1,9 @@
 import java.awt.geom.Point2D;
 import java.util.Random;
 
+/**
+ * Defines the properties and behaviors of a warrior. This includes attributes such as health, attack power, and defense, as well as methods to perform actions like moving and attacking.
+ */
 public abstract class Warrior {
 
     public enum Team {

@@ -13,7 +13,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 
 /**
- * ActionPanel class manages the user interface for action selection and troop management.
+ * Handles the user interface for the game actions. This includes buttons and other interactive elements that allow the player to control their warriors and perform various in-game actions.
  */
 public class ActionPanel extends JPanel {
     private static final int pixelSize = 10;

@@ -4,6 +4,9 @@ import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Represents the main game window where the game is displayed. This class is responsible for setting up the main game interface, including the game area and any additional panels or components required for gameplay.
+ */
 public class GameFrame extends JFrame {
     private static final int mapHeight = 100;
     private static final int mapWidth = 100;
