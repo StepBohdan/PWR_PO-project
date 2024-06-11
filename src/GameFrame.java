@@ -37,6 +37,8 @@ public class GameFrame extends JFrame {
     private ActionPanel actionPanel;
     private final ArrayList<Warrior> troops = new ArrayList<>();
 
+
+    // Dodawanie różnych przycisków i logo
     GameFrame(final int maxTroops) {
         this.maxTroops = maxTroops;
 
@@ -70,7 +72,6 @@ public class GameFrame extends JFrame {
         sideCheckBox.addActionListener(_ -> selectedTeam = sideCheckBox.isSelected() ? Warrior.Team.RED : Warrior.Team.BLUE);
         selectedTeam = Warrior.Team.BLUE;
         final ImageIcon blueTeamIcon = new ImageIcon("src/images/blue.png");
-        sideCheckBox.setIcon(blueTeamIcon);
         sideCheckBox.setIcon(blueTeamIcon);
         final ImageIcon redTeamIcon = new ImageIcon("src/images/red.png");
         sideCheckBox.setSelectedIcon(redTeamIcon);
@@ -147,9 +148,6 @@ public class GameFrame extends JFrame {
 
         setMainPanel();
 
-        final JComboBox<String> terrainTypeComboBox = new JComboBox<>();
-        terrainTypeComboBox.setPreferredSize(new Dimension(100, 100)); // ?
-
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         if (gd.isFullScreenSupported()) {
             gd.setFullScreenWindow(this);
@@ -163,6 +161,7 @@ public class GameFrame extends JFrame {
         this.setVisible(true);
     }
 
+    // Ustawia główny panel dla interfejsu aplikacji.
     private void setMainPanel() {
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -170,7 +169,7 @@ public class GameFrame extends JFrame {
         mainPanel.add(new JLabel(gameLogoIcon), BorderLayout.CENTER);
         mainPanel.setVisible(true);
     }
-
+   // Dodawanie radioButtons (swordsman, archer, shieldman)
     private static JPanel getTroopsTypePanel(final GameFrame gameFrame) {
         final ButtonGroup troopsTypeButtonGroup = new ButtonGroup();
         final JPanel troopsTypePanel = new JPanel();
@@ -191,6 +190,7 @@ public class GameFrame extends JFrame {
         return troopsTypePanel;
     }
 
+    // Oczyszczanie wierszu wojowników
     private void clearTroopsInRow(final int rowNumber) {
         int targetX = (selectedTeam == Warrior.Team.BLUE) ? rowNumber - 1 : mapWidth - rowNumber;
         troops.removeIf(troop -> troop.x == targetX && troop.team == selectedTeam);
@@ -237,6 +237,7 @@ public class GameFrame extends JFrame {
         mainPanel.revalidate();
         mainPanel.repaint();
 
+        // Sprawdzanie rozmieszczenia dwóch zespołów
         switch (selectedTeam) {
             case BLUE -> blueConfigured = true;
             case RED -> redConfigured = true;
@@ -315,7 +316,7 @@ public class GameFrame extends JFrame {
         System.out.println("Game started");
     }
 
-
+    // Układ wojowników
     public void generateTroops(final int amount, final int rowNumber) {
         final int step = mapHeight / amount;
 
